@@ -1,4 +1,4 @@
-// GeoNavigator v6.0 - Main Application Logic (FIXED)
+// GeoNavigator v6.0 - Main Application Logic (UPDATED for Local Map)
 // Core game engine for geography quiz with interactive map
 
 class GeoNavigator {
@@ -22,13 +22,14 @@ class GeoNavigator {
                 isInputBlocked: false,
                 elapsedTime: 0,
                 isPaused: false,
-                lastTimerTime: 0  // Track timer for pauses
+                lastTimerTime: 0
             },
             navigation: {
                 previousScreen: null,   
                 fromPause: false,       
                 gameActive: false       
             },
+            // Данные теперь берутся из модуля GeoCountries динамически
             countryNameMapping: {},
             continents: {},
             countryData: {}
@@ -62,7 +63,6 @@ class GeoNavigator {
     }
 
     loadCountryData() {
-        // Load country data from GeoCountries module
         if (window.GeoCountries) {
             console.log('Loading country data from GeoCountries module...');
             this.config.countryNameMapping = window.GeoCountries.countryNameMapping || {};
@@ -70,7 +70,6 @@ class GeoNavigator {
             this.config.countryData = window.GeoCountries.countryData || {};
         } else {
             console.error('GeoCountries module not found! Game data will be unavailable.');
-            // Initialize empty data structures as fallback
             this.config.countryNameMapping = {};
             this.config.continents = {
                 europe: [], asia: [], africa: [], america: [], oceania: []
@@ -82,25 +81,12 @@ class GeoNavigator {
     setupEventListeners() {
         console.log('Setting up event listeners...');
         
-        // Main menu navigation
         this.setupMainMenuEvents();
-        
-        // Game setup screen events
         this.setupGameSetupEvents();
-        
-        // Game screen events
         this.setupGameScreenEvents();
-        
-        // Pause menu events (v6.0 feature)
         this.setupPauseMenuEvents();
-        
-        // Results screen events
         this.setupResultsScreenEvents();
-        
-        // Settings events with path memory
         this.setupSettingsEvents();
-        
-        // Map control events
         this.setupMapEvents();
     }
 
@@ -233,7 +219,6 @@ class GeoNavigator {
             });
         }
 
-        // Language buttons with game active check
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const lang = btn.dataset.lang;
@@ -245,7 +230,6 @@ class GeoNavigator {
             });
         });
 
-        // Theme buttons
         document.querySelectorAll('.theme-btn').forEach(btn => {
             btn.addEventListener('click', () => {
                 const theme = btn.dataset.theme;
@@ -258,7 +242,6 @@ class GeoNavigator {
             });
         });
 
-        // Volume control with null safety
         const volumeSlider = document.getElementById('volumeSlider');
         if (volumeSlider) {
             volumeSlider.addEventListener('input', (e) => {
@@ -272,7 +255,6 @@ class GeoNavigator {
             });
         }
 
-        // Save settings button
         const saveSettingsBtn = document.querySelector('.btn-save');
         if (saveSettingsBtn) {
             saveSettingsBtn.addEventListener('click', () => {
@@ -414,10 +396,6 @@ class GeoNavigator {
         }
     }
 
-    // ============================================
-    // PATH MEMORY SYSTEM (v6.0)
-    // ============================================
-
     navigateToSettings(fromScreen) {
         this.config.navigation.previousScreen = fromScreen;
         this.config.navigation.fromPause = (fromScreen === 'pauseScreen');
@@ -454,7 +432,7 @@ class GeoNavigator {
     }
 
     // ============================================
-    // PAUSE MENU SYSTEM (v6.0)
+    // PAUSE MENU SYSTEM
     // ============================================
 
     showPauseMenu() {
@@ -820,15 +798,12 @@ class GeoNavigator {
     }
 
     // ============================================
-    // MAP AND GEOGRAPHY FUNCTIONS
+    // MAP AND GEOGRAPHY FUNCTIONS (UPDATED)
     // ============================================
 
     initMap() {
         const mapContainer = document.getElementById('map');
-        if (!mapContainer) {
-            console.error('Map container not found');
-            return;
-        }
+        if (!mapContainer) return;
         
         try {
             if (this.config.gameState.map) {
@@ -848,19 +823,13 @@ class GeoNavigator {
             });
             
             L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', {
-                attribution: '© OpenStreetMap contributors, © CARTO',
+                attribution: '© OpenStreetMap, © CARTO',
                 subdomains: 'abcd',
                 maxZoom: 8
             }).addTo(map);
             
             this.addCountryBoundaries(map);
             this.config.gameState.map = map;
-            this.setupMapClickHandler(map);
-            
-            setTimeout(() => {
-                map.invalidateSize();
-                console.log('Map initialized with country boundaries');
-            }, 100);
             
         } catch (error) {
             console.error('Map initialization error:', error);
@@ -868,43 +837,57 @@ class GeoNavigator {
     }
 
     addCountryBoundaries(map) {
-        try {
-            fetch('https://raw.githubusercontent.com/johan/world.geo.json/master/countries.geo.json')
-                .then(response => {
-                    if (!response.ok) throw new Error('Failed to load boundaries');
-                    return response.json();
-                })
-                .then(data => {
-                    const geoJsonLayer = L.geoJson(data, {
-                        style: () => {
-                            return {
-                                fillColor: 'transparent',
-                                weight: 1.5,
-                                opacity: 0.6,
-                                color: '#4cc9f0',
-                                fillOpacity: 0.1,
-                                dashArray: '3, 3',
-                                className: 'country-polygon'
-                            };
-                        },
-                        onEachFeature: (feature, layer) => {
-                            this.setupCountryInteractivity(feature, layer, map);
-                        }
-                    }).addTo(map);
-                    
-                    this.config.gameState.boundariesLayer = geoJsonLayer;
-                })
-                .catch(error => {
-                    console.warn('Failed to load country boundaries:', error);
-                    this.addSimpleBoundaries(map);
-                });
-        } catch (error) {
-            console.error('Error adding country boundaries:', error);
-            this.addSimpleBoundaries(map);
-        }
+        // Fetching LOCAL file from root
+        fetch('countries.geo.json')
+            .then(response => {
+                if (!response.ok) throw new Error('Failed to load local map data');
+                return response.json();
+            })
+            .then(data => {
+                const geoJsonLayer = L.geoJson(data, {
+                    style: () => {
+                        return {
+                            fillColor: 'transparent',
+                            weight: 1.5,
+                            opacity: 0.6,
+                            color: '#4cc9f0',
+                            fillOpacity: 0.1,
+                            dashArray: '3, 3',
+                            className: 'country-polygon'
+                        };
+                    },
+                    onEachFeature: (feature, layer) => {
+                        this.setupCountryInteractivity(feature, layer, map);
+                    }
+                }).addTo(map);
+                
+                this.config.gameState.boundariesLayer = geoJsonLayer;
+                console.log('Local map loaded successfully');
+            })
+            .catch(error => {
+                console.error('Map loading error:', error);
+                this.showNotification('Error loading map file (check countries.geo.json)', 'error');
+                this.addSimpleBoundaries(map); // Fallback
+            });
     }
 
     setupCountryInteractivity(feature, layer, map) {
+        // === UPDATED: Identify country by ISO_A2 code ===
+        // Natural Earth uses ISO_A2 or ISO_A2_EH
+        const isoCode = feature.properties.ISO_A2 || feature.properties.ISO_A2_EH;
+        
+        // Resolve Russian name using our helper
+        let countryName = null;
+        if (window.GeoCountries && isoCode) {
+            countryName = window.GeoCountries.getCountryNameByCode(isoCode);
+        }
+
+        // If not found in our game database, disable interaction
+        if (!countryName) {
+            layer.setStyle({ interactive: false }); 
+            return;
+        }
+
         layer.options.interactive = true;
         layer.options.bubblingMouseEvents = false;
         
@@ -918,7 +901,6 @@ class GeoNavigator {
                 dashArray: ''
             });
             
-            const countryName = this.getRussianName(feature.properties.name);
             layer.bindTooltip(countryName, {
                 permanent: false,
                 direction: 'auto',
@@ -935,38 +917,26 @@ class GeoNavigator {
             }
             layer.closeTooltip();
         });
-    }
 
-    setupMapClickHandler(map) {
-        map.on('click', (e) => {
+        // === CLICK HANDLING MOVED HERE ===
+        layer.on('click', (e) => {
             if (this.config.currentGame?.mode !== 'countryByCapital' || 
                 this.config.gameState.isInputBlocked || 
                 this.config.gameState.isPaused) {
                 return;
             }
-            
+
+            // Stop event propagation so map doesn't get clicked
+            L.DomEvent.stop(e);
+
             const currentQuestion = this.config.gameState.questions[this.config.gameState.currentQuestionIndex];
-            if (!currentQuestion) return;
             
-            const point = e.latlng;
-            let clickedCountry = null;
-            
-            if (this.config.gameState.boundariesLayer) {
-                this.config.gameState.boundariesLayer.eachLayer((layer) => {
-                    if (layer.getBounds && layer.getBounds().contains(point)) {
-                        const englishName = layer.feature?.properties?.name;
-                        if (englishName) {
-                            clickedCountry = this.getRussianName(englishName);
-                        }
-                    }
-                });
-            }
-            
-            if (clickedCountry) {
-                this.handleMapCountryClick(clickedCountry, currentQuestion, e.latlng);
-            }
+            // Handle click with the correctly identified country name
+            this.handleMapCountryClick(countryName, currentQuestion, e.latlng);
         });
     }
+
+    // Note: old setupMapClickHandler is no longer needed as logic is inside the layer
 
     handleMapCountryClick(clickedCountry, currentQuestion, latlng) {
         this.config.gameState.isInputBlocked = true;
@@ -996,12 +966,17 @@ class GeoNavigator {
     highlightCorrectCountry(countryName) {
         if (!this.config.gameState.boundariesLayer || !this.config.gameState.map) return;
         
-        const englishName = this.getEnglishName(countryName);
+        // === UPDATED: Find correct country by ISO code ===
+        const targetCode = window.GeoCountries.getCodeByCountryName(countryName);
+        if (!targetCode) return;
+
         const geoJsonLayer = this.config.gameState.boundariesLayer;
         
         geoJsonLayer.eachLayer((layer) => {
-            if (layer.feature && 
-                layer.feature.properties.name.toLowerCase() === englishName.toLowerCase()) {
+            const mapIsoCode = layer.feature?.properties?.ISO_A2 || layer.feature?.properties?.ISO_A2_EH;
+            
+            if (mapIsoCode && targetCode && 
+                mapIsoCode.toLowerCase() === targetCode.toLowerCase()) {
                 
                 layer.setStyle({
                     weight: 3,
@@ -1012,7 +987,7 @@ class GeoNavigator {
                 });
                 
                 const bounds = layer.getBounds();
-                if (bounds) {
+                if (bounds && Object.keys(bounds).length > 0) {
                     this.config.gameState.map.flyToBounds(bounds, {
                         padding: [50, 50],
                         maxZoom: 5,
@@ -1036,6 +1011,7 @@ class GeoNavigator {
     }
 
     addSimpleBoundaries(map) {
+        // Fallback rectangles if geojson fails
         const continents = [
             { name: 'Europe', bounds: [[35, -10], [71, 40]] },
             { name: 'Asia', bounds: [[10, 60], [75, 180]] },
@@ -1054,25 +1030,6 @@ class GeoNavigator {
                 dashArray: '3, 3'
             }).addTo(map);
         });
-    }
-
-    getEnglishName(russianName) {
-        // Use GeoCountries module method if available
-        if (window.GeoCountries?.getEnglishName) {
-            return window.GeoCountries.getEnglishName(russianName);
-        }
-        return this.config.countryNameMapping[russianName] || russianName;
-    }
-
-    getRussianName(englishName) {
-        // Use GeoCountries module method if available
-        if (window.GeoCountries?.getRussianName) {
-            return window.GeoCountries.getRussianName(englishName);
-        }
-        for (const [rus, eng] of Object.entries(this.config.countryNameMapping)) {
-            if (eng.toLowerCase() === englishName.toLowerCase()) return rus;
-        }
-        return englishName;
     }
 
     // ============================================
@@ -1094,7 +1051,6 @@ class GeoNavigator {
             timerDisplay.style.color = timeLeft <= 10 ? '#ef4444' : '#f59e0b';
         }
         
-        // FIXED: Proper timer interval setup with memory leak prevention
         this.config.gameState.timerInterval = setInterval(() => {
             if (!this.config.currentGame || this.config.gameState.isInputBlocked || this.config.gameState.isPaused) {
                 this.stopTimer();
@@ -1232,7 +1188,6 @@ class GeoNavigator {
     applyLanguage(lang) {
         this.config.settings.language = lang;
         
-        // FIXED: Better localization handling with proper null checks
         document.querySelectorAll('[data-i18n]').forEach(element => {
             const key = element.getAttribute('data-i18n');
             const text = this.getLocalizedText(key);
@@ -1285,7 +1240,6 @@ class GeoNavigator {
         document.querySelectorAll('.lang-btn span').forEach(span => {
             const langBtn = span.closest('.lang-btn');
             if (langBtn) {
-                const langAttr = langBtn.dataset.lang;
                 if (span.hasAttribute('data-i18n-ru') && span.hasAttribute('data-i18n-en')) {
                     span.textContent = lang === 'ru' ? 
                         span.getAttribute('data-i18n-ru') : 
@@ -1317,14 +1271,13 @@ class GeoNavigator {
 
     getLocalizedText(key) {
         const lang = this.config.settings.language;
-        // FIXED: Better null safety for LOCALES
         if (typeof LOCALES !== 'undefined' && LOCALES && LOCALES[lang] && LOCALES[lang][key]) {
             return LOCALES[lang][key];
         }
         if (typeof LOCALES !== 'undefined' && LOCALES && LOCALES['ru'] && LOCALES['ru'][key]) {
             return LOCALES['ru'][key];
         }
-        return key; // Return key as fallback
+        return key; 
     }
 
     // ============================================
@@ -1374,7 +1327,6 @@ class GeoNavigator {
     // ============================================
 
     setupNotifications() {
-        // Ensure notification container exists
         if (!document.getElementById('notification')) {
             const notificationContainer = document.createElement('div');
             notificationContainer.id = 'notification';
