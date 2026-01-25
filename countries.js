@@ -1,4 +1,5 @@
-// countries.js - Data module for GeoNavigator v6.0 (Updated for Natural Earth Map)
+// countries.js - Data module for GeoNavigator v6.0
+// Updated with Natural Earth compatibility fixes
 
 const GeoCountries = {
     // Полный список 195 стран (Русский -> Английский)
@@ -469,44 +470,62 @@ const GeoCountries = {
         "Фиджи": { capital: "Сува", code: "fj", continent: "oceania" }
     },
 
-    // Utility methods for country data access
-    
-    // === НОВЫЕ МЕТОДЫ ДЛЯ ПОДДЕРЖКИ КАРТЫ NATURAL EARTH ===
-    
-    // Получить русское название страны по ISO коду из GeoJSON (например, "US" -> "США")
-    getCountryNameByCode: function(isoCode) {
-        if (!isoCode) return null;
-        
-        // В базе Natural Earth код может быть в верхнем регистре (US), у нас в нижнем (us)
-        const searchCode = isoCode.toLowerCase();
-        
-        // Ищем страну в нашей базе, у которой код совпадает
-        for (const [countryName, data] of Object.entries(this.countryData)) {
-            // Проверка на undefined на случай ошибок в данных
-            if (data && data.code && data.code.toLowerCase() === searchCode) {
-                return countryName;
-            }
-        }
-        return null;
+    // === UTILITY METHODS ===
+
+    // Словарь исправлений для карты Natural Earth (3 буквы -> 2 буквы)
+    // Исправляет страны, у которых код ISO_A2 равен -99 или отсутствует
+    codeFixes: {
+        "fra": "fr", // Франция
+        "nor": "no", // Норвегия
+        "somaliland": "so", // Сомали (через Сомалиленд)
+        "kos": "xk", // Косово
+        "cyp": "cy", // Кипр
+        "prt": "pt", // Португалия
+        "ncy": "cy"  // Северный Кипр -> Кипр
     },
 
-    // Получить ISO код по русскому названию (для подсветки правильного ответа)
-    getCodeByCountryName: function(countryName) {
-        const data = this.countryData[countryName];
-        return data ? data.code : null;
+    // Основной метод поиска страны по кодам из GeoJSON
+    // Принимает isoCode (2 буквы) и adm3Code (3 буквы)
+    getCountryNameByCode: function(isoCode, adm3Code) {
+        // 1. Сначала пробуем найти по стандартному 2-буквенному коду
+        if (isoCode && isoCode !== '-99') {
+            const searchCode = isoCode.toLowerCase();
+            for (const [countryName, data] of Object.entries(this.countryData)) {
+                if (data && data.code && data.code.toLowerCase() === searchCode) {
+                    return countryName;
+                }
+            }
+        }
+
+        // 2. Если не вышло или код сломан (-99), ищем по 3-буквенному коду (ADM0_A3)
+        if (adm3Code) {
+            const search3 = adm3Code.toLowerCase();
+            // Проверяем наш словарь исправлений
+            if (this.codeFixes[search3]) {
+                const fixedCode = this.codeFixes[search3];
+                for (const [countryName, data] of Object.entries(this.countryData)) {
+                    if (data.code === fixedCode) return countryName;
+                }
+            }
+        }
+        
+        return null;
     },
-    // =======================================================
 
     getEnglishName: function(russianName) {
         return this.countryNameMapping[russianName] || russianName;
     },
 
     getRussianName: function(englishName) {
-        // Старый метод поиска по имени (менее надежный теперь, но оставляем)
         for (const [rus, eng] of Object.entries(this.countryNameMapping)) {
             if (eng.toLowerCase() === englishName.toLowerCase()) return rus;
         }
         return englishName;
+    },
+    
+    getCodeByCountryName: function(countryName) {
+        const data = this.countryData[countryName];
+        return data ? data.code : null;
     },
 
     getContinentForCountry: function(countryName) {
@@ -535,11 +554,11 @@ const GeoCountries = {
                 capitals.push(data.capital);
             }
         });
-        return [...new Set(capitals)]; // Remove duplicates
+        return [...new Set(capitals)];
     }
 };
 
-// Export for use in browser (global variable)
+// Export for use in browser
 if (typeof window !== 'undefined') {
     window.GeoCountries = GeoCountries;
 }
