@@ -1,204 +1,145 @@
-// locales.js - файл локализации версия 6.0
+// locales.js - файл локализации v6.5 (Smart TV Edition)
 const LOCALES = {
     ru: {
-        // Главное меню
         'gameTitle': 'GeoNavigator',
-        'gameSubtitle': 'Проверьте свои знания географии! Угадывайте страны и столицы на интерактивной карте мира.',
-        'modeCapitalByCountry': 'Столица по стране',
-        'modeCountryByCapital': 'Страна по столице',
-        'startGame': 'НАЧАТЬ ИГРУ',
-        'featuresTitle': 'Особенности игры',
-        'feature1': 'Интерактивная карта',
-        'feature2': 'Система достижений',
-        'feature3': 'Гибкие настройки',
-        'countries': 'Стран',
-        'modes': 'Режима',
-        'continents': 'Континентов',
-        'settings': 'Настройки',
-        'about': 'Об игре',
+        'gameSubtitle': 'Исследуйте мир, проверяйте знания и открывайте новые горизонты.',
         
-        // Настройки
+        // Режимы игры
+        'modeCapitalByCountry': 'Угадай столицу',
+        'descCapitalByCountry': 'Дана страна — выберите столицу',
+        
+        'modeCountryByCapital': 'Найти на карте',
+        'descCountryByCapital': 'Дана столица — кликните по карте',
+        
+        'modeCountryByCapitalText': 'Угадай страну',
+        'descCountryByCapitalText': 'Дана столица — выберите страну',
+        
+        // Главное меню
+        'startGame': 'НАЧАТЬ ИГРУ',
         'settingsTitle': 'НАСТРОЙКИ',
         'language': 'ЯЗЫК',
         'sound': 'ЗВУК',
         'theme': 'ТЕМА',
         'lightTheme': 'Светлая',
         'darkTheme': 'Тёмная',
-        'saveSettings': 'СОХРАНИТЬ НАСТРОЙКИ',
+        'saveSettings': 'СОХРАНИТЬ',
         'back': 'Назад',
+        'about': 'Об игре',
+        'aboutText': 'GeoNavigator v6.5\nСпециальная версия для Smart TV.\nКарты: Natural Earth.\nРежим олимпиады: Включен.',
         
-        // Настройки игры
+        // Настройки партии
         'gameSettingsTitle': 'НАСТРОЙКИ ИГРЫ',
-        'gameContinents': 'КОНТИНЕНТЫ',
+        'gameContinents': 'РЕГИОНЫ',
         'europe': 'Европа',
         'asia': 'Азия',
         'africa': 'Африка',
-        'oceania': 'Океания',
         'america': 'Америка',
-        'gameMode': 'РЕЖИМ ИГРЫ',
-        'capitalByCountryDesc': 'Угадайте столицу по стране',
-        'countryByCapitalDesc': 'Найдите страну на карте',
-        'questions': 'ВОПРОСЫ',
-        'quick': 'Быстро',
-        'short': 'Коротко',
-        'medium': 'Средне',
-        'long': 'Длинно',
-        'all': 'ВСЕ',
-        'timer': 'ТАЙМЕР',
-        'fast': 'Быстро',
-        'normal': 'Нормально',
-        'relaxed': 'Расслабленно',
-        'noRush': 'Не торопясь',
-        'startGameNow': 'НАЧАТЬ ИГРУ',
+        'oceania': 'Океания',
+        'gameMode': 'РЕЖИМ',
+        'questionsCount': 'ВОПРОСОВ',
+        'timer': 'ТАЙМЕР (СЕК)',
+        'startGameAction': 'ПОЕХАЛИ!',
+        'selectContinent': 'Выберите хотя бы один регион!',
         
-        // Игровой экран
-        'guessCapital': 'Угадайте столицу этой страны:',
-        'findCountry': 'Найдите на карте страну со столицей: {capital}',
-        'clickOnCountry': 'Кликните на нужную страну на карте',
-        'skipQuestion': 'ПРОПУСТИТЬ ВОПРОС',
-        'quitConfirm': 'Вы уверены, что хотите выйти из игры?',
-        'correct': 'Правильно! ✓',
-        'wrong': 'Неправильно! ✗',
-        'correctAnswer': 'Правильный ответ: {country} ({capital})',
-        'selectContinent': 'Пожалуйста, выберите хотя бы один континент',
+        // Геймплей
+        'pause': 'ПАУЗА',
+        'score': 'Очки',
+        'question': 'Вопрос',
+        'guessCapital': 'Столица этой страны?',
+        'findCountry': 'Где находится {capital}?',
+        'guessCountry': 'Чья это столица?', // Для нового режима
+        'clickOnCountry': 'Найдите страну на карте',
+        'in': 'в',
+        
+        'correct': 'Верно!',
+        'wrong': 'Ошибка!',
+        'correctAnswer': '{country} — столица {capital}',
         
         // Пауза
         'pauseTitle': 'ПАУЗА',
         'resume': 'ПРОДОЛЖИТЬ',
-        'restart': 'НАЧАТЬ ЗАНОВО',
-        'score': 'Счет',
-        'progress': 'Прогресс',
-        'timePlayed': 'Время игры',
-        'restartConfirm': 'Вы уверены, что хотите начать игру заново? Текущий прогресс будет потерян.',
-        'languageChangeWarning': 'Внимание: Вы находитесь в активной игре. Изменение языка сбросит текущую игру. Продолжить?',
+        'restart': 'ЗАНОВО',
+        'quit': 'В МЕНЮ',
+        'restartConfirm': 'Начать заново?',
+        'quitConfirm': 'Выйти в меню?',
+        'languageChangeWarning': 'Смена языка сбросит игру.',
+        'gameReset': 'Игра сброшена',
+        'settingsSaved': 'Сохранено',
         
         // Результаты
-        'resultsTitle': 'РЕЗУЛЬТАТЫ ИГРЫ',
-        'correctAnswers': 'Правильно',
-        'wrongAnswers': 'Неправильно',
+        'resultsTitle': 'ФИНАЛ',
+        'correctAnswers': 'Верно',
+        'wrongAnswers': 'Ошибки',
         'time': 'Время',
-        'playAgain': 'ИГРАТЬ СНОВА',
-        'mainMenu': 'ГЛАВНОЕ МЕНЮ',
-        'perfectResult': 'Идеальный результат! Вы эксперт по географии! 🌟',
-        'greatResult': 'Отличный результат! Продолжайте в том же духе! 👍',
-        'goodResult': 'Хороший результат! Есть куда стремиться! 💪',
-        'tryAgain': 'Попробуйте еще раз! Вы обязательно улучшите результат! 🔄',
+        'playAgain': 'ЕЩЁ РАЗ',
+        'mainMenu': 'МЕНЮ',
         
-        // Уведомления
-        'settingsSaved': 'Настройки сохранены',
-        'gameReset': 'Игра сброшена из-за изменения языка',
-        'aboutText': `GeoNavigator v6.0
-Географическая игра для изучения стран и столиц.
-
-Разработано с использованием:
-- Leaflet.js для карт
-- Font Awesome для иконок
-- Poppins шрифт
-
-Все страны мира - 195 стран!`,
-        
-        // Дополнительные
-        'in': 'в'
+        'perfectResult': 'Идеально! 🏆',
+        'greatResult': 'Отлично! 🔥',
+        'goodResult': 'Неплохо! 👍',
+        'tryAgain': 'Попробуй ещё! 🔄'
     },
-    
     en: {
-        // Main menu
         'gameTitle': 'GeoNavigator',
-        'gameSubtitle': 'Test your geography knowledge! Guess countries and capitals on the interactive world map.',
-        'modeCapitalByCountry': 'Capital by Country',
-        'modeCountryByCapital': 'Country by Capital',
-        'startGame': 'START GAME',
-        'featuresTitle': 'Game Features',
-        'feature1': 'Interactive Map',
-        'feature2': 'Achievement System',
-        'feature3': 'Flexible Settings',
-        'countries': 'Countries',
-        'modes': 'Modes',
-        'continents': 'Continents',
-        'settings': 'Settings',
-        'about': 'About',
-        
-        // Settings
+        'gameSubtitle': 'Explore the world, test your knowledge.',
+        'modeCapitalByCountry': 'Guess Capital',
+        'descCapitalByCountry': 'Given country - pick capital',
+        'modeCountryByCapital': 'Find on Map',
+        'descCountryByCapital': 'Given capital - click map',
+        'modeCountryByCapitalText': 'Guess Country',
+        'descCountryByCapitalText': 'Given capital - pick country',
+        'startGame': 'START',
         'settingsTitle': 'SETTINGS',
         'language': 'LANGUAGE',
         'sound': 'SOUND',
         'theme': 'THEME',
         'lightTheme': 'Light',
         'darkTheme': 'Dark',
-        'saveSettings': 'SAVE SETTINGS',
+        'saveSettings': 'SAVE',
         'back': 'Back',
-        
-        // Game settings
-        'gameSettingsTitle': 'GAME SETTINGS',
-        'gameContinents': 'CONTINENTS',
+        'about': 'About',
+        'aboutText': 'GeoNavigator v6.5\nSmart TV Edition.\nMaps: Natural Earth.',
+        'gameSettingsTitle': 'SETUP',
+        'gameContinents': 'REGIONS',
         'europe': 'Europe',
         'asia': 'Asia',
         'africa': 'Africa',
-        'oceania': 'Oceania',
         'america': 'America',
-        'gameMode': 'GAME MODE',
-        'capitalByCountryDesc': 'Guess the capital from the country',
-        'countryByCapitalDesc': 'Find the country on the map',
-        'questions': 'QUESTIONS',
-        'quick': 'Quick',
-        'short': 'Short',
-        'medium': 'Medium',
-        'long': 'Long',
-        'all': 'ALL',
-        'timer': 'TIMER',
-        'fast': 'Fast',
-        'normal': 'Normal',
-        'relaxed': 'Relaxed',
-        'noRush': 'No Rush',
-        'startGameNow': 'START GAME NOW',
-        
-        // Game screen
-        'guessCapital': 'Guess the capital of this country:',
-        'findCountry': 'Find the country on the map with the capital: {capital}',
-        'clickOnCountry': 'Click on the country on the map',
-        'skipQuestion': 'SKIP QUESTION',
-        'quitConfirm': 'Are you sure you want to quit the game?',
-        'correct': 'Correct! ✓',
-        'wrong': 'Wrong! ✗',
-        'correctAnswer': 'Correct answer: {country} ({capital})',
-        'selectContinent': 'Please select at least one continent',
-        
-        // Pause
-        'pauseTitle': 'PAUSE',
-        'resume': 'RESUME',
-        'restart': 'RESTART GAME',
+        'oceania': 'Oceania',
+        'gameMode': 'MODE',
+        'questionsCount': 'QUESTIONS',
+        'timer': 'TIMER (SEC)',
+        'startGameAction': 'GO!',
+        'selectContinent': 'Select a region!',
+        'pause': 'PAUSE',
         'score': 'Score',
-        'progress': 'Progress',
-        'timePlayed': 'Time Played',
-        'restartConfirm': 'Are you sure you want to restart the game? Current progress will be lost.',
-        'languageChangeWarning': 'Warning: You are in an active game. Changing the language will reset the current game. Continue?',
-        
-        // Results
-        'resultsTitle': 'GAME RESULTS',
+        'question': 'Q',
+        'guessCapital': 'Capital of this country?',
+        'findCountry': 'Where is {capital}?',
+        'guessCountry': 'Whose capital is this?',
+        'clickOnCountry': 'Find on map',
+        'in': 'in',
+        'correct': 'Correct!',
+        'wrong': 'Wrong!',
+        'correctAnswer': '{country} — capital is {capital}',
+        'pauseTitle': 'PAUSED',
+        'resume': 'RESUME',
+        'restart': 'RESTART',
+        'quit': 'MENU',
+        'restartConfirm': 'Restart game?',
+        'quitConfirm': 'Quit to menu?',
+        'languageChangeWarning': 'Language change resets game.',
+        'gameReset': 'Game reset',
+        'settingsSaved': 'Saved',
+        'resultsTitle': 'RESULTS',
         'correctAnswers': 'Correct',
         'wrongAnswers': 'Wrong',
         'time': 'Time',
-        'playAgain': 'PLAY AGAIN',
-        'mainMenu': 'MAIN MENU',
-        'perfectResult': 'Perfect score! You are a geography expert! 🌟',
-        'greatResult': 'Great result! Keep it up! 👍',
-        'goodResult': 'Good result! There is room for improvement! 💪',
-        'tryAgain': 'Try again! You will definitely improve your result! 🔄',
-        
-        // Notifications
-        'settingsSaved': 'Settings saved',
-        'gameReset': 'Game reset due to language change',
-        'aboutText': `GeoNavigator v6.0
-A geography game for learning countries and capitals.
-
-Developed using:
-- Leaflet.js for maps
-- Font Awesome for icons
-- Poppins font
-
-All countries of the world - 195 countries!`,
-        
-        // Additional
-        'in': 'in'
+        'playAgain': 'AGAIN',
+        'mainMenu': 'MENU',
+        'perfectResult': 'Perfect! 🏆',
+        'greatResult': 'Great! 🔥',
+        'goodResult': 'Good! 👍',
+        'tryAgain': 'Try again! 🔄'
     }
 };
