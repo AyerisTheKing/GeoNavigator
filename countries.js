@@ -1,270 +1,121 @@
-// countries.js - Data module for GeoNavigator v6.0
-// Updated with Natural Earth compatibility fixes
+// countries.js - Data module for GeoGator v7.0
+// Full database: 195 countries, Split Americas, Natural Earth compatibility
 
 const GeoCountries = {
-    // Полный список 195 стран (Русский -> Английский)
+    // 1. Полный список имен (Русский -> Английский)
     countryNameMapping: {
-        // Европа (44 страны)
-        "Австрия": "Austria",
-        "Албания": "Albania",
-        "Андорра": "Andorra",
-        "Белоруссия": "Belarus",
-        "Бельгия": "Belgium",
-        "Болгария": "Bulgaria",
-        "Босния и Герцеговина": "Bosnia and Herzegovina",
-        "Ватикан": "Vatican City",
-        "Великобритания": "United Kingdom",
-        "Венгрия": "Hungary",
-        "Германия": "Germany",
-        "Греция": "Greece",
-        "Дания": "Denmark",
-        "Ирландия": "Ireland",
-        "Исландия": "Iceland",
-        "Испания": "Spain",
-        "Италия": "Italy",
-        "Латвия": "Latvia",
-        "Литва": "Lithuania",
-        "Лихтенштейн": "Liechtenstein",
-        "Люксембург": "Luxembourg",
-        "Мальта": "Malta",
-        "Молдавия": "Moldova",
-        "Монако": "Monaco",
-        "Нидерланды": "Netherlands",
-        "Норвегия": "Norway",
-        "Польша": "Poland",
-        "Португалия": "Portugal",
-        "Россия": "Russia",
-        "Румыния": "Romania",
-        "Сан-Марино": "San Marino",
-        "Северная Македония": "North Macedonia",
-        "Сербия": "Serbia",
-        "Словакия": "Slovakia",
-        "Словения": "Slovenia",
-        "Украина": "Ukraine",
-        "Финляндия": "Finland",
-        "Франция": "France",
-        "Хорватия": "Croatia",
-        "Черногория": "Montenegro",
-        "Чехия": "Czech Republic",
-        "Швейцария": "Switzerland",
-        "Швеция": "Sweden",
-        "Эстония": "Estonia",
-        
-        // Азия (48 стран)
-        "Азербайджан": "Azerbaijan",
-        "Армения": "Armenia",
-        "Афганистан": "Afghanistan",
-        "Бангладеш": "Bangladesh",
-        "Бахрейн": "Bahrain",
-        "Бруней": "Brunei",
-        "Бутан": "Bhutan",
-        "Вьетнам": "Vietnam",
-        "Грузия": "Georgia",
-        "Израиль": "Israel",
-        "Индия": "India",
-        "Индонезия": "Indonesia",
-        "Иордания": "Jordan",
-        "Ирак": "Iraq",
-        "Иран": "Iran",
-        "Йемен": "Yemen",
-        "Казахстан": "Kazakhstan",
-        "Камбоджа": "Cambodia",
-        "Катар": "Qatar",
-        "Кипр": "Cyprus",
-        "Киргизия": "Kyrgyzstan",
-        "Китай": "China",
-        "Кувейт": "Kuwait",
-        "Лаос": "Laos",
-        "Ливан": "Lebanon",
-        "Малайзия": "Malaysia",
-        "Мальдивы": "Maldives",
-        "Монголия": "Mongolia",
-        "Мьянма": "Myanmar",
-        "Непал": "Nepal",
-        "Объединённые Арабские Эмираты": "United Arab Emirates",
-        "Оман": "Oman",
-        "Пакистан": "Pakistan",
-        "Палестина": "Palestine",
-        "Саудовская Аравия": "Saudi Arabia",
-        "Сингапур": "Singapore",
-        "Сирия": "Syria",
-        "Таджикистан": "Tajikistan",
-        "Таиланд": "Thailand",
-        "Туркменистан": "Turkmenistan",
-        "Турция": "Turkey",
-        "Узбекистан": "Uzbekistan",
-        "Филиппины": "Philippines",
-        "Шри-Ланка": "Sri Lanka",
-        "Южная Корея": "South Korea",
-        "Япония": "Japan",
-        "Восточный Тимор": "East Timor",
+        // Европа
+        "Австрия": "Austria", "Албания": "Albania", "Андорра": "Andorra", "Белоруссия": "Belarus",
+        "Бельгия": "Belgium", "Болгария": "Bulgaria", "Босния и Герцеговина": "Bosnia and Herzegovina",
+        "Ватикан": "Vatican City", "Великобритания": "United Kingdom", "Венгрия": "Hungary",
+        "Германия": "Germany", "Греция": "Greece", "Дания": "Denmark", "Ирландия": "Ireland",
+        "Исландия": "Iceland", "Испания": "Spain", "Италия": "Italy", "Латвия": "Latvia",
+        "Литва": "Lithuania", "Лихтенштейн": "Liechtenstein", "Люксембург": "Luxembourg",
+        "Мальта": "Malta", "Молдавия": "Moldova", "Монако": "Monaco", "Нидерланды": "Netherlands",
+        "Норвегия": "Norway", "Польша": "Poland", "Португалия": "Portugal", "Россия": "Russia",
+        "Румыния": "Romania", "Сан-Марино": "San Marino", "Северная Македония": "North Macedonia",
+        "Сербия": "Serbia", "Словакия": "Slovakia", "Словения": "Slovenia", "Украина": "Ukraine",
+        "Финляндия": "Finland", "Франция": "France", "Хорватия": "Croatia", "Черногория": "Montenegro",
+        "Чехия": "Czech Republic", "Швейцария": "Switzerland", "Швеция": "Sweden", "Эстония": "Estonia",
+
+        // Азия
+        "Азербайджан": "Azerbaijan", "Армения": "Armenia", "Афганистан": "Afghanistan", "Бангладеш": "Bangladesh",
+        "Бахрейн": "Bahrain", "Бруней": "Brunei", "Бутан": "Bhutan", "Вьетнам": "Vietnam", "Грузия": "Georgia",
+        "Израиль": "Israel", "Индия": "India", "Индонезия": "Indonesia", "Иордания": "Jordan", "Ирак": "Iraq",
+        "Иран": "Iran", "Йемен": "Yemen", "Казахстан": "Kazakhstan", "Камбоджа": "Cambodia", "Катар": "Qatar",
+        "Кипр": "Cyprus", "Киргизия": "Kyrgyzstan", "Китай": "China", "Кувейт": "Kuwait", "Лаос": "Laos",
+        "Ливан": "Lebanon", "Малайзия": "Malaysia", "Мальдивы": "Maldives", "Монголия": "Mongolia",
+        "Мьянма": "Myanmar", "Непал": "Nepal", "Объединённые Арабские Эмираты": "United Arab Emirates",
+        "Оман": "Oman", "Пакистан": "Pakistan", "Палестина": "Palestine", "Саудовская Аравия": "Saudi Arabia",
+        "Сингапур": "Singapore", "Сирия": "Syria", "Таджикистан": "Tajikistan", "Таиланд": "Thailand",
+        "Туркменистан": "Turkmenistan", "Турция": "Turkey", "Узбекистан": "Uzbekistan", "Филиппины": "Philippines",
+        "Шри-Ланка": "Sri Lanka", "Южная Корея": "South Korea", "Япония": "Japan", "Восточный Тимор": "East Timor",
         "КНДР": "North Korea",
-        
-        // Африка (54 страны)
-        "Алжир": "Algeria",
-        "Ангола": "Angola",
-        "Бенин": "Benin",
-        "Ботсвана": "Botswana",
-        "Буркина-Фасо": "Burkina Faso",
-        "Бурунди": "Burundi",
-        "Габон": "Gabon",
-        "Гамбия": "Gambia",
-        "Гана": "Ghana",
-        "Гвинея": "Guinea",
-        "Гвинея-Бисау": "Guinea-Bissau",
-        "Джибути": "Djibouti",
-        "Египет": "Egypt",
-        "Замбия": "Zambia",
-        "Зимбабве": "Zimbabwe",
-        "Кабо-Верде": "Cape Verde",
-        "Камерун": "Cameroon",
-        "Кения": "Kenya",
-        "Коморы": "Comoros",
-        "Конго, Демократическая Республика": "Democratic Republic of the Congo",
-        "Конго, Республика": "Republic of the Congo",
-        "Кот-д'Ивуар": "Ivory Coast",
-        "Лесото": "Lesotho",
-        "Либерия": "Liberia",
-        "Ливия": "Libya",
-        "Маврикий": "Mauritius",
-        "Мавритания": "Mauritania",
-        "Мадагаскар": "Madagascar",
-        "Малawi": "Malawi",
-        "Мали": "Mali",
-        "Марокко": "Morocco",
-        "Мозамбик": "Mozambique",
-        "Намибия": "Namibia",
-        "Нигер": "Niger",
-        "Нигерия": "Nigeria",
-        "Руанда": "Rwanda",
-        "Сан-Томе и Принсипи": "Sao Tome and Principe",
-        "Сейшельские Острова": "Seychelles",
-        "Сенегал": "Senegal",
-        "Сомали": "Somalia",
-        "Судан": "Sudan",
-        "Сьерра-Леоне": "Sierra Leone",
-        "Танзания": "Tanzania",
-        "Того": "Togo",
-        "Тунис": "Tunisia",
-        "Уганда": "Uganda",
-        "Центральноафриканская Республика": "Central African Republic",
-        "Чад": "Chad",
-        "Экваториальная Гвинея": "Equatorial Guinea",
-        "Эритрея": "Eritrea",
-        "Эсватини": "Eswatini",
-        "Эфиопия": "Ethiopia",
-        "ЮАР": "South Africa",
-        "Южный Судан": "South Sudan",
-        
-        // Америка (35 стран)
-        "Антигуа и Барбуда": "Antigua and Barbuda",
-        "Аргентина": "Argentina",
-        "Багамские Острова": "Bahamas",
-        "Барбадос": "Barbados",
-        "Белиз": "Belize",
-        "Боливия": "Bolivia",
-        "Бразилия": "Brazil",
-        "Венесуэла": "Venezuela",
-        "Гаити": "Haiti",
-        "Гайана": "Guyana",
-        "Гватемала": "Guatemala",
-        "Гондурас": "Honduras",
-        "Гренада": "Grenada",
-        "Доминика": "Dominica",
-        "Доминиканская Республика": "Dominican Republic",
-        "Канада": "Canada",
-        "Колумбия": "Colombia",
-        "Коста-Рика": "Costa Rica",
-        "Куба": "Cuba",
-        "Мексика": "Mexico",
-        "Никарагуа": "Nicaragua",
-        "Панама": "Panama",
-        "Парагвай": "Paraguay",
-        "Перу": "Peru",
-        "Сальвадор": "El Salvador",
-        "Сент-Винсент и Гренадины": "Saint Vincent and the Grenadines",
-        "Сент-Китс и Невис": "Saint Kitts and Nevis",
-        "Сент-Люсия": "Saint Lucia",
-        "США": "United States",
-        "Суринам": "Suriname",
-        "Тринидад и Тобаго": "Trinidad and Tobago",
-        "Уругвай": "Uruguay",
-        "Чили": "Chile",
-        "Эквадор": "Ecuador",
-        "Ямайка": "Jamaica",
-        
-        // Океания (14 стран)
-        "Австралия": "Australia",
-        "Вануату": "Vanuatu",
-        "Кирибати": "Kiribati",
-        "Маршалловы Острова": "Marshall Islands",
-        "Микронезия": "Micronesia",
-        "Науру": "Nauru",
-        "Новая Зеландия": "New Zealand",
-        "Палау": "Palau",
-        "Папуа — Новая Гвинея": "Papua New Guinea",
-        "Самоа": "Samoa",
-        "Соломоновы Острова": "Solomon Islands",
-        "Тонга": "Tonga",
-        "Тувалу": "Tuvalu",
-        "Фиджи": "Fiji"
+
+        // Африка
+        "Алжир": "Algeria", "Ангола": "Angola", "Бенин": "Benin", "Ботсвана": "Botswana", "Буркина-Фасо": "Burkina Faso",
+        "Бурунди": "Burundi", "Габон": "Gabon", "Гамбия": "Gambia", "Гана": "Ghana", "Гвинея": "Guinea",
+        "Гвинея-Бисау": "Guinea-Bissau", "Джибути": "Djibouti", "Египет": "Egypt", "Замбия": "Zambia",
+        "Зимбабве": "Zimbabwe", "Кабо-Верде": "Cape Verde", "Камерун": "Cameroon", "Кения": "Kenya",
+        "Коморы": "Comoros", "Конго, Демократическая Республика": "Democratic Republic of the Congo",
+        "Конго, Республика": "Republic of the Congo", "Кот-д'Ивуар": "Ivory Coast", "Лесото": "Lesotho",
+        "Либерия": "Liberia", "Ливия": "Libya", "Маврикий": "Mauritius", "Мавритания": "Mauritania",
+        "Мадагаскар": "Madagascar", "Малawi": "Malawi", "Мали": "Mali", "Марокко": "Morocco", "Мозамбик": "Mozambique",
+        "Намибия": "Namibia", "Нигер": "Niger", "Нигерия": "Nigeria", "Руанда": "Rwanda", "Сан-Томе и Принсипи": "Sao Tome and Principe",
+        "Сейшельские Острова": "Seychelles", "Сенегал": "Senegal", "Сомали": "Somalia", "Судан": "Sudan",
+        "Сьерра-Леоне": "Sierra Leone", "Танзания": "Tanzania", "Того": "Togo", "Тунис": "Tunisia", "Уганда": "Uganda",
+        "Центральноафриканская Республика": "Central African Republic", "Чад": "Chad", "Экваториальная Гвинея": "Equatorial Guinea",
+        "Эритрея": "Eritrea", "Эсватини": "Eswatini", "Эфиопия": "Ethiopia", "ЮАР": "South Africa", "Южный Судан": "South Sudan",
+
+        // Северная Америка (включая Центр. Америку и Карибы)
+        "Антигуа и Барбуда": "Antigua and Barbuda", "Багамские Острова": "Bahamas", "Барбадос": "Barbados",
+        "Белиз": "Belize", "Гаити": "Haiti", "Гватемала": "Guatemala", "Гондурас": "Honduras", "Гренада": "Grenada",
+        "Доминика": "Dominica", "Доминиканская Республика": "Dominican Republic", "Канада": "Canada",
+        "Коста-Рика": "Costa Rica", "Куба": "Cuba", "Мексика": "Mexico", "Никарагуа": "Nicaragua", "Панама": "Panama",
+        "Сальвадор": "El Salvador", "Сент-Винсент и Гренадины": "Saint Vincent and the Grenadines",
+        "Сент-Китс и Невис": "Saint Kitts and Nevis", "Сент-Люсия": "Saint Lucia", "США": "United States",
+        "Тринидад и Тобаго": "Trinidad and Tobago", "Ямайка": "Jamaica",
+
+        // Южная Америка
+        "Аргентина": "Argentina", "Боливия": "Bolivia", "Бразилия": "Brazil", "Венесуэла": "Venezuela",
+        "Гайана": "Guyana", "Колумбия": "Colombia", "Парагвай": "Paraguay", "Перу": "Peru", "Суринам": "Suriname",
+        "Уругвай": "Uruguay", "Чили": "Chile", "Эквадор": "Ecuador",
+
+        // Океания
+        "Австралия": "Australia", "Вануату": "Vanuatu", "Кирибати": "Kiribati", "Маршалловы Острова": "Marshall Islands",
+        "Микронезия": "Micronesia", "Науру": "Nauru", "Новая Зеландия": "New Zealand", "Палау": "Palau",
+        "Папуа — Новая Гвинея": "Papua New Guinea", "Самоа": "Samoa", "Соломоновы Острова": "Solomon Islands",
+        "Тонга": "Tonga", "Тувалу": "Tuvalu", "Фиджи": "Fiji"
     },
 
-    // Континенты
+    // 2. Списки для генерации вопросов (Америка разделена)
     continents: {
         europe: [
-            "Австрия", "Албания", "Андорра", "Белоруссия", "Бельгия", "Болгария", 
-            "Босния и Герцеговина", "Ватикан", "Великобритания", "Венгрия", 
-            "Германия", "Греция", "Дания", "Ирландия", "Исландия", "Испания", 
-            "Италия", "Латвия", "Литва", "Лихтенштейн", "Люксембург", "Мальта", 
-            "Молдавия", "Монако", "Нидерланды", "Норвегия", "Польша", "Португалия", 
-            "Россия", "Румыния", "Сан-Марино", "Северная Македония", "Сербия", 
-            "Словакия", "Словения", "Украина", "Финляндия", "Франция", "Хорватия", 
-            "Черногория", "Чехия", "Швейцария", "Швеция", "Эстония"
+            "Австрия", "Албания", "Андорра", "Белоруссия", "Бельгия", "Болгария", "Босния и Герцеговина",
+            "Ватикан", "Великобритания", "Венгрия", "Германия", "Греция", "Дания", "Ирландия", "Исландия",
+            "Испания", "Италия", "Латвия", "Литва", "Лихтенштейн", "Люксембург", "Мальта", "Молдавия",
+            "Монако", "Нидерланды", "Норвегия", "Польша", "Португалия", "Россия", "Румыния", "Сан-Марино",
+            "Северная Македония", "Сербия", "Словакия", "Словения", "Украина", "Финляндия", "Франция",
+            "Хорватия", "Черногория", "Чехия", "Швейцария", "Швеция", "Эстония"
         ],
         asia: [
-            "Азербайджан", "Армения", "Афганистан", "Бангладеш", "Бахрейн", 
-            "Бруней", "Бутан", "Вьетнам", "Грузия", "Израиль", "Индия", 
-            "Индонезия", "Иордания", "Ирак", "Иран", "Йемен", "Казахстан", 
-            "Камбоджа", "Катар", "Кипр", "Киргизия", "Китай", "Кувейт", 
-            "Лаос", "Ливан", "Малайзия", "Мальдивы", "Монголия", "Мьянма", 
-            "Непал", "Объединённые Арабские Эмираты", "Оман", "Пакистан", 
-            "Палестина", "Саудовская Аравия", "Сингапур", "Сирия", "Таджикистан", 
-            "Таиланд", "Туркменистан", "Турция", "Узбекистан", "Филиппины", 
-            "Шри-Ланка", "Южная Корея", "Япония", "Восточный Тимор", "КНДР"
+            "Азербайджан", "Армения", "Афганистан", "Бангладеш", "Бахрейн", "Бруней", "Бутан", "Вьетнам",
+            "Грузия", "Израиль", "Индия", "Индонезия", "Иордания", "Ирак", "Иран", "Йемен", "Казахстан",
+            "Камбоджа", "Катар", "Кипр", "Киргизия", "Китай", "Кувейт", "Лаос", "Ливан", "Малайзия",
+            "Мальдивы", "Монголия", "Мьянма", "Непал", "Объединённые Арабские Эмираты", "Оман", "Пакистан",
+            "Палестина", "Саудовская Аравия", "Сингапур", "Сирия", "Таджикистан", "Таиланд", "Туркменистан",
+            "Турция", "Узбекистан", "Филиппины", "Шри-Ланка", "Южная Корея", "Япония", "Восточный Тимор", "КНДР"
         ],
         africa: [
-            "Алжир", "Ангола", "Бенин", "Ботсвана", "Буркина-Фасо", "Бурунди", 
-            "Габон", "Гамбия", "Гана", "Гвинея", "Гвинея-Бисау", "Джибути", 
-            "Египет", "Замбия", "Зимбабве", "Кабо-Верде", "Камерун", "Кения", 
-            "Коморы", "Конго, Демократическая Республика", "Конго, Республика", 
-            "Кот-д'Ивуар", "Лесото", "Либерия", "Ливия", "Маврикий", "Мавритания", 
-            "Мадагаскар", "Малawi", "Мали", "Марокко", "Мозамбик", "Намибия", 
-            "Нигер", "Нигерия", "Руанда", "Сан-Томе и Принсипи", "Сейшельские Острова", 
-            "Сенегал", "Сомали", "Судан", "Сьерра-Леоне", "Танзания", "Того", 
-            "Тунис", "Уганда", "Центральноафриканская Республика", "Чад", 
-            "Экваториальная Гвинея", "Эритрея", "Эсватини", "Эфиопия", 
-            "ЮАР", "Южный Судан"
+            "Алжир", "Ангола", "Бенин", "Ботсвана", "Буркина-Фасо", "Бурунди", "Габон", "Гамбия", "Гана",
+            "Гвинея", "Гвинея-Бисау", "Джибути", "Египет", "Замбия", "Зимбабве", "Кабо-Верде", "Камерун",
+            "Кения", "Коморы", "Конго, Демократическая Республика", "Конго, Республика", "Кот-д'Ивуар",
+            "Лесото", "Либерия", "Ливия", "Маврикий", "Мавритания", "Мадагаскар", "Малawi", "Мали",
+            "Марокко", "Мозамбик", "Намибия", "Нигер", "Нигерия", "Руанда", "Сан-Томе и Принсипи",
+            "Сейшельские Острова", "Сенегал", "Сомали", "Судан", "Сьерра-Леоне", "Танзания", "Того",
+            "Тунис", "Уганда", "Центральноафриканская Республика", "Чад", "Экваториальная Гвинея",
+            "Эритрея", "Эсватини", "Эфиопия", "ЮАР", "Южный Судан"
         ],
-        america: [
-            "Антигуа и Барбуда", "Аргентина", "Багамские Острова", "Барбадос", 
-            "Белиз", "Боливия", "Бразилия", "Венесуэла", "Гаити", "Гайана", 
-            "Гватемала", "Гондурас", "Гренада", "Доминика", "Доминиканская Республика", 
-            "Канада", "Колумбия", "Коста-Рика", "Куба", "Мексика", "Никарагуа", 
-            "Панама", "Парагвай", "Перу", "Сальвадор", "Сент-Винсент и Гренадины", 
-            "Сент-Китс и Невис", "Сент-Люсия", "США", "Суринам", 
-            "Тринидад и Тобаго", "Уругвай", "Чили", "Эквадор", "Ямайка"
+        north_america: [
+            "Антигуа и Барбуда", "Багамские Острова", "Барбадос", "Белиз", "Гаити", "Гватемала", "Гондурас",
+            "Гренада", "Доминика", "Доминиканская Республика", "Канада", "Коста-Рика", "Куба", "Мексика",
+            "Никарагуа", "Панама", "Сальвадор", "Сент-Винсент и Гренадины", "Сент-Китс и Невис",
+            "Сент-Люсия", "США", "Тринидад и Тобаго", "Ямайка"
+        ],
+        south_america: [
+            "Аргентина", "Боливия", "Бразилия", "Венесуэла", "Гайана", "Колумбия", "Парагвай", "Перу",
+            "Суринам", "Уругвай", "Чили", "Эквадор"
         ],
         oceania: [
-            "Австралия", "Вануату", "Кирибати", "Маршалловы Острова", "Микронезия", 
-            "Науру", "Новая Зеландия", "Палау", "Папуа — Новая Гвинея", "Самоа", 
-            "Соломоновы Острова", "Тонга", "Тувалу", "Фиджи"
+            "Австралия", "Вануату", "Кирибати", "Маршалловы Острова", "Микронезия", "Науру",
+            "Новая Зеландия", "Палау", "Папуа — Новая Гвинея", "Самоа", "Соломоновы Острова",
+            "Тонга", "Тувалу", "Фиджи"
         ]
     },
 
-    // Данные стран: столица, код (ISO alpha-2), континент
+    // 3. Полная база данных стран (Коды + Столицы + Регионы)
     countryData: {
-        // Европа (44 страны)
+        // --- ЕВРОПА ---
         "Австрия": { capital: "Вена", code: "at", continent: "europe" },
         "Албания": { capital: "Тирана", code: "al", continent: "europe" },
         "Андорра": { capital: "Андорра-ла-Велья", code: "ad", continent: "europe" },
@@ -309,8 +160,8 @@ const GeoCountries = {
         "Швейцария": { capital: "Берн", code: "ch", continent: "europe" },
         "Швеция": { capital: "Стокгольм", code: "se", continent: "europe" },
         "Эстония": { capital: "Таллин", code: "ee", continent: "europe" },
-        
-        // Азия (48 стран)
+
+        // --- АЗИЯ ---
         "Азербайджан": { capital: "Баку", code: "az", continent: "asia" },
         "Армения": { capital: "Ереван", code: "am", continent: "asia" },
         "Афганистан": { capital: "Кабул", code: "af", continent: "asia" },
@@ -359,8 +210,8 @@ const GeoCountries = {
         "Япония": { capital: "Токио", code: "jp", continent: "asia" },
         "Восточный Тимор": { capital: "Дили", code: "tl", continent: "asia" },
         "КНДР": { capital: "Пхеньян", code: "kp", continent: "asia" },
-        
-        // Африка (54 страны)
+
+        // --- АФРИКА ---
         "Алжир": { capital: "Алжир", code: "dz", continent: "africa" },
         "Ангола": { capital: "Луанда", code: "ao", continent: "africa" },
         "Бенин": { capital: "Порто-Ново", code: "bj", continent: "africa" },
@@ -415,45 +266,48 @@ const GeoCountries = {
         "Эфиопия": { capital: "Аддис-Абеба", code: "et", continent: "africa" },
         "ЮАР": { capital: "Претория", code: "za", continent: "africa" },
         "Южный Судан": { capital: "Джуба", code: "ss", continent: "africa" },
-        
-        // Америка (35 стран)
-        "Антигуа и Барбуда": { capital: "Сент-Джонс", code: "ag", continent: "america" },
-        "Аргентина": { capital: "Буэнос-Айрес", code: "ar", continent: "america" },
-        "Багамские Острова": { capital: "Нассау", code: "bs", continent: "america" },
-        "Барбадос": { capital: "Бриджтаун", code: "bb", continent: "america" },
-        "Белиз": { capital: "Бelmopan", code: "bz", continent: "america" },
-        "Боливия": { capital: "Ла-Пас", code: "bo", continent: "america" },
-        "Бразилия": { capital: "Бразилиа", code: "br", continent: "america" },
-        "Венесуэла": { capital: "Каракас", code: "ve", continent: "america" },
-        "Гаити": { capital: "Порт-о-Пренс", code: "ht", continent: "america" },
-        "Гайана": { capital: "Джорджтаун", code: "gy", continent: "america" },
-        "Гватемала": { capital: "Гватемала-Сити", code: "gt", continent: "america" },
-        "Гондурас": { capital: "Тегусигальпа", code: "hn", continent: "america" },
-        "Гренада": { capital: "Сент-Джорджес", code: "gd", continent: "america" },
-        "Доминика": { capital: "Розо", code: "dm", continent: "america" },
-        "Доминиканская Республика": { capital: "Санто-Доминго", code: "do", continent: "america" },
-        "Канада": { capital: "Оттава", code: "ca", continent: "america" },
-        "Колумбия": { capital: "Богота", code: "co", continent: "america" },
-        "Коста-Рика": { capital: "Сан-Хосе", code: "cr", continent: "america" },
-        "Куба": { capital: "Гавана", code: "cu", continent: "america" },
-        "Мексика": { capital: "Мехико", code: "mx", continent: "america" },
-        "Никарагуа": { capital: "Манагуа", code: "ni", continent: "america" },
-        "Панама": { capital: "Панама", code: "pa", continent: "america" },
-        "Парагвай": { capital: "Асунсьон", code: "py", continent: "america" },
-        "Перу": { capital: "Лима", code: "pe", continent: "america" },
-        "Сальвадор": { capital: "Сан-Сальвадор", code: "sv", continent: "america" },
-        "Сент-Винсент и Гренадины": { capital: "Кингстаун", code: "vc", continent: "america" },
-        "Сент-Китс и Невис": { capital: "Бастер", code: "kn", continent: "america" },
-        "Сент-Люсия": { capital: "Кастри", code: "lc", continent: "america" },
-        "США": { capital: "Вашингтон", code: "us", continent: "america" },
-        "Суринам": { capital: "Парамарибо", code: "sr", continent: "america" },
-        "Тринидад и Тобаго": { capital: "Порт-оф-Спейн", code: "tt", continent: "america" },
-        "Уругвай": { capital: "Монтевидео", code: "uy", continent: "america" },
-        "Чили": { capital: "Сантьяго", code: "cl", continent: "america" },
-        "Эквадор": { capital: "Кито", code: "ec", continent: "america" },
-        "Ямайка": { capital: "Кингстон", code: "jm", continent: "america" },
-        
-        // Океания (14 стран)
+
+        // --- СЕВЕРНАЯ АМЕРИКА ---
+        "Антигуа и Барбуда": { capital: "Сент-Джонс", code: "ag", continent: "north_america" },
+        "Багамские Острова": { capital: "Нассау", code: "bs", continent: "north_america" },
+        "Барбадос": { capital: "Бриджтаун", code: "bb", continent: "north_america" },
+        "Белиз": { capital: "Бelmopan", code: "bz", continent: "north_america" },
+        "Гаити": { capital: "Порт-о-Пренс", code: "ht", continent: "north_america" },
+        "Гватемала": { capital: "Гватемала-Сити", code: "gt", continent: "north_america" },
+        "Гондурас": { capital: "Тегусигальпа", code: "hn", continent: "north_america" },
+        "Гренада": { capital: "Сент-Джорджес", code: "gd", continent: "north_america" },
+        "Доминика": { capital: "Розо", code: "dm", continent: "north_america" },
+        "Доминиканская Республика": { capital: "Санто-Доминго", code: "do", continent: "north_america" },
+        "Канада": { capital: "Оттава", code: "ca", continent: "north_america" },
+        "Колумбия": { capital: "Богота", code: "co", continent: "south_america" }, // Исправлено: Южная, но иногда спорно, оставим Юг
+        "Коста-Рика": { capital: "Сан-Хосе", code: "cr", continent: "north_america" },
+        "Куба": { capital: "Гавана", code: "cu", continent: "north_america" },
+        "Мексика": { capital: "Мехико", code: "mx", continent: "north_america" },
+        "Никарагуа": { capital: "Манагуа", code: "ni", continent: "north_america" },
+        "Панама": { capital: "Панама", code: "pa", continent: "north_america" },
+        "Сальвадор": { capital: "Сан-Сальвадор", code: "sv", continent: "north_america" },
+        "Сент-Винсент и Гренадины": { capital: "Кингстаун", code: "vc", continent: "north_america" },
+        "Сент-Китс и Невис": { capital: "Бастер", code: "kn", continent: "north_america" },
+        "Сент-Люсия": { capital: "Кастри", code: "lc", continent: "north_america" },
+        "США": { capital: "Вашингтон", code: "us", continent: "north_america" },
+        "Тринидад и Тобаго": { capital: "Порт-оф-Спейн", code: "tt", continent: "north_america" },
+        "Ямайка": { capital: "Кингстон", code: "jm", continent: "north_america" },
+
+        // --- ЮЖНАЯ АМЕРИКА ---
+        "Аргентина": { capital: "Буэнос-Айрес", code: "ar", continent: "south_america" },
+        "Боливия": { capital: "Ла-Пас", code: "bo", continent: "south_america" },
+        "Бразилия": { capital: "Бразилиа", code: "br", continent: "south_america" },
+        "Венесуэла": { capital: "Каракас", code: "ve", continent: "south_america" },
+        "Гайана": { capital: "Джорджтаун", code: "gy", continent: "south_america" },
+        "Колумбия": { capital: "Богота", code: "co", continent: "south_america" },
+        "Парагвай": { capital: "Асунсьон", code: "py", continent: "south_america" },
+        "Перу": { capital: "Лима", code: "pe", continent: "south_america" },
+        "Суринам": { capital: "Парамарибо", code: "sr", continent: "south_america" },
+        "Уругвай": { capital: "Монтевидео", code: "uy", continent: "south_america" },
+        "Чили": { capital: "Сантьяго", code: "cl", continent: "south_america" },
+        "Эквадор": { capital: "Кито", code: "ec", continent: "south_america" },
+
+        // --- ОКЕАНИЯ ---
         "Австралия": { capital: "Канберра", code: "au", continent: "oceania" },
         "Вануату": { capital: "Порт-Вила", code: "vu", continent: "oceania" },
         "Кирибати": { capital: "Тарава", code: "ki", continent: "oceania" },
@@ -470,24 +324,13 @@ const GeoCountries = {
         "Фиджи": { capital: "Сува", code: "fj", continent: "oceania" }
     },
 
-    // === UTILITY METHODS ===
-
-    // Словарь исправлений для карты Natural Earth (3 буквы -> 2 буквы)
-    // Исправляет страны, у которых код ISO_A2 равен -99 или отсутствует
+    // 4. Методы и фиксы (НЕ УДАЛЯТЬ!)
     codeFixes: {
-        "fra": "fr", // Франция
-        "nor": "no", // Норвегия
-        "somaliland": "so", // Сомали (через Сомалиленд)
-        "kos": "xk", // Косово
-        "cyp": "cy", // Кипр
-        "prt": "pt", // Португалия
-        "ncy": "cy"  // Северный Кипр -> Кипр
+        "fra": "fr", "nor": "no", "somaliland": "so", "kos": "xk", "cyp": "cy", 
+        "prt": "pt", "ncy": "cy"
     },
 
-    // Основной метод поиска страны по кодам из GeoJSON
-    // Принимает isoCode (2 буквы) и adm3Code (3 буквы)
     getCountryNameByCode: function(isoCode, adm3Code) {
-        // 1. Сначала пробуем найти по стандартному 2-буквенному коду
         if (isoCode && isoCode !== '-99') {
             const searchCode = isoCode.toLowerCase();
             for (const [countryName, data] of Object.entries(this.countryData)) {
@@ -496,11 +339,8 @@ const GeoCountries = {
                 }
             }
         }
-
-        // 2. Если не вышло или код сломан (-99), ищем по 3-буквенному коду (ADM0_A3)
         if (adm3Code) {
             const search3 = adm3Code.toLowerCase();
-            // Проверяем наш словарь исправлений
             if (this.codeFixes[search3]) {
                 const fixedCode = this.codeFixes[search3];
                 for (const [countryName, data] of Object.entries(this.countryData)) {
@@ -508,7 +348,6 @@ const GeoCountries = {
                 }
             }
         }
-        
         return null;
     },
 
@@ -516,45 +355,9 @@ const GeoCountries = {
         return this.countryNameMapping[russianName] || russianName;
     },
 
-    getRussianName: function(englishName) {
-        for (const [rus, eng] of Object.entries(this.countryNameMapping)) {
-            if (eng.toLowerCase() === englishName.toLowerCase()) return rus;
-        }
-        return englishName;
-    },
-    
-    getCodeByCountryName: function(countryName) {
-        const data = this.countryData[countryName];
-        return data ? data.code : null;
-    },
-
     getContinentForCountry: function(countryName) {
-        for (const [continent, countries] of Object.entries(this.continents)) {
-            if (countries.includes(countryName)) {
-                return continent;
-            }
-        }
-        return 'unknown';
-    },
-
-    getCountryData: function(countryName) {
-        return this.countryData[countryName] || null;
-    },
-
-    getAllCountriesByContinent: function(continent) {
-        return this.continents[continent] || [];
-    },
-
-    getAllCapitalsByContinent: function(continent) {
-        const countries = this.continents[continent] || [];
-        const capitals = [];
-        countries.forEach(country => {
-            const data = this.countryData[country];
-            if (data && data.capital) {
-                capitals.push(data.capital);
-            }
-        });
-        return [...new Set(capitals)];
+        const data = this.countryData[countryName];
+        return data ? data.continent : 'unknown';
     }
 };
 
