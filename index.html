@@ -142,19 +142,32 @@
         
         <div class="game-content">
             <div class="game-header">
-                <div class="game-stat"><span class="stat-label" data-i18n="score">Очки</span><span class="stat-val" id="correctCount">0</span></div>
-                <div class="game-stat center"><span class="stat-label" data-i18n="timer">Таймер</span><span class="stat-val timer" id="timerDisplay">10</span></div>
-                <div class="game-stat"><span class="stat-label" data-i18n="question">Вопрос</span><span class="stat-val"><span id="currentQuestion">1</span>/<span id="totalQuestions">10</span></span></div>
+                <div class="game-stat">
+                    <span class="stat-label" data-i18n="score">Очки</span>
+                    <span class="stat-val" id="correctCount">0</span>
+                </div>
+                <div class="game-stat center">
+                    <span class="stat-label" data-i18n="timer">Таймер</span>
+                    <span class="stat-val timer" id="timerDisplay">10</span>
+                </div>
+                <div class="game-stat">
+                    <span class="stat-label" data-i18n="question">Вопрос</span>
+                    <span class="stat-val"><span id="currentQuestion">1</span>/<span id="totalQuestions">10</span></span>
+                </div>
                 <button id="pauseGameBtn" class="btn-icon-small"><i class="fas fa-pause"></i></button>
             </div>
             
             <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
             
             <div class="game-ui">
-                <div class="country-flag-container" id="countryFlagContainer"><div class="country-flag" id="countryFlag"></div></div>
+                <div class="country-flag-container" id="countryFlagContainer">
+                    <div class="country-flag" id="countryFlag"></div>
+                </div>
+                
                 <div class="capital-hint" id="capitalHint"><span></span></div>
                 
                 <div class="question-text" id="questionText"></div>
+                
                 <div class="country-name" id="countryName"></div>
                 
                 <div class="answer-grid" id="answerOptions"></div>
@@ -167,10 +180,12 @@
     <div id="pauseScreen" class="screen overlay-screen">
         <div class="overlay-content">
             <h2 data-i18n="pauseTitle">ПАУЗА</h2>
+            
             <div class="pause-stats">
                 <div class="p-stat"><i class="fas fa-star"></i> <span id="pauseScore">0</span></div>
                 <div class="p-stat"><i class="fas fa-clock"></i> <span id="pauseTime">0c</span></div>
             </div>
+            
             <div class="pause-actions">
                 <button id="resumeGameBtn" class="btn-primary"><i class="fas fa-play"></i> <span data-i18n="resume">ПРОДОЛЖИТЬ</span></button>
                 <button id="restartGameBtn" class="btn-secondary"><i class="fas fa-redo"></i> <span data-i18n="restart">ЗАНОВО</span></button>
@@ -186,6 +201,7 @@
                 <h2 data-i18n="settingsTitle">НАСТРОЙКИ</h2>
                 <button id="backFromSettingsBtn" class="btn-icon"><i class="fas fa-arrow-left"></i></button>
             </div>
+            
             <div class="settings-content">
                 <div class="setting-item">
                     <span class="setting-label" data-i18n="language">ЯЗЫК</span>
@@ -194,6 +210,7 @@
                         <button class="lang-btn" data-lang="en"><span class="fi fi-us"></span> <span data-i18n-ru="Английский" data-i18n-en="English">English</span></button>
                     </div>
                 </div>
+                
                 <div class="setting-item">
                     <span class="setting-label" data-i18n="theme">ТЕМА</span>
                     <div class="setting-controls">
@@ -201,6 +218,7 @@
                         <button class="theme-btn" data-theme="light"><i class="fas fa-sun"></i> <span data-i18n="lightTheme">Светлая</span></button>
                     </div>
                 </div>
+                
                 <div class="setting-item">
                     <span class="setting-label" data-i18n="sound">ЗВУК</span>
                     <div class="volume-control">
