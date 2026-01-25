@@ -1,21 +1,27 @@
-// locales.js - файл локализации v6.5 (Smart TV Edition)
+// locales.js - v6.6 (GeoGator Edition)
 const LOCALES = {
     ru: {
-        'gameTitle': 'GeoNavigator',
-        'gameSubtitle': 'Исследуйте мир, проверяйте знания и открывайте новые горизонты.',
+        'gameTitle': 'ГеоГатор', // РЕБРЕНДИНГ
+        'gameSubtitle': 'Исследуй мир, ставь рекорды.',
         
-        // Режимы игры
+        // Статистика (Главное меню)
+        'statTotal': 'Всего верно',
+        'statRecord': 'Рекорд',
+        'statAccuracy': 'Точность',
+        
+        // Кнопки меню
+        'startGame': 'НАЧАТЬ ИГРУ',
+        'settings': 'НАСТРОЙКИ', // Теперь явно прописано
+        
+        // Режимы
         'modeCapitalByCountry': 'Угадай столицу',
         'descCapitalByCountry': 'Дана страна — выберите столицу',
-        
         'modeCountryByCapital': 'Найти на карте',
         'descCountryByCapital': 'Дана столица — кликните по карте',
-        
         'modeCountryByCapitalText': 'Угадай страну',
         'descCountryByCapitalText': 'Дана столица — выберите страну',
         
-        // Главное меню
-        'startGame': 'НАЧАТЬ ИГРУ',
+        // Настройки
         'settingsTitle': 'НАСТРОЙКИ',
         'language': 'ЯЗЫК',
         'sound': 'ЗВУК',
@@ -24,11 +30,9 @@ const LOCALES = {
         'darkTheme': 'Тёмная',
         'saveSettings': 'СОХРАНИТЬ',
         'back': 'Назад',
-        'about': 'Об игре',
-        'aboutText': 'GeoNavigator v6.5\nСпециальная версия для Smart TV.\nКарты: Natural Earth.\nРежим олимпиады: Включен.',
         
-        // Настройки партии
-        'gameSettingsTitle': 'НАСТРОЙКИ ИГРЫ',
+        // Настройки игры
+        'gameSettingsTitle': 'НОВАЯ ИГРА',
         'gameContinents': 'РЕГИОНЫ',
         'europe': 'Европа',
         'asia': 'Азия',
@@ -37,9 +41,9 @@ const LOCALES = {
         'oceania': 'Океания',
         'gameMode': 'РЕЖИМ',
         'questionsCount': 'ВОПРОСОВ',
-        'timer': 'ТАЙМЕР (СЕК)',
+        'timer': 'ТАЙМЕР',
         'startGameAction': 'ПОЕХАЛИ!',
-        'selectContinent': 'Выберите хотя бы один регион!',
+        'selectContinent': 'Выберите регион!',
         
         // Геймплей
         'pause': 'ПАУЗА',
@@ -47,15 +51,14 @@ const LOCALES = {
         'question': 'Вопрос',
         'guessCapital': 'Столица этой страны?',
         'findCountry': 'Где находится {capital}?',
-        'guessCountry': 'Чья это столица?', // Для нового режима
+        'guessCountry': 'Чья это столица?',
         'clickOnCountry': 'Найдите страну на карте',
         'in': 'в',
-        
         'correct': 'Верно!',
         'wrong': 'Ошибка!',
         'correctAnswer': '{country} — столица {capital}',
         
-        // Пауза
+        // Пауза/Финал
         'pauseTitle': 'ПАУЗА',
         'resume': 'ПРОДОЛЖИТЬ',
         'restart': 'ЗАНОВО',
@@ -63,32 +66,38 @@ const LOCALES = {
         'restartConfirm': 'Начать заново?',
         'quitConfirm': 'Выйти в меню?',
         'languageChangeWarning': 'Смена языка сбросит игру.',
-        'gameReset': 'Игра сброшена',
+        'gameReset': 'Сброс',
         'settingsSaved': 'Сохранено',
         
-        // Результаты
         'resultsTitle': 'ФИНАЛ',
         'correctAnswers': 'Верно',
         'wrongAnswers': 'Ошибки',
         'time': 'Время',
         'playAgain': 'ЕЩЁ РАЗ',
         'mainMenu': 'МЕНЮ',
-        
-        'perfectResult': 'Идеально! 🏆',
+        'perfectResult': 'Гениально! 🏆',
         'greatResult': 'Отлично! 🔥',
         'goodResult': 'Неплохо! 👍',
-        'tryAgain': 'Попробуй ещё! 🔄'
+        'tryAgain': 'Тренируйся! 🔄'
     },
     en: {
-        'gameTitle': 'GeoNavigator',
-        'gameSubtitle': 'Explore the world, test your knowledge.',
+        'gameTitle': 'GeoGator', // REBRANDING
+        'gameSubtitle': 'Explore the world, beat records.',
+        
+        'statTotal': 'Total Correct',
+        'statRecord': 'Best Score',
+        'statAccuracy': 'Accuracy',
+        
+        'startGame': 'START GAME',
+        'settings': 'SETTINGS',
+        
         'modeCapitalByCountry': 'Guess Capital',
         'descCapitalByCountry': 'Given country - pick capital',
         'modeCountryByCapital': 'Find on Map',
         'descCountryByCapital': 'Given capital - click map',
         'modeCountryByCapitalText': 'Guess Country',
         'descCountryByCapitalText': 'Given capital - pick country',
-        'startGame': 'START',
+        
         'settingsTitle': 'SETTINGS',
         'language': 'LANGUAGE',
         'sound': 'SOUND',
@@ -97,9 +106,8 @@ const LOCALES = {
         'darkTheme': 'Dark',
         'saveSettings': 'SAVE',
         'back': 'Back',
-        'about': 'About',
-        'aboutText': 'GeoNavigator v6.5\nSmart TV Edition.\nMaps: Natural Earth.',
-        'gameSettingsTitle': 'SETUP',
+        
+        'gameSettingsTitle': 'NEW GAME',
         'gameContinents': 'REGIONS',
         'europe': 'Europe',
         'asia': 'Asia',
@@ -108,9 +116,10 @@ const LOCALES = {
         'oceania': 'Oceania',
         'gameMode': 'MODE',
         'questionsCount': 'QUESTIONS',
-        'timer': 'TIMER (SEC)',
+        'timer': 'TIMER',
         'startGameAction': 'GO!',
         'selectContinent': 'Select a region!',
+        
         'pause': 'PAUSE',
         'score': 'Score',
         'question': 'Q',
@@ -122,6 +131,7 @@ const LOCALES = {
         'correct': 'Correct!',
         'wrong': 'Wrong!',
         'correctAnswer': '{country} — capital is {capital}',
+        
         'pauseTitle': 'PAUSED',
         'resume': 'RESUME',
         'restart': 'RESTART',
@@ -131,6 +141,7 @@ const LOCALES = {
         'languageChangeWarning': 'Language change resets game.',
         'gameReset': 'Game reset',
         'settingsSaved': 'Saved',
+        
         'resultsTitle': 'RESULTS',
         'correctAnswers': 'Correct',
         'wrongAnswers': 'Wrong',
