@@ -1963,3 +1963,108 @@ body.dark-theme::before {
     .stat-icon { font-size: 1.2rem; order: 1; margin: 0; }
     .stat-label { order: 1; margin-left: 10px; flex-grow: 1; text-align: left; }
 }
+/* ========================================= */
+/* === GEOGATOR v7.0 UPDATE PATCH === */
+/* Вставьте это в конец файла style.css */
+/* ========================================= */
+
+/* 1. Обновленная сетка регионов (3 колонки для Америки) */
+.continents-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+}
+
+/* На мобильных возвращаем 2 колонки */
+@media (max-width: 768px) {
+    .continents-grid {
+        grid-template-columns: repeat(2, 1fr) !important;
+    }
+}
+
+/* 2. Новая статистика в главном меню */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    width: 100%;
+    margin-top: 20px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 15px;
+    text-align: center;
+    backdrop-filter: blur(5px);
+    transition: transform 0.3s;
+}
+
+.stat-card:hover {
+    transform: translateY(-5px);
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.stat-icon { font-size: 1.5rem; margin-bottom: 5px; }
+.stat-value { font-size: 1.5rem; font-weight: 800; color: #fff; }
+.stat-label { font-size: 0.75rem; color: #94a3b8; text-transform: uppercase; letter-spacing: 1px; }
+
+/* Цвета иконок */
+.stat-icon.correct { color: #4ade80; text-shadow: 0 0 10px rgba(74, 222, 128, 0.4); }
+.stat-icon.record { color: #f59e0b; text-shadow: 0 0 10px rgba(245, 158, 11, 0.4); }
+.stat-icon.accuracy { color: #4cc9f0; text-shadow: 0 0 10px rgba(76, 201, 240, 0.4); }
+
+/* 3. Кнопка "Настройки" (Серый стиль) */
+.btn-secondary {
+    background: linear-gradient(135deg, #334155, #1e293b) !important;
+    border: 1px solid rgba(255,255,255,0.1) !important;
+    color: #cbd5e1 !important;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.3) !important;
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #475569, #334155) !important;
+    color: #fff !important;
+    transform: translateY(-2px);
+}
+
+/* 4. Сетка режимов (2 сверху, 1 по центру) */
+.mode-selection {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+}
+
+.mode-card.center-card {
+    grid-column: 1 / -1;
+    width: 60%;
+    margin: 0 auto;
+}
+
+/* 5. Режим ТВ "Угадай страну" (Скрываем карту под интерфейс) */
+.mode-text-country .game-ui {
+    background: transparent !important;
+    box-shadow: none !important;
+    border: none !important;
+    backdrop-filter: none !important;
+}
+
+.mode-text-country .capital-hint {
+    display: block !important;
+    font-size: 3.5rem !important;
+    text-shadow: 0 5px 20px #000;
+    margin-bottom: 30px;
+}
+
+.mode-text-country .game-content {
+    justify-content: center; /* Центрируем вопрос на экране */
+}
+
+/* 6. Умный слайдер громкости (База серая) */
+input[type=range] {
+    background: #334155; /* Серый фон для неактивной части */
+}
+
+/* 7. Скрываем старые блоки, если они остались в HTML */
+.game-features, .game-stats {
+    display: none !important;
+}
