@@ -5,23 +5,35 @@ class GeoNavigator {
     constructor() {
         this.config = {
             currentGame: null,      
-            settings: { language: 'ru', volume: 80, theme: 'dark' },
+            settings: { 
+                language: 'ru', 
+                volume: 80, 
+                theme: 'dark' // Тема всегда темная, но настройка сохранена для совместимости
+            },
             gameState: {            
                 score: 0, 
                 currentQuestionIndex: 0, 
                 questions: [], 
                 startTime: null, // Время начала вопроса (для таймера)
-                gameStartTime: null, // Время начала всей игры
+                gameStartTime: null, // Время начала всей игры (для статистики)
                 timerInterval: null, 
                 map: null, 
                 boundariesLayer: null,
                 isInputBlocked: false, 
                 isPaused: false
             },
-            navigation: { previousScreen: null, fromPause: false, gameActive: false },
+            navigation: { 
+                previousScreen: null, 
+                fromPause: false, 
+                gameActive: false 
+            },
             
-            // Статистика игрока
-            playerStats: { totalCorrect: 0, totalQuestions: 0, bestScore: 0 }
+            // Статистика игрока (сохраняется в localStorage)
+            playerStats: { 
+                totalCorrect: 0, 
+                totalQuestions: 0, 
+                bestScore: 0 
+            }
         };
 
         // Координаты центров для Умной Камеры (v7.0: Разделенная Америка)
@@ -44,14 +56,19 @@ class GeoNavigator {
         this.setupEventListeners();
         this.showScreen('mainMenu');
         this.setupNotifications();
-        this.updateStatsUI();
+        this.updateStatsUI(); // Обновляем цифры в меню
         this.initVolumeSliderVisuals(); // Красим слайдер при старте
     }
 
     // === 1. ЗАГРУЗКА ДАННЫХ И НАСТРОЕК ===
 
     loadSettings() {
-        try { Object.assign(this.config.settings, JSON.parse(localStorage.getItem('geoNavigatorSettings'))); } catch(e){}
+        try { 
+            const saved = localStorage.getItem('geoNavigatorSettings');
+            if (saved) {
+                Object.assign(this.config.settings, JSON.parse(saved)); 
+            }
+        } catch(e) { console.error('Settings load error', e); }
         this.applySettings();
     }
 
@@ -65,6 +82,7 @@ class GeoNavigator {
     }
 
     updateStatsUI() {
+        // Обновляем плашки статистики в главном меню
         const s = this.config.playerStats;
         const totalEl = document.getElementById('statTotalCorrect');
         const bestEl = document.getElementById('statBestScore');
@@ -74,43 +92,57 @@ class GeoNavigator {
         if (bestEl) bestEl.textContent = s.bestScore;
         
         let acc = 0;
-        if (s.totalQuestions > 0) acc = Math.round((s.totalCorrect / s.totalQuestions) * 100);
+        if (s.totalQuestions > 0) {
+            acc = Math.round((s.totalCorrect / s.totalQuestions) * 100);
+        }
         if (accEl) accEl.textContent = `${acc}%`;
     }
 
     // === 2. СОБЫТИЯ И UI ===
 
     setupEventListeners() {
-        // Меню
+        // --- ГЛАВНОЕ МЕНЮ ---
         document.getElementById('startGameBtn')?.addEventListener('click', () => {
             this.config.navigation.previousScreen = 'mainMenu';
             this.showScreen('gameSetupScreen');
         });
         document.getElementById('openSettingsBtn')?.addEventListener('click', () => this.navigateToSettings('mainMenu'));
 
-        // Настройки игры
+        // --- ЭКРАН НАСТРОЙКИ ИГРЫ ---
         document.getElementById('backFromSetupBtn')?.addEventListener('click', () => this.showScreen('mainMenu'));
         document.getElementById('startGameWithParamsBtn')?.addEventListener('click', () => this.startGame());
 
-        // Геймплей
+        // --- ГЕЙМПЛЕЙ ---
         document.getElementById('pauseGameBtn')?.addEventListener('click', () => this.showPauseMenu());
         document.getElementById('skipQuestionBtn')?.addEventListener('click', () => this.skipQuestion());
+        
+        // --- ЭКРАН ПАУЗЫ ---
         document.getElementById('resumeGameBtn')?.addEventListener('click', () => this.resumeGame());
         
         document.getElementById('restartGameBtn')?.addEventListener('click', () => {
-            if(confirm(this.getLocalizedText('restartConfirm'))) { this.resetGameState(); this.showScreen('gameSetupScreen'); }
+            if(confirm(this.getLocalizedText('restartConfirm'))) { 
+                this.resetGameState(); 
+                this.showScreen('gameSetupScreen'); 
+            }
         });
+        
+        document.getElementById('openSettingsFromPauseBtn')?.addEventListener('click', () => this.navigateToSettings('pauseScreen'));
+        
         document.getElementById('quitToMenuFromPauseBtn')?.addEventListener('click', () => {
-            if(confirm(this.getLocalizedText('quitConfirm'))) { this.resetGameState(); this.showScreen('mainMenu'); }
+            if(confirm(this.getLocalizedText('quitConfirm'))) { 
+                this.resetGameState(); 
+                this.showScreen('mainMenu'); 
+            }
         });
 
-        // Результаты
+        // --- ЭКРАН РЕЗУЛЬТАТОВ ---
         document.getElementById('playAgainBtn')?.addEventListener('click', () => this.playAgain());
         document.getElementById('backToMenuFromResultBtn')?.addEventListener('click', () => {
-            this.resetGameState(); this.showScreen('mainMenu');
+            this.resetGameState(); 
+            this.showScreen('mainMenu');
         });
 
-        // Настройки приложения
+        // --- НАСТРОЙКИ ПРИЛОЖЕНИЯ ---
         document.getElementById('backFromSettingsBtn')?.addEventListener('click', () => this.returnFromSettings());
         
         document.querySelectorAll('.lang-btn').forEach(btn => {
@@ -128,6 +160,17 @@ class GeoNavigator {
                 this.saveSettings();
             });
         }
+        
+        // Кнопки зума карты
+        document.getElementById('zoomInBtn')?.addEventListener('click', () => {
+            if (this.config.gameState.map) this.config.gameState.map.zoomIn();
+        });
+        document.getElementById('zoomOutBtn')?.addEventListener('click', () => {
+            if (this.config.gameState.map) this.config.gameState.map.zoomOut();
+        });
+        document.getElementById('resetViewBtn')?.addEventListener('click', () => {
+            if (this.config.gameState.map) this.config.gameState.map.setView([20, 0], 2);
+        });
     }
 
     initVolumeSliderVisuals() {
@@ -140,7 +183,7 @@ class GeoNavigator {
     }
 
     updateSliderVisual(slider) {
-        // CSS-трюк: меняем background-size чтобы закрасить часть до ползунка синим
+        // CSS-трюк: меняем background-size чтобы закрасить часть до ползунка синим, а после - серым
         const val = (slider.value - slider.min) / (slider.max - slider.min) * 100;
         slider.style.background = `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${val}%, #334155 ${val}%, #334155 100%)`;
     }
@@ -154,7 +197,7 @@ class GeoNavigator {
         this.config.currentGame = params;
         this.resetGameStateForNewGame();
         
-        // CSS для режима "Угадай страну" (ТВ)
+        // CSS для режима "Угадай страну" (ТВ) - скрываем карту, показываем текст крупно
         const gameScreen = document.getElementById('gameScreen');
         if (params.mode === 'countryByCapitalText') {
             gameScreen.classList.add('mode-text-country');
@@ -163,7 +206,7 @@ class GeoNavigator {
         }
 
         this.generateQuestions();
-        this.config.gameState.gameStartTime = Date.now(); // Засекаем общее время
+        this.config.gameState.gameStartTime = Date.now(); // Засекаем общее время игры
         
         this.showScreen('gameScreen');
         this.showQuestion();
@@ -228,7 +271,12 @@ class GeoNavigator {
         this.config.gameState.questions = finalSelection.map(c => {
             const d = window.GeoCountries.countryData[c];
             if (!d) return null;
-            return { country: c, capital: d.capital, code: d.code, continent: d.continent };
+            return { 
+                country: c, 
+                capital: d.capital, 
+                code: d.code, 
+                continent: d.continent 
+            };
         }).filter(q => q !== null);
         
         document.getElementById('totalQuestions').textContent = this.config.gameState.questions.length;
@@ -250,16 +298,21 @@ class GeoNavigator {
 
         // Рендер в зависимости от режима
         const mode = this.config.currentGame.mode;
-        if (mode === 'capitalByCountry') this.showCapitalByCountryQuestion(q);
-        else if (mode === 'countryByCapital') this.showCountryByCapitalQuestion(q);
-        else if (mode === 'countryByCapitalText') this.showCountryByCapitalTextQuestion(q);
+        if (mode === 'capitalByCountry') {
+            this.showCapitalByCountryQuestion(q);
+        } else if (mode === 'countryByCapital') {
+            this.showCountryByCapitalQuestion(q);
+        } else if (mode === 'countryByCapitalText') {
+            this.showCountryByCapitalTextQuestion(q);
+        }
     }
 
     updateQuestionUI(idx, total) {
         document.getElementById('currentQuestion').textContent = idx + 1;
         document.getElementById('totalQuestions').textContent = total;
         document.getElementById('correctCount').textContent = this.config.gameState.score;
-        document.getElementById('progressBar').style.width = `${((idx + 1) / total) * 100}%`;
+        const p = ((idx) / total) * 100; // Прогресс бар
+        document.getElementById('progressBar').style.width = `${p}%`;
     }
 
     // --- РЕЖИМЫ ИГРЫ ---
@@ -268,7 +321,10 @@ class GeoNavigator {
         this.toggleUIElements({ flag: true, options: true, hint: false });
         document.getElementById('questionText').textContent = this.getLocalizedText('guessCapital');
         document.getElementById('countryName').textContent = q.country;
-        document.getElementById('countryFlag').innerHTML = `<img src="https://flagcdn.com/w320/${q.code}.png" alt="flag">`;
+        
+        const flagDiv = document.getElementById('countryFlag');
+        flagDiv.innerHTML = `<img src="https://flagcdn.com/w320/${q.code}.png" alt="flag">`;
+        
         this.generateAnswerOptions(q, 'capital');
     }
 
@@ -283,10 +339,10 @@ class GeoNavigator {
         document.getElementById('questionText').textContent = this.getLocalizedText('guessCountry');
         document.querySelector('.capital-hint span').innerHTML = `<strong>${q.capital}</strong>`;
 
-        // Умная камера: полет к региону
+        // Умная камера: полет к региону (если режим требует карты)
         if (this.config.gameState.map && this.continentViews[q.continent]) {
             const view = this.continentViews[q.continent];
-            this.config.gameState.map.flyTo(view.center, view.zoom, { duration: 0.5 }); // Чуть медленнее для красоты
+            this.config.gameState.map.flyTo(view.center, view.zoom, { duration: 0.5 });
         }
         this.generateAnswerOptions(q, 'country');
     }
@@ -301,8 +357,11 @@ class GeoNavigator {
 
     displayContinentHint(continent, capital) {
         const el = document.querySelector('.capital-hint span');
-        const cName = this.getLocalizedText(continent);
+        // Берем локализованное название континента (европа, азия и т.д.)
+        const cNameKey = continent; 
+        const cName = this.getLocalizedText(cNameKey);
         const inText = this.getLocalizedText('in');
+        
         el.innerHTML = `<strong>${capital}</strong> — ${this.getLocalizedText('clickOnCountry')}<br><small>${inText} ${cName}</small>`;
     }
 
@@ -313,17 +372,21 @@ class GeoNavigator {
         let correct = (type === 'capital') ? q.capital : q.country;
         let pool = [];
 
-        // Берем варианты ответов со всех доступных стран
+        // Берем варианты ответов со всех доступных стран выбранных континентов
         const selected = this.config.currentGame.continents;
         selected.forEach(c => {
             if (window.GeoCountries.continents[c]) {
                 window.GeoCountries.continents[c].forEach(countryName => {
                     const d = window.GeoCountries.countryData[countryName];
-                    if (type === 'capital') pool.push(d.capital); else pool.push(countryName);
+                    if (d) {
+                        if (type === 'capital') pool.push(d.capital); 
+                        else pool.push(countryName);
+                    }
                 });
             }
         });
 
+        // Исключаем правильный ответ и перемешиваем
         pool = [...new Set(pool)].filter(i => i !== correct);
         const wrong = this.shuffleArray(pool).slice(0, 3);
         const options = this.shuffleArray([correct, ...wrong]);
@@ -352,6 +415,7 @@ class GeoNavigator {
         } else {
             this.showNotification(this.getLocalizedText('wrong'), 'error');
             this.markButtons(correct, selected);
+            // Показать правильный ответ
             setTimeout(() => this.showNotification(
                 this.getLocalizedText('correctAnswer').replace('{country}', q.country).replace('{capital}', q.capital), 
                 'info'
@@ -382,23 +446,33 @@ class GeoNavigator {
         const q = this.config.gameState.questions[this.config.gameState.currentQuestionIndex];
         if (this.config.currentGame.mode === 'countryByCapitalText') this.highlightCorrectCountry(q.country);
         
-        this.showNotification(this.getLocalizedText('correctAnswer').replace('{country}', q.country).replace('{capital}', q.capital), 'info');
+        const msg = this.getLocalizedText('correctAnswer').replace('{country}', q.country).replace('{capital}', q.capital);
+        this.showNotification(msg, 'info');
         setTimeout(() => this.nextQuestion(), 1500);
     }
 
-    // === КАРТА ===
+    // === КАРТА (Leaflet) ===
 
     initMap() {
         if (!document.getElementById('map')) return;
         if (this.config.gameState.map) this.config.gameState.map.remove();
 
-        // Центрируем карту
         const map = L.map('map', { 
-            zoomControl: false, attributionControl: false, center: [20, 0], zoom: 2, 
-            minZoom: 2, maxZoom: 8, worldCopyJump: true, maxBoundsViscosity: 1.0 
+            zoomControl: false, 
+            attributionControl: false, 
+            center: [20, 0], 
+            zoom: 2, 
+            minZoom: 2, 
+            maxZoom: 8, 
+            worldCopyJump: true, 
+            maxBoundsViscosity: 1.0 
         });
         
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 8 }).addTo(map);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { 
+            subdomains: 'abcd', 
+            maxZoom: 8 
+        }).addTo(map);
+        
         this.addCountryBoundaries(map);
         this.config.gameState.map = map;
     }
@@ -408,7 +482,14 @@ class GeoNavigator {
             .then(r => r.json())
             .then(data => {
                 const layer = L.geoJson(data, {
-                    style: { fillColor: 'transparent', weight: 1.5, opacity: 0.6, color: '#4cc9f0', fillOpacity: 0.1, dashArray: '3, 3' },
+                    style: { 
+                        fillColor: 'transparent', 
+                        weight: 1.5, 
+                        opacity: 0.6, 
+                        color: '#4cc9f0', 
+                        fillOpacity: 0.1, 
+                        dashArray: '3, 3' 
+                    },
                     onEachFeature: (f, l) => this.setupCountryInteractivity(f, l, map)
                 }).addTo(map);
                 this.config.gameState.boundariesLayer = layer;
@@ -423,8 +504,11 @@ class GeoNavigator {
 
         if (!name) { layer.setStyle({ interactive: false }); return; }
 
-        // Если режим ТВ - отключаем клики
-        if (this.config.currentGame?.mode === 'countryByCapitalText') { layer.options.interactive = false; return; }
+        // Если режим ТВ (Угадай страну по столице) - отключаем клики
+        if (this.config.currentGame?.mode === 'countryByCapitalText') { 
+            layer.options.interactive = false; 
+            return; 
+        }
 
         layer.options.interactive = true;
         
@@ -442,6 +526,7 @@ class GeoNavigator {
         });
 
         layer.on('click', (e) => {
+            // Клик работает только в режиме поиска на карте
             if (this.config.currentGame?.mode === 'countryByCapital') {
                 L.DomEvent.stop(e);
                 const q = this.config.gameState.questions[this.config.gameState.currentQuestionIndex];
@@ -476,6 +561,7 @@ class GeoNavigator {
             const adm3 = layer.feature.properties.ADM0_A3;
             if (window.GeoCountries?.getCountryNameByCode(iso, adm3) === name) {
                 layer.setStyle({ weight: 3, color: '#4ade80', fillColor: '#4ade80', fillOpacity: 0.4, dashArray: '' });
+                // Если режим карты - летим к стране
                 if (this.config.currentGame.mode !== 'countryByCapitalText') {
                     const bounds = layer.getBounds();
                     if(bounds.isValid()) this.config.gameState.map.flyToBounds(bounds, { padding: [50, 50], maxZoom: 5, duration: 1.5 });
@@ -486,7 +572,7 @@ class GeoNavigator {
 
     resetCountryColors() { this.config.gameState.boundariesLayer?.eachLayer(l => this.config.gameState.boundariesLayer.resetStyle(l)); }
 
-    // === ТАЙМЕР v7.0 (С поддержкой Unlimited) ===
+    // === ТАЙМЕР v7.0 (Unlimited Support) ===
 
     startTimer() {
         this.stopTimer();
@@ -495,8 +581,10 @@ class GeoNavigator {
         
         // Режим "Без времени"
         if (duration === 'unlimited') {
-            if(disp) { disp.textContent = '∞'; disp.style.color = '#f59e0b'; }
-            // Мы не запускаем интервал, так как время не ограничено
+            if(disp) { 
+                disp.textContent = '∞'; 
+                disp.style.color = '#f59e0b'; 
+            }
             return;
         }
 
@@ -516,10 +604,13 @@ class GeoNavigator {
     
     handleTimeOut() {
         this.config.gameState.isInputBlocked = true;
+        const q = this.config.gameState.questions[this.config.gameState.currentQuestionIndex];
+        
+        // Подсвечиваем ответ при таймауте
         if (this.config.currentGame.mode === 'countryByCapitalText') {
-            const q = this.config.gameState.questions[this.config.gameState.currentQuestionIndex];
             this.highlightCorrectCountry(q.country);
         }
+        
         this.showNotification('Время вышло!', 'warning');
         setTimeout(() => this.nextQuestion(), 1500);
     }
@@ -531,8 +622,7 @@ class GeoNavigator {
         this.config.navigation.gameActive = false;
         document.getElementById('gameScreen').classList.remove('mode-text-country');
         
-        // Статистика (сохраняем только если не "без времени" - или можно сохранять всегда, как решишь)
-        // Для честности рекорды обычно сохраняют только в режиме с таймером, но тут сохраним всё.
+        // Обновляем статистику
         const score = this.config.gameState.score;
         const total = this.config.gameState.questions.length;
         
@@ -540,7 +630,6 @@ class GeoNavigator {
         this.config.playerStats.totalQuestions += total;
         if (score > this.config.playerStats.bestScore) this.config.playerStats.bestScore = score;
         
-        // Сохраняем статистику
         localStorage.setItem('geoGatorStats', JSON.stringify(this.config.playerStats));
 
         this.showResults();
@@ -550,7 +639,7 @@ class GeoNavigator {
         const { score, questions, gameStartTime } = this.config.gameState;
         const total = questions.length;
         
-        // Считаем общее время игры
+        // Считаем общее время
         const totalTimeSeconds = Math.round((Date.now() - gameStartTime) / 1000);
         
         document.getElementById('resultScore').textContent = score;
@@ -567,34 +656,42 @@ class GeoNavigator {
         this.showScreen('resultScreen');
     }
 
-    // === СИСТЕМНЫЕ МЕТОДЫ ===
+    // === УТИЛИТЫ ===
+
     getLocalizedText(key) { return LOCALES?.[this.config.settings.language]?.[key] || key; }
     
     saveSettings() { localStorage.setItem('geoNavigatorSettings', JSON.stringify(this.config.settings)); }
     
     applySettings() {
-        // Язык
+        // Перевод текстов
         document.querySelectorAll('[data-i18n]').forEach(e => {
-            e.textContent = this.getLocalizedText(e.getAttribute('data-i18n'));
+            const key = e.getAttribute('data-i18n');
+            e.textContent = this.getLocalizedText(key);
         });
-        // Кнопки языка
+        
+        // Активность кнопок языка
         document.querySelectorAll('.lang-btn').forEach(b => {
             b.classList.toggle('active', b.dataset.lang === this.config.settings.language);
         });
+        
+        // Обновляем слайдер
+        this.initVolumeSliderVisuals();
     }
 
     changeLanguage(lang) {
-        if(this.config.navigation.gameActive && confirm(this.getLocalizedText('languageChangeWarning'))) {
-            this.resetGameState();
+        if(this.config.navigation.gameActive) {
+            if(confirm(this.getLocalizedText('languageChangeWarning'))) {
+                this.resetGameState();
+                this.config.settings.language = lang;
+                this.applySettings();
+                this.saveSettings();
+                this.showScreen('mainMenu');
+            }
+        } else {
             this.config.settings.language = lang;
             this.applySettings();
             this.saveSettings();
-            this.showScreen('mainMenu');
-        } else if (!this.config.navigation.gameActive) {
-            this.config.settings.language = lang;
-            this.applySettings();
-            this.saveSettings();
-            this.updateStatsUI(); // Обновить заголовки статистики
+            this.updateStatsUI(); // Перерисовываем заголовки статистики
         }
     }
     
@@ -603,6 +700,18 @@ class GeoNavigator {
     showPauseMenu() { 
         this.config.gameState.isPaused = true; 
         this.stopTimer(); 
+        
+        // Обновляем данные паузы
+        document.getElementById('pauseScore').textContent = this.config.gameState.score;
+        const totalTime = Math.round((Date.now() - this.config.gameState.gameStartTime) / 1000);
+        document.getElementById('pauseTime').textContent = `${totalTime}c`;
+        
+        const current = this.config.gameState.currentQuestionIndex;
+        const total = this.config.gameState.questions.length;
+        const progress = total > 0 ? Math.round((current / total) * 100) : 0;
+        const progressEl = document.getElementById('pauseProgress');
+        if(progressEl) progressEl.textContent = `${progress}%`;
+
         this.showScreen('pauseScreen'); 
     }
     
