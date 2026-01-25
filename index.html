@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GeoNavigator - Географическая игра</title>
+    <title>GeoGator - Географическая игра</title>
     <link rel="stylesheet" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
@@ -12,83 +12,52 @@
           crossorigin=""/>
 </head>
 <body>
-    <!-- Главное меню -->
     <div id="mainMenu" class="screen active">
         <div class="hero-content">
             <div class="game-title">
                 <i class="fas fa-globe-americas"></i>
-                <span class="title-gradient" data-i18n="gameTitle">GeoNavigator</span>
+                <span class="title-gradient" data-i18n="gameTitle">GeoGator</span>
                 <i class="fas fa-map-marked-alt"></i>
             </div>
             
             <p class="game-subtitle" data-i18n="gameSubtitle">
-                Проверьте свои знания географии! Угадывайте страны и столицы на интерактивной карте мира.
+                Исследуй мир, ставь рекорды.
             </p>
             
-            <div class="game-modes">
-                <div class="mode-badge">
-                    <i class="fas fa-landmark"></i>
-                    <span data-i18n="modeCapitalByCountry">Столица по стране</span>
-                </div>
-                <div class="mode-badge">
-                    <i class="fas fa-map-marker-alt"></i>
-                    <span data-i18n="modeCountryByCapital">Страна по столице</span>
-                </div>
-            </div>
-            
-            <button id="startGameBtn" class="btn-start-game">
-                <div class="btn-glow"></div>
-                <i class="fas fa-rocket"></i>
-                <span data-i18n="startGame">НАЧАТЬ ИГРУ</span>
-            </button>
-            
-            <div class="game-stats">
-                <div class="stat-card">
-                    <div class="stat-value">195</div>
-                    <div class="stat-label" data-i18n="countries">Стран</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">2</div>
-                    <div class="stat-label" data-i18n="modes">Режима</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-value">5</div>
-                    <div class="stat-label" data-i18n="continents">Континентов</div>
-                </div>
-            </div>
-            
-            <div class="game-features">
-                <h3 data-i18n="featuresTitle">Особенности игры</h3>
-                <div class="features-grid">
-                    <div class="feature-item">
-                        <i class="fas fa-gamepad"></i>
-                        <span data-i18n="feature1">Интерактивная карта</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-trophy"></i>
-                        <span data-i18n="feature2">Система достижений</span>
-                    </div>
-                    <div class="feature-item">
-                        <i class="fas fa-sliders-h"></i>
-                        <span data-i18n="feature3">Гибкие настройки</span>
-                    </div>
-                </div>
-            </div>
-            
-            <div style="margin-top: 40px; display: flex; gap: 15px; justify-content: center;">
-                <button id="openSettingsBtn" class="btn-secondary">
+            <div class="menu-actions" style="display: flex; flex-direction: column; align-items: center; gap: 15px; margin: 30px 0;">
+                <button id="startGameBtn" class="btn-start-game">
+                    <div class="btn-glow"></div>
+                    <i class="fas fa-rocket"></i>
+                    <span data-i18n="startGame">НАЧАТЬ ИГРУ</span>
+                </button>
+                
+                <button id="openSettingsBtn" class="btn-secondary" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); padding: 12px 25px; border-radius: 12px; color: white; cursor: pointer; transition: all 0.3s;">
                     <i class="fas fa-cog"></i> 
                     <span data-i18n="settings">Настройки</span>
                 </button>
-                <button id="openAboutBtn" class="btn-secondary">
-                    <i class="fas fa-info-circle"></i> 
-                    <span data-i18n="about">Об игре</span>
-                </button>
             </div>
-        </div>
+            
+            <div class="stats-container" style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 15px; margin-top: 20px;">
+                <div class="stat-card" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); text-align: center;">
+                    <div class="stat-icon" style="color: #4ade80; font-size: 1.5rem; margin-bottom: 5px;"><i class="fas fa-check"></i></div>
+                    <div class="stat-value" id="statTotalCorrect" style="font-size: 1.5rem; font-weight: bold; color: white;">0</div>
+                    <div class="stat-label" data-i18n="statTotal" style="font-size: 0.8rem; opacity: 0.7;">Всего верно</div>
+                </div>
+                <div class="stat-card" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); text-align: center;">
+                    <div class="stat-icon" style="color: #f59e0b; font-size: 1.5rem; margin-bottom: 5px;"><i class="fas fa-trophy"></i></div>
+                    <div class="stat-value" id="statBestScore" style="font-size: 1.5rem; font-weight: bold; color: white;">0</div>
+                    <div class="stat-label" data-i18n="statRecord" style="font-size: 0.8rem; opacity: 0.7;">Рекорд</div>
+                </div>
+                <div class="stat-card" style="background: rgba(255,255,255,0.05); padding: 15px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); text-align: center;">
+                    <div class="stat-icon" style="color: #4cc9f0; font-size: 1.5rem; margin-bottom: 5px;"><i class="fas fa-bullseye"></i></div>
+                    <div class="stat-value" id="statAccuracy" style="font-size: 1.5rem; font-weight: bold; color: white;">0%</div>
+                    <div class="stat-label" data-i18n="statAccuracy" style="font-size: 0.8rem; opacity: 0.7;">Точность</div>
+                </div>
+            </div>
+            
+            </div>
     </div>
 
-    <!-- Экран настроек -->
     <div id="settingsScreen" class="screen">
         <div class="container">
             <button class="back-btn" id="backFromSettingsBtn">
@@ -148,7 +117,6 @@
         </div>
     </div>
 
-    <!-- Экран выбора параметров игры -->
     <div id="gameSetupScreen" class="screen">
         <div class="container">
             <button class="back-btn" id="backFromSetupBtn">
@@ -211,7 +179,7 @@
                             <div class="mode-card">
                                 <i class="fas fa-landmark"></i>
                                 <h4 data-i18n="modeCapitalByCountry">Столица по стране</h4>
-                                <p data-i18n="capitalByCountryDesc">Угадайте столицу по стране</p>
+                                <p data-i18n="descCapitalByCountry">Угадайте столицу по стране</p>
                             </div>
                         </label>
                         <label class="mode-option">
@@ -219,7 +187,15 @@
                             <div class="mode-card">
                                 <i class="fas fa-map-marker-alt"></i>
                                 <h4 data-i18n="modeCountryByCapital">Страна по столице</h4>
-                                <p data-i18n="countryByCapitalDesc">Найдите страну на карте</p>
+                                <p data-i18n="descCountryByCapital">Найдите страну на карте</p>
+                            </div>
+                        </label>
+                        <label class="mode-option">
+                            <input type="radio" name="gameMode" value="countryByCapitalText">
+                            <div class="mode-card">
+                                <i class="fas fa-globe"></i>
+                                <h4 data-i18n="modeCountryByCapitalText">Угадай страну</h4>
+                                <p data-i18n="descCountryByCapitalText">Тест + Умная камера</p>
                             </div>
                         </label>
                     </div>
@@ -284,17 +260,15 @@
                 
                 <button id="startGameWithParamsBtn" class="btn-start">
                     <i class="fas fa-rocket"></i> 
-                    <span data-i18n="startGameNow">НАЧАТЬ ИГРУ</span>
+                    <span data-i18n="startGameAction">ПОЕХАЛИ!</span>
                 </button>
             </div>
         </div>
     </div>
 
-    <!-- Игровой экран -->
     <div id="gameScreen" class="screen">
         <div class="game-container">
             <div class="game-header">
-                <!-- Кнопка паузы вместо кнопки назад -->
                 <button class="pause-btn" id="pauseGameBtn">
                     <i class="fas fa-pause"></i>
                 </button>
@@ -360,7 +334,6 @@
         </div>
     </div>
 
-    <!-- Экран паузы -->
     <div id="pauseScreen" class="screen">
         <div class="container">
             <h2 class="screen-title">
@@ -400,13 +373,6 @@
                         </div>
                     </div>
                     <div class="pause-stat">
-                        <i class="fas fa-question-circle"></i>
-                        <div>
-                            <span data-i18n="progress">Прогресс</span>
-                            <strong id="pauseProgress">0%</strong>
-                        </div>
-                    </div>
-                    <div class="pause-stat">
                         <i class="fas fa-clock"></i>
                         <div>
                             <span data-i18n="timePlayed">Время игры</span>
@@ -418,7 +384,6 @@
         </div>
     </div>
 
-    <!-- Экран результатов -->
     <div id="resultScreen" class="screen">
         <div class="container">
             <h2 class="screen-title">
@@ -474,7 +439,6 @@
         </div>
     </div>
 
-    <!-- Уведомления -->
     <div id="notification" class="notification">
         <div class="notification-content">
             <i id="notificationIcon" class="fas fa-info-circle"></i>
@@ -482,262 +446,11 @@
         </div>
     </div>
 
-    <!-- Подключаем все скрипты в правильном порядке -->
     <script src="countries.js"></script>
     <script src="locales.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
             integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo="
             crossorigin=""></script>
-    <script src="http<!DOCTYPE html>
-<html lang="ru">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GeoGator</title>
-    <link rel="stylesheet" href="style.css">
-
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-
-    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin=""/>
-</head>
-<body>
-
-    <div id="mainMenu" class="screen active">
-        <div class="hero-content">
-            <div class="game-title">
-                <i class="fas fa-globe-americas"></i>
-                <span class="title-gradient" data-i18n="gameTitle">GeoGator</span>
-            </div>
-
-            <p class="game-subtitle" data-i18n="gameSubtitle">Исследуй мир.</p>
-
-            <div class="menu-actions">
-                <button id="startGameBtn" class="btn-primary btn-large">
-                    <i class="fas fa-play"></i>
-                    <span data-i18n="startGame">НАЧАТЬ ИГРУ</span>
-                </button>
-
-                <button id="openSettingsBtn" class="btn-secondary">
-                    <i class="fas fa-cog"></i>
-                    <span data-i18n="settings">НАСТРОЙКИ</span>
-                </button>
-            </div>
-
-            <div class="stats-container">
-                <div class="stat-card">
-                    <div class="stat-icon correct"><i class="fas fa-check"></i></div>
-                    <div class="stat-value" id="statTotalCorrect">0</div>
-                    <div class="stat-label" data-i18n="statTotal">Всего верно</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon record"><i class="fas fa-trophy"></i></div>
-                    <div class="stat-value" id="statBestScore">0</div>
-                    <div class="stat-label" data-i18n="statRecord">Рекорд</div>
-                </div>
-                <div class="stat-card">
-                    <div class="stat-icon accuracy"><i class="fas fa-bullseye"></i></div>
-                    <div class="stat-value" id="statAccuracy">0%</div>
-                    <div class="stat-label" data-i18n="statAccuracy">Точность</div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="gameSetupScreen" class="screen">
-        <div class="setup-container">
-            <div class="setup-header">
-                <h2 data-i18n="gameSettingsTitle">НОВАЯ ИГРА</h2>
-                <button id="backFromSetupBtn" class="btn-icon"><i class="fas fa-arrow-left"></i></button>
-            </div>
-
-            <div class="setup-content">
-                <div class="setup-section">
-                    <h3 data-i18n="gameContinents">РЕГИОНЫ</h3>
-                    <div class="continents-grid">
-                        <label class="continent-card"><input type="checkbox" name="continent" value="europe" checked><span><i class="fas fa-landmark"></i> <span data-i18n="europe">Европа</span></span></label>
-                        <label class="continent-card"><input type="checkbox" name="continent" value="asia" checked><span><i class="fas fa-torii-gate"></i> <span data-i18n="asia">Азия</span></span></label>
-                        <label class="continent-card"><input type="checkbox" name="continent" value="africa"><span><i class="fas fa-pyramid"></i> <span data-i18n="africa">Африка</span></span></label>
-                        <label class="continent-card"><input type="checkbox" name="continent" value="america"><span><i class="fas fa-statue-of-liberty"></i> <span data-i18n="america">Америка</span></span></label>
-                        <label class="continent-card"><input type="checkbox" name="continent" value="oceania"><span><i class="fas fa-water"></i> <span data-i18n="oceania">Океания</span></span></label>
-                    </div>
-                </div>
-
-                <div class="setup-section">
-                    <h3 data-i18n="gameMode">РЕЖИМ</h3>
-                    <div class="mode-selection">
-                        <label class="mode-card">
-                            <input type="radio" name="gameMode" value="capitalByCountry" checked>
-                            <div class="mode-content">
-                                <div class="mode-icon"><i class="fas fa-city"></i></div>
-                                <div class="mode-info">
-                                    <span class="mode-title" data-i18n="modeCapitalByCountry">Угадай столицу</span>
-                                    <span class="mode-desc" data-i18n="descCapitalByCountry">Тест</span>
-                                </div>
-                            </div>
-                        </label>
-                        <label class="mode-card">
-                            <input type="radio" name="gameMode" value="countryByCapital">
-                            <div class="mode-content">
-                                <div class="mode-icon"><i class="fas fa-map-marked-alt"></i></div>
-                                <div class="mode-info">
-                                    <span class="mode-title" data-i18n="modeCountryByCapital">Найти на карте</span>
-                                    <span class="mode-desc" data-i18n="descCountryByCapital">Поиск</span>
-                                </div>
-                            </div>
-                        </label>
-                        <label class="mode-card">
-                            <input type="radio" name="gameMode" value="countryByCapitalText">
-                            <div class="mode-content">
-                                <div class="mode-icon"><i class="fas fa-globe"></i></div>
-                                <div class="mode-info">
-                                    <span class="mode-title" data-i18n="modeCountryByCapitalText">Угадай страну</span>
-                                    <span class="mode-desc" data-i18n="descCountryByCapitalText">Тест</span>
-                                </div>
-                            </div>
-                        </label>
-                    </div>
-                </div>
-
-                <div class="setup-row">
-                    <div class="setup-col">
-                        <h3 data-i18n="questionsCount">ВОПРОСОВ</h3>
-                        <div class="radio-group">
-                            <label><input type="radio" name="questionCount" value="10" checked><span>10</span></label>
-                            <label><input type="radio" name="questionCount" value="20"><span>20</span></label>
-                            <label><input type="radio" name="questionCount" value="50"><span>50</span></label>
-                        </div>
-                    </div>
-                    <div class="setup-col">
-                        <h3 data-i18n="timer">ТАЙМЕР</h3>
-                        <div class="radio-group">
-                            <label><input type="radio" name="timer" value="5"><span>5с</span></label>
-                            <label><input type="radio" name="timer" value="10" checked><span>10с</span></label>
-                            <label><input type="radio" name="timer" value="15"><span>15с</span></label>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <button id="startGameWithParamsBtn" class="btn-primary btn-block">
-                <i class="fas fa-rocket"></i> <span data-i18n="startGameAction">ПОЕХАЛИ!</span>
-            </button>
-        </div>
-    </div>
-
-    <div id="gameScreen" class="screen game-screen">
-        <div id="map" class="game-map"></div>
-
-        <div class="game-content">
-            <div class="game-header">
-                <div class="game-stat"><span class="stat-label" data-i18n="score">Очки</span><span class="stat-val" id="correctCount">0</span></div>
-                <div class="game-stat center"><span class="stat-label" data-i18n="timer">Таймер</span><span class="stat-val timer" id="timerDisplay">10</span></div>
-                <div class="game-stat"><span class="stat-label" data-i18n="question">Вопрос</span><span class="stat-val"><span id="currentQuestion">1</span>/<span id="totalQuestions">10</span></span></div>
-                <button id="pauseGameBtn" class="btn-icon-small"><i class="fas fa-pause"></i></button>
-            </div>
-
-            <div class="progress-container"><div class="progress-bar" id="progressBar"></div></div>
-
-            <div class="game-ui">
-                <div class="country-flag-container" id="countryFlagContainer"><div class="country-flag" id="countryFlag"></div></div>
-                <div class="capital-hint" id="capitalHint"><span></span></div>
-
-                <div class="question-text" id="questionText"></div>
-                <div class="country-name" id="countryName"></div>
-
-                <div class="answer-grid" id="answerOptions"></div>
-
-                <button id="skipQuestionBtn" class="btn-skip">Пропустить</button>
-            </div>
-        </div>
-    </div>
-
-    <div id="pauseScreen" class="screen overlay-screen">
-        <div class="overlay-content">
-            <h2 data-i18n="pauseTitle">ПАУЗА</h2>
-            <div class="pause-stats">
-                <div class="p-stat"><i class="fas fa-star"></i> <span id="pauseScore">0</span></div>
-                <div class="p-stat"><i class="fas fa-clock"></i> <span id="pauseTime">0c</span></div>
-            </div>
-            <div class="pause-actions">
-                <button id="resumeGameBtn" class="btn-primary"><i class="fas fa-play"></i> <span data-i18n="resume">ПРОДОЛЖИТЬ</span></button>
-                <button id="restartGameBtn" class="btn-secondary"><i class="fas fa-redo"></i> <span data-i18n="restart">ЗАНОВО</span></button>
-                <button id="openSettingsFromPauseBtn" class="btn-secondary"><i class="fas fa-cog"></i> <span data-i18n="settings">НАСТРОЙКИ</span></button>
-                <button id="quitToMenuFromPauseBtn" class="btn-danger"><i class="fas fa-home"></i> <span data-i18n="quit">В МЕНЮ</span></button>
-            </div>
-        </div>
-    </div>
-
-    <div id="settingsScreen" class="screen">
-        <div class="settings-container">
-            <div class="settings-header">
-                <h2 data-i18n="settingsTitle">НАСТРОЙКИ</h2>
-                <button id="backFromSettingsBtn" class="btn-icon"><i class="fas fa-arrow-left"></i></button>
-            </div>
-            <div class="settings-content">
-                <div class="setting-item">
-                    <span class="setting-label" data-i18n="language">ЯЗЫК</span>
-                    <div class="setting-controls">
-                        <button class="lang-btn active" data-lang="ru"><span class="fi fi-ru"></span> <span data-i18n-ru="Русский" data-i18n-en="Russian">Русский</span></button>
-                        <button class="lang-btn" data-lang="en"><span class="fi fi-us"></span> <span data-i18n-ru="Английский" data-i18n-en="English">English</span></button>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <span class="setting-label" data-i18n="theme">ТЕМА</span>
-                    <div class="setting-controls">
-                        <button class="theme-btn active" data-theme="dark"><i class="fas fa-moon"></i> <span data-i18n="darkTheme">Тёмная</span></button>
-                        <button class="theme-btn" data-theme="light"><i class="fas fa-sun"></i> <span data-i18n="lightTheme">Светлая</span></button>
-                    </div>
-                </div>
-                <div class="setting-item">
-                    <span class="setting-label" data-i18n="sound">ЗВУК</span>
-                    <div class="volume-control">
-                        <input type="range" id="volumeSlider" min="0" max="100" value="80">
-                        <span id="volumeValue">80%</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="resultScreen" class="screen overlay-screen">
-        <div class="overlay-content result-content">
-            <h2 data-i18n="resultsTitle">ФИНАЛ</h2>
-
-            <div class="score-circle">
-                <span id="resultPercentage">0%</span>
-            </div>
-
-            <div class="results-stats">
-                <div class="r-stat correct"><span data-i18n="correctAnswers">Верно</span><strong id="resultScore">0</strong></div>
-                <div class="r-stat wrong"><span data-i18n="wrongAnswers">Ошибки</span><strong id="wrongAnswers">0</strong></div>
-                <div class="r-stat time"><span data-i18n="time">Время</span><strong id="totalTime">0</strong>с</div>
-            </div>
-
-            <div class="results-message" id="resultMessage"></div>
-
-            <div class="results-actions">
-                <button id="playAgainBtn" class="btn-primary"><i class="fas fa-redo"></i> <span data-i18n="playAgain">ЕЩЁ РАЗ</span></button>
-                <button id="backToMenuFromResultBtn" class="btn-secondary"><i class="fas fa-home"></i> <span data-i18n="mainMenu">МЕНЮ</span></button>
-            </div>
-        </div>
-    </div>
-
-    <div id="notification" class="notification">
-        <div class="notification-content">
-            <i id="notificationIcon" class="fas fa-info-circle"></i>
-            <span id="notificationText"></span>
-        </div>
-    </div>
-
-    <script src="countries.js"></script>
-    <script src="locales.js"></script>
-    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="script.js"></script>
 </body>
-</html>s://unpkg.com/leaflet-boundary-canvas@latest/src/leaflet-boundary-canvas.js"></script>
-    <script src="script.js"></script>
-</body>
-
 </html>
