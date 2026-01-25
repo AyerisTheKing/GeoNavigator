@@ -1963,3 +1963,89 @@ body.dark-theme::before {
     .stat-icon { font-size: 1.2rem; order: 1; margin: 0; }
     .stat-label { order: 1; margin-left: 10px; flex-grow: 1; text-align: left; }
 }
+
+/* --- GeoGator v7.0 Updates --- */
+
+/* 1. 3-Column Grid for Continents */
+.continents-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+}
+
+/* 2. Metallic Settings Button */
+#openSettingsBtn {
+    background: linear-gradient(145deg, #4b5563, #374151) !important;
+    border: 1px solid rgba(255, 255, 255, 0.3) !important;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
+    color: #e5e7eb !important;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
+    padding: 15px 30px;
+}
+
+#openSettingsBtn:hover {
+    background: linear-gradient(145deg, #374151, #1f2937) !important;
+    transform: translateY(-2px);
+    border-color: rgba(255, 255, 255, 0.5) !important;
+}
+
+#openSettingsBtn i {
+    color: #9ca3af !important; /* Silver icon */
+}
+
+/* Ensure Start Button is Blue */
+#startGameBtn {
+    background: linear-gradient(135deg, #2563eb, #3b82f6) !important;
+    box-shadow: 0 0 15px rgba(37, 99, 235, 0.5) !important;
+}
+
+/* Volume Slider Fix */
+#volumeSlider {
+    background: #334155; 
+}
+
+
+/* --- v7.1 Updates: Background & Sound --- */
+
+#mainMenu {
+    background: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.8)), url('worldmapbg.avif') !important;
+    background-size: cover !important;
+    background-position: center !important;
+    background-attachment: fixed !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+}
+
+.volume-control {
+    display: flex !important;
+    align-items: center !important;
+    gap: 15px !important;
+}
+
+#btnMute {
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+    transition: var(--transition);
+}
+
+#btnMute:hover {
+    background: rgba(255,255,255,0.1);
+}
+
+#btnMute.muted {
+    color: var(--danger-color);
+}
+
+#volumeSlider {
+    flex: 1;
+    margin: 0 !important;
+}
+

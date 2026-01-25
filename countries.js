@@ -326,11 +326,11 @@ const GeoCountries = {
 
     // 4. Методы и фиксы (НЕ УДАЛЯТЬ!)
     codeFixes: {
-        "fra": "fr", "nor": "no", "somaliland": "so", "kos": "xk", "cyp": "cy", 
+        "fra": "fr", "nor": "no", "somaliland": "so", "kos": "xk", "cyp": "cy",
         "prt": "pt", "ncy": "cy"
     },
 
-    getCountryNameByCode: function(isoCode, adm3Code) {
+    getCountryNameByCode: function (isoCode, adm3Code) {
         if (isoCode && isoCode !== '-99') {
             const searchCode = isoCode.toLowerCase();
             for (const [countryName, data] of Object.entries(this.countryData)) {
@@ -351,11 +351,11 @@ const GeoCountries = {
         return null;
     },
 
-    getEnglishName: function(russianName) {
+    getEnglishName: function (russianName) {
         return this.countryNameMapping[russianName] || russianName;
     },
 
-    getContinentForCountry: function(countryName) {
+    getContinentForCountry: function (countryName) {
         const data = this.countryData[countryName];
         return data ? data.continent : 'unknown';
     }

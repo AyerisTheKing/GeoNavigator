@@ -4,22 +4,22 @@
 class GeoNavigator {
     constructor() {
         this.config = {
-            currentGame: null,      
-            settings: { language: 'ru', volume: 80, theme: 'dark' },
-            gameState: {            
-                score: 0, 
-                currentQuestionIndex: 0, 
-                questions: [], 
+            currentGame: null,
+            settings: { language: 'ru', volume: 80, theme: 'dark', isMuted: false },
+            gameState: {
+                score: 0,
+                currentQuestionIndex: 0,
+                questions: [],
                 startTime: null, // Время начала вопроса (для таймера)
                 gameStartTime: null, // Время начала всей игры
-                timerInterval: null, 
-                map: null, 
+                timerInterval: null,
+                map: null,
                 boundariesLayer: null,
-                isInputBlocked: false, 
+                isInputBlocked: false,
                 isPaused: false
             },
             navigation: { previousScreen: null, fromPause: false, gameActive: false },
-            
+
             // Статистика игрока
             playerStats: { totalCorrect: 0, totalQuestions: 0, bestScore: 0 }
         };
@@ -45,13 +45,40 @@ class GeoNavigator {
         this.showScreen('mainMenu');
         this.setupNotifications();
         this.updateStatsUI();
-        this.initVolumeSliderVisuals(); // Красим слайдер при старте
+        this.initVolumeSliderVisuals();
+
+        // Initial music start (browser policy may block autoplay until interaction)
+        document.addEventListener('click', () => this.manageMusic(), { once: true });
     }
+
+    manageMusic() {
+        const audio = document.getElementById('bgMusic');
+        if (!audio) return;
+
+        const vol = this.config.settings.isMuted ? 0 : this.config.settings.volume / 100;
+        audio.volume = vol;
+
+        // Music plays in menus (mainMenu, settings, setup, pause, results)
+        // Music stops in gameScreen
+        // But we handle this in showScreen mostly, this function is for initial start or volume update
+
+        const currentScreen = document.querySelector('.screen.active')?.id;
+        if (currentScreen !== 'gameScreen' && audio.paused && vol > 0) {
+            audio.play().catch(e => console.log('Autoplay prevented', e));
+        } else if ((currentScreen === 'gameScreen' || vol === 0) && !audio.paused) {
+            // If checking strict pause on game screen, just pause.
+            // If muted, we can keep playing at 0 volume or pause. 
+            // Let's pause if game screen, otherwise keep playing (if vol 0, it's silent).
+            if (currentScreen === 'gameScreen') audio.pause();
+        }
+    }
+
+
 
     // === 1. ЗАГРУЗКА ДАННЫХ И НАСТРОЕК ===
 
     loadSettings() {
-        try { Object.assign(this.config.settings, JSON.parse(localStorage.getItem('geoNavigatorSettings'))); } catch(e){}
+        try { Object.assign(this.config.settings, JSON.parse(localStorage.getItem('geoNavigatorSettings'))); } catch (e) { }
         this.applySettings();
     }
 
@@ -72,7 +99,7 @@ class GeoNavigator {
 
         if (totalEl) totalEl.textContent = s.totalCorrect;
         if (bestEl) bestEl.textContent = s.bestScore;
-        
+
         let acc = 0;
         if (s.totalQuestions > 0) acc = Math.round((s.totalCorrect / s.totalQuestions) * 100);
         if (accEl) accEl.textContent = `${acc}%`;
@@ -96,12 +123,12 @@ class GeoNavigator {
         document.getElementById('pauseGameBtn')?.addEventListener('click', () => this.showPauseMenu());
         document.getElementById('skipQuestionBtn')?.addEventListener('click', () => this.skipQuestion());
         document.getElementById('resumeGameBtn')?.addEventListener('click', () => this.resumeGame());
-        
+
         document.getElementById('restartGameBtn')?.addEventListener('click', () => {
-            if(confirm(this.getLocalizedText('restartConfirm'))) { this.resetGameState(); this.showScreen('gameSetupScreen'); }
+            if (confirm(this.getLocalizedText('restartConfirm'))) { this.resetGameState(); this.showScreen('gameSetupScreen'); }
         });
         document.getElementById('quitToMenuFromPauseBtn')?.addEventListener('click', () => {
-            if(confirm(this.getLocalizedText('quitConfirm'))) { this.resetGameState(); this.showScreen('mainMenu'); }
+            if (confirm(this.getLocalizedText('quitConfirm'))) { this.resetGameState(); this.showScreen('mainMenu'); }
         });
 
         // Результаты
@@ -112,12 +139,12 @@ class GeoNavigator {
 
         // Настройки приложения
         document.getElementById('backFromSettingsBtn')?.addEventListener('click', () => this.returnFromSettings());
-        
+
         document.querySelectorAll('.lang-btn').forEach(btn => {
             btn.addEventListener('click', () => this.changeLanguage(btn.dataset.lang));
         });
 
-        // Слайдер громкости (Визуализация + Логика)
+        // Слайдер громкости
         const slider = document.getElementById('volumeSlider');
         if (slider) {
             slider.addEventListener('input', (e) => {
@@ -125,9 +152,21 @@ class GeoNavigator {
                 this.config.settings.volume = parseInt(val);
                 document.getElementById('volumeValue').textContent = `${val}%`;
                 this.updateSliderVisual(e.target);
+
+                // Update audio volume
+                const audio = document.getElementById('bgMusic');
+                if (audio) {
+                    const vol = this.config.settings.isMuted ? 0 : this.config.settings.volume / 100;
+                    audio.volume = vol;
+                }
+                if (this.config.settings.isMuted) this.toggleMute(); // Unmute if slider moved
+
                 this.saveSettings();
             });
         }
+
+        // Mute Button
+        document.getElementById('btnMute')?.addEventListener('click', () => this.toggleMute());
     }
 
     initVolumeSliderVisuals() {
@@ -136,6 +175,30 @@ class GeoNavigator {
             slider.value = this.config.settings.volume;
             document.getElementById('volumeValue').textContent = `${slider.value}%`;
             this.updateSliderVisual(slider);
+        }
+        if (this.config.settings.isMuted === undefined) this.config.settings.isMuted = false;
+        this.updateMuteUI();
+    }
+
+    toggleMute() {
+        this.config.settings.isMuted = !this.config.settings.isMuted;
+        this.updateMuteUI();
+        this.manageMusic();
+        this.saveSettings();
+    }
+
+    updateMuteUI() {
+        const btn = document.getElementById('btnMute');
+        if (!btn) return;
+        const icon = btn.querySelector('i');
+        const isMuted = this.config.settings.isMuted;
+
+        if (isMuted) {
+            icon.className = 'fas fa-volume-mute';
+            btn.classList.add('muted');
+        } else {
+            icon.className = 'fas fa-volume-up';
+            btn.classList.remove('muted');
         }
     }
 
@@ -150,10 +213,10 @@ class GeoNavigator {
     startGame() {
         const params = this.getGameParameters();
         if (!this.validateGameParameters(params)) return;
-        
+
         this.config.currentGame = params;
         this.resetGameStateForNewGame();
-        
+
         // CSS для режима "Угадай страну" (ТВ)
         const gameScreen = document.getElementById('gameScreen');
         if (params.mode === 'countryByCapitalText') {
@@ -164,23 +227,24 @@ class GeoNavigator {
 
         this.generateQuestions();
         this.config.gameState.gameStartTime = Date.now(); // Засекаем общее время
-        
+
         this.showScreen('gameScreen');
         this.showQuestion();
     }
 
     getGameParameters() {
+        // Получаем чекбоксы континентов
         const continents = Array.from(document.querySelectorAll('input[name="continent"]:checked')).map(cb => cb.value);
         const gameMode = document.querySelector('input[name="gameMode"]:checked')?.value || 'capitalByCountry';
-        
+
         // Обработка "Все вопросы"
         let qVal = document.querySelector('input[name="questionCount"]:checked')?.value || '10';
         const questionCount = (qVal === 'all') ? 'all' : parseInt(qVal);
-        
+
         // Обработка "Без времени"
         let tVal = document.querySelector('input[name="timer"]:checked')?.value || '10';
         const timerDuration = (tVal === 'unlimited') ? 'unlimited' : parseInt(tVal);
-        
+
         return { continents, mode: gameMode, questionCount, timerDuration };
     }
 
@@ -205,7 +269,7 @@ class GeoNavigator {
     generateQuestions() {
         const { continents: selected, questionCount } = this.config.currentGame;
         let allCountries = [];
-        
+
         // Собираем страны из выбранных регионов (включая новые Америки)
         selected.forEach(c => {
             if (window.GeoCountries && window.GeoCountries.continents[c]) {
@@ -215,7 +279,7 @@ class GeoNavigator {
 
         // Перемешиваем
         const shuffled = this.shuffleArray(allCountries);
-        
+
         // Если "Все" - берем весь список, иначе обрезаем
         let finalSelection = [];
         if (questionCount === 'all') {
@@ -223,14 +287,14 @@ class GeoNavigator {
         } else {
             finalSelection = shuffled.slice(0, Math.min(questionCount, shuffled.length));
         }
-        
+
         // Формируем объекты вопросов
         this.config.gameState.questions = finalSelection.map(c => {
             const d = window.GeoCountries.countryData[c];
             if (!d) return null;
             return { country: c, capital: d.capital, code: d.code, continent: d.continent };
         }).filter(q => q !== null);
-        
+
         document.getElementById('totalQuestions').textContent = this.config.gameState.questions.length;
     }
 
@@ -238,7 +302,7 @@ class GeoNavigator {
         this.config.gameState.isInputBlocked = false;
         this.resetCountryColors();
         const { currentQuestionIndex, questions } = this.config.gameState;
-        
+
         if (currentQuestionIndex >= questions.length) {
             this.endGame();
             return;
@@ -309,7 +373,7 @@ class GeoNavigator {
     generateAnswerOptions(q, type) {
         const grid = document.getElementById('answerOptions');
         grid.innerHTML = '';
-        
+
         let correct = (type === 'capital') ? q.capital : q.country;
         let pool = [];
 
@@ -332,8 +396,8 @@ class GeoNavigator {
             const btn = document.createElement('button');
             btn.className = 'answer-option';
             btn.textContent = ans;
-            btn.addEventListener('click', () => { 
-                if(!this.config.gameState.isInputBlocked) this.handleAnswerSelection(ans, correct, q); 
+            btn.addEventListener('click', () => {
+                if (!this.config.gameState.isInputBlocked) this.handleAnswerSelection(ans, correct, q);
             });
             grid.appendChild(btn);
         });
@@ -342,7 +406,7 @@ class GeoNavigator {
     handleAnswerSelection(selected, correct, q) {
         this.config.gameState.isInputBlocked = true;
         this.stopTimer(); // Остановить таймер при ответе
-        
+
         if (this.config.currentGame.mode === 'countryByCapitalText') this.highlightCorrectCountry(q.country);
 
         if (selected === correct) {
@@ -353,7 +417,7 @@ class GeoNavigator {
             this.showNotification(this.getLocalizedText('wrong'), 'error');
             this.markButtons(correct, selected);
             setTimeout(() => this.showNotification(
-                this.getLocalizedText('correctAnswer').replace('{country}', q.country).replace('{capital}', q.capital), 
+                this.getLocalizedText('correctAnswer').replace('{country}', q.country).replace('{capital}', q.capital),
                 'info'
             ), 1000);
         }
@@ -375,13 +439,13 @@ class GeoNavigator {
     }
 
     skipQuestion() {
-        if(this.config.gameState.isInputBlocked) return;
+        if (this.config.gameState.isInputBlocked) return;
         this.config.gameState.isInputBlocked = true;
         this.stopTimer();
-        
+
         const q = this.config.gameState.questions[this.config.gameState.currentQuestionIndex];
         if (this.config.currentGame.mode === 'countryByCapitalText') this.highlightCorrectCountry(q.country);
-        
+
         this.showNotification(this.getLocalizedText('correctAnswer').replace('{country}', q.country).replace('{capital}', q.capital), 'info');
         setTimeout(() => this.nextQuestion(), 1500);
     }
@@ -393,11 +457,11 @@ class GeoNavigator {
         if (this.config.gameState.map) this.config.gameState.map.remove();
 
         // Центрируем карту
-        const map = L.map('map', { 
-            zoomControl: false, attributionControl: false, center: [20, 0], zoom: 2, 
-            minZoom: 2, maxZoom: 8, worldCopyJump: true, maxBoundsViscosity: 1.0 
+        const map = L.map('map', {
+            zoomControl: false, attributionControl: false, center: [20, 0], zoom: 2,
+            minZoom: 2, maxZoom: 8, worldCopyJump: true, maxBoundsViscosity: 1.0
         });
-        
+
         L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 8 }).addTo(map);
         this.addCountryBoundaries(map);
         this.config.gameState.map = map;
@@ -427,16 +491,16 @@ class GeoNavigator {
         if (this.config.currentGame?.mode === 'countryByCapitalText') { layer.options.interactive = false; return; }
 
         layer.options.interactive = true;
-        
+
         layer.on('mouseover', () => {
-            if(this.config.gameState.isInputBlocked) return;
+            if (this.config.gameState.isInputBlocked) return;
             layer.setStyle({ weight: 2.5, color: '#fff', fillOpacity: 0.2, dashArray: '' });
             layer.bindTooltip(name, { direction: 'auto', className: 'country-tooltip' }).openTooltip();
             layer.bringToFront();
         });
 
         layer.on('mouseout', () => {
-            if(this.config.gameState.isInputBlocked) return;
+            if (this.config.gameState.isInputBlocked) return;
             this.config.gameState.boundariesLayer.resetStyle(layer);
             layer.closeTooltip();
         });
@@ -453,7 +517,7 @@ class GeoNavigator {
     handleMapCountryClick(clicked, q) {
         this.config.gameState.isInputBlocked = true;
         this.stopTimer();
-        
+
         if (clicked === q.country) {
             this.config.gameState.score++;
             this.showNotification(this.getLocalizedText('correct'), 'success');
@@ -462,7 +526,7 @@ class GeoNavigator {
             this.showNotification(this.getLocalizedText('wrong'), 'error');
             this.highlightCorrectCountry(q.country);
             setTimeout(() => this.showNotification(
-                this.getLocalizedText('correctAnswer').replace('{country}', q.country).replace('{capital}', q.capital), 
+                this.getLocalizedText('correctAnswer').replace('{country}', q.country).replace('{capital}', q.capital),
                 'info'
             ), 1000);
         }
@@ -478,7 +542,7 @@ class GeoNavigator {
                 layer.setStyle({ weight: 3, color: '#4ade80', fillColor: '#4ade80', fillOpacity: 0.4, dashArray: '' });
                 if (this.config.currentGame.mode !== 'countryByCapitalText') {
                     const bounds = layer.getBounds();
-                    if(bounds.isValid()) this.config.gameState.map.flyToBounds(bounds, { padding: [50, 50], maxZoom: 5, duration: 1.5 });
+                    if (bounds.isValid()) this.config.gameState.map.flyToBounds(bounds, { padding: [50, 50], maxZoom: 5, duration: 1.5 });
                 }
             }
         });
@@ -492,28 +556,28 @@ class GeoNavigator {
         this.stopTimer();
         const duration = this.config.currentGame.timerDuration;
         const disp = document.getElementById('timerDisplay');
-        
+
         // Режим "Без времени"
         if (duration === 'unlimited') {
-            if(disp) { disp.textContent = '∞'; disp.style.color = '#f59e0b'; }
+            if (disp) { disp.textContent = '∞'; disp.style.color = '#f59e0b'; }
             // Мы не запускаем интервал, так как время не ограничено
             return;
         }
 
         // Обычный режим
         let left = duration;
-        if(disp) { disp.textContent = left; disp.style.color = left<=10?'#ef4444':'#f59e0b'; }
-        
+        if (disp) { disp.textContent = left; disp.style.color = left <= 10 ? '#ef4444' : '#f59e0b'; }
+
         this.config.gameState.timerInterval = setInterval(() => {
-            if(this.config.gameState.isPaused) return;
+            if (this.config.gameState.isPaused) return;
             left--;
-            if(disp) { disp.textContent = left; disp.style.color = left<=10?'#ef4444':'#f59e0b'; }
-            if(left<=0) { this.stopTimer(); this.handleTimeOut(); }
+            if (disp) { disp.textContent = left; disp.style.color = left <= 10 ? '#ef4444' : '#f59e0b'; }
+            if (left <= 0) { this.stopTimer(); this.handleTimeOut(); }
         }, 1000);
     }
 
     stopTimer() { clearInterval(this.config.gameState.timerInterval); }
-    
+
     handleTimeOut() {
         this.config.gameState.isInputBlocked = true;
         if (this.config.currentGame.mode === 'countryByCapitalText') {
@@ -530,16 +594,16 @@ class GeoNavigator {
         this.stopTimer();
         this.config.navigation.gameActive = false;
         document.getElementById('gameScreen').classList.remove('mode-text-country');
-        
+
         // Статистика (сохраняем только если не "без времени" - или можно сохранять всегда, как решишь)
         // Для честности рекорды обычно сохраняют только в режиме с таймером, но тут сохраним всё.
         const score = this.config.gameState.score;
         const total = this.config.gameState.questions.length;
-        
+
         this.config.playerStats.totalCorrect += score;
         this.config.playerStats.totalQuestions += total;
         if (score > this.config.playerStats.bestScore) this.config.playerStats.bestScore = score;
-        
+
         // Сохраняем статистику
         localStorage.setItem('geoGatorStats', JSON.stringify(this.config.playerStats));
 
@@ -549,29 +613,29 @@ class GeoNavigator {
     showResults() {
         const { score, questions, gameStartTime } = this.config.gameState;
         const total = questions.length;
-        
+
         // Считаем общее время игры
         const totalTimeSeconds = Math.round((Date.now() - gameStartTime) / 1000);
-        
+
         document.getElementById('resultScore').textContent = score;
         document.getElementById('resultTotal').textContent = total;
         document.getElementById('totalTime').textContent = totalTimeSeconds;
-        
-        const p = total > 0 ? Math.round((score/total)*100) : 0;
+
+        const p = total > 0 ? Math.round((score / total) * 100) : 0;
         document.getElementById('resultPercentage').textContent = `${p}%`;
-        document.getElementById('resultMessage').textContent = this.getLocalizedText(p==100?'perfectResult':p>=80?'greatResult':'tryAgain');
-        
+        document.getElementById('resultMessage').textContent = this.getLocalizedText(p == 100 ? 'perfectResult' : p >= 80 ? 'greatResult' : 'tryAgain');
+
         const circle = document.querySelector('.score-circle');
-        if(circle) circle.style.background = `conic-gradient(#4ade80 0deg ${p*3.6}deg, #ef4444 ${p*3.6}deg 360deg)`;
-        
+        if (circle) circle.style.background = `conic-gradient(#4ade80 0deg ${p * 3.6}deg, #ef4444 ${p * 3.6}deg 360deg)`;
+
         this.showScreen('resultScreen');
     }
 
     // === СИСТЕМНЫЕ МЕТОДЫ ===
     getLocalizedText(key) { return LOCALES?.[this.config.settings.language]?.[key] || key; }
-    
+
     saveSettings() { localStorage.setItem('geoNavigatorSettings', JSON.stringify(this.config.settings)); }
-    
+
     applySettings() {
         // Язык
         document.querySelectorAll('[data-i18n]').forEach(e => {
@@ -584,7 +648,7 @@ class GeoNavigator {
     }
 
     changeLanguage(lang) {
-        if(this.config.navigation.gameActive && confirm(this.getLocalizedText('languageChangeWarning'))) {
+        if (this.config.navigation.gameActive && confirm(this.getLocalizedText('languageChangeWarning'))) {
             this.resetGameState();
             this.config.settings.language = lang;
             this.applySettings();
@@ -597,61 +661,90 @@ class GeoNavigator {
             this.updateStatsUI(); // Обновить заголовки статистики
         }
     }
-    
+
     playAgain() { this.startGame(); }
-    
-    showPauseMenu() { 
-        this.config.gameState.isPaused = true; 
-        this.stopTimer(); 
-        this.showScreen('pauseScreen'); 
+
+    showPauseMenu() {
+        this.config.gameState.isPaused = true;
+        this.stopTimer();
+
+        // Update Pause Stats
+        if (document.getElementById('pauseScore')) document.getElementById('pauseScore').textContent = this.config.gameState.score;
+
+        // Time
+        if (this.config.gameState.gameStartTime) {
+            const elapsed = Math.round((Date.now() - this.config.gameState.gameStartTime) / 1000);
+            if (document.getElementById('pauseTime')) document.getElementById('pauseTime').textContent = `${elapsed}s`;
+        }
+
+        // Progress
+        const total = this.config.gameState.questions.length;
+        const current = this.config.gameState.currentQuestionIndex;
+        let percent = 0;
+        if (total > 0) percent = Math.round((current / total) * 100);
+        if (document.getElementById('pauseProgress')) document.getElementById('pauseProgress').textContent = `${percent}%`;
+
+        this.showScreen('pauseScreen');
     }
-    
-    resumeGame() { 
-        this.config.gameState.isPaused = false; 
-        this.startTimer(); 
-        this.showScreen('gameScreen'); 
+
+    resetGameState() { this.resetGameStateForNewGame(); }
+
+    resumeGame() {
+        this.config.gameState.isPaused = false;
+        this.startTimer();
+        this.showScreen('gameScreen');
     }
-    
-    setupNotifications() { 
+
+    setupNotifications() {
         if (!document.getElementById('notification')) {
             const d = document.createElement('div'); d.id = 'notification'; d.className = 'notification';
             d.innerHTML = `<div class="notification-content"><i id="notificationIcon" class="fas fa-info-circle"></i><span id="notificationText"></span></div>`;
             document.body.appendChild(d);
         }
     }
-    
+
     showNotification(msg, type) {
         const n = document.getElementById('notification');
-        if(n) { 
+        if (n) {
             const icon = document.getElementById('notificationIcon');
             icon.className = type === 'success' ? 'fas fa-check-circle' : type === 'error' ? 'fas fa-times-circle' : 'fas fa-info-circle';
             n.style.borderLeftColor = type === 'success' ? '#4ade80' : type === 'error' ? '#ef4444' : '#4cc9f0';
-            document.getElementById('notificationText').textContent = msg; 
-            n.classList.add('show'); 
-            setTimeout(()=>n.classList.remove('show'), 3000); 
+            document.getElementById('notificationText').textContent = msg;
+            n.classList.add('show');
+            setTimeout(() => n.classList.remove('show'), 3000);
         }
     }
-    
+
     returnFromSettings() {
         const prev = this.config.navigation.previousScreen;
         if (prev === 'pauseScreen') this.showScreen('pauseScreen');
         else if (prev === 'gameSetupScreen') this.showScreen('gameSetupScreen');
         else this.showScreen('mainMenu');
     }
-    
+
     navigateToSettings(from) {
         this.config.navigation.previousScreen = from;
         this.showScreen('settingsScreen');
     }
-    
+
     shuffleArray(arr) { return arr.sort(() => Math.random() - 0.5); }
-    
+
     showScreen(name) {
         document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
         document.getElementById(name).classList.add('active');
         this.config.navigation.gameActive = (name === 'gameScreen');
-        
-        if (name === 'gameScreen') setTimeout(() => this.initMap(), 100);
+
+        if (name === 'gameScreen') {
+            setTimeout(() => this.initMap(), 100);
+            const audio = document.getElementById('bgMusic');
+            if (audio && !audio.paused) audio.pause();
+        } else {
+            const audio = document.getElementById('bgMusic');
+            if (audio && audio.paused) {
+                audio.volume = this.config.settings.volume / 100;
+                audio.play().catch(() => { });
+            }
+        }
         if (name === 'mainMenu') this.updateStatsUI();
     }
 }
