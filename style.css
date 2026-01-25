@@ -1870,4 +1870,96 @@ body.dark-theme::before {
     .capital-hint span {
         font-size: 1rem;
     }
+
+}
+/* === НОВЫЕ СТИЛИ МЕНЮ (v6.6) === */
+
+/* Кнопки меню */
+.menu-actions {
+    display: flex;
+    flex-direction: column;
+    gap: 15px;
+    width: 100%;
+    max-width: 300px;
+    margin: 30px auto;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    padding: 15px 30px;
+    border-radius: var(--border-radius);
+    font-size: 1.1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: translateY(-2px);
+}
+
+/* СТАТИСТИКА */
+.stats-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    width: 100%;
+    max-width: 600px;
+    margin-top: 20px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 16px;
+    padding: 15px;
+    text-align: center;
+    backdrop-filter: blur(5px);
+}
+
+.stat-icon {
+    font-size: 1.5rem;
+    margin-bottom: 5px;
+}
+
+.stat-icon.correct { color: var(--success-color); }
+.stat-icon.record { color: var(--warning-color); }
+.stat-icon.accuracy { color: var(--accent-color); }
+
+.stat-value {
+    font-size: 1.8rem;
+    font-weight: 700;
+    color: #fff;
+    line-height: 1.2;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.6);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Адаптив для мобильных */
+@media (max-width: 600px) {
+    .stats-container {
+        grid-template-columns: 1fr; /* В столбик на телефоне */
+        gap: 10px;
+    }
+    .stat-card {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        padding: 10px 20px;
+    }
+    .stat-value { font-size: 1.4rem; order: 2; }
+    .stat-icon { font-size: 1.2rem; order: 1; margin: 0; }
+    .stat-label { order: 1; margin-left: 10px; flex-grow: 1; text-align: left; }
 }
