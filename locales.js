@@ -1,156 +1,235 @@
-// locales.js - v6.6 (GeoGator Edition)
+// locales.js - v7.0 (GeoGator Edition)
+// Updates: Split Americas, Unlimited Time, "All" Questions
+
 const LOCALES = {
     ru: {
-        'gameTitle': 'ГеоГатор', // РЕБРЕНДИНГ
+        // --- ЗАГОЛОВКИ И МЕНЮ ---
+        'gameTitle': 'ГеоГатор',
         'gameSubtitle': 'Исследуй мир, ставь рекорды.',
+        'statsTitle': 'СТАТИСТИКА',
         
-        // Статистика (Главное меню)
         'statTotal': 'Всего верно',
         'statRecord': 'Рекорд',
         'statAccuracy': 'Точность',
         
-        // Кнопки меню
-        'startGame': 'НАЧАТЬ ИГРУ',
-        'settings': 'НАСТРОЙКИ', // Теперь явно прописано
+        'startGame': 'ИГРАТЬ',
+        'settings': 'НАСТРОЙКИ',
+        'back': 'Назад',
+        'saveSettings': 'СОХРАНИТЬ',
         
-        // Режимы
-        'modeCapitalByCountry': 'Угадай столицу',
-        'descCapitalByCountry': 'Дана страна — выберите столицу',
-        'modeCountryByCapital': 'Найти на карте',
-        'descCountryByCapital': 'Дана столица — кликните по карте',
-        'modeCountryByCapitalText': 'Угадай страну',
-        'descCountryByCapitalText': 'Дана столица — выберите страну',
-        
-        // Настройки
+        // --- ЭКРАН НАСТРОЕК (SETTINGS) ---
         'settingsTitle': 'НАСТРОЙКИ',
         'language': 'ЯЗЫК',
         'sound': 'ЗВУК',
-        'theme': 'ТЕМА',
+        'theme': 'ТЕМА', // (Оставлено для совместимости, хотя скрыто в CSS)
         'lightTheme': 'Светлая',
         'darkTheme': 'Тёмная',
-        'saveSettings': 'СОХРАНИТЬ',
-        'back': 'Назад',
         
-        // Настройки игры
+        // --- ЭКРАН НОВОЙ ИГРЫ (SETUP) ---
         'gameSettingsTitle': 'НОВАЯ ИГРА',
         'gameContinents': 'РЕГИОНЫ',
+        'startGameAction': 'ПОЕХАЛИ!',
+        'selectContinent': 'Выберите хотя бы один регион!',
+        
+        // Континенты (НОВОЕ: Разделение Америки)
         'europe': 'Европа',
         'asia': 'Азия',
         'africa': 'Африка',
-        'america': 'Америка',
+        'north_america': 'Сев. Америка',
+        'south_america': 'Юж. Америка',
         'oceania': 'Океания',
-        'gameMode': 'РЕЖИМ',
-        'questionsCount': 'ВОПРОСОВ',
-        'timer': 'ТАЙМЕР',
-        'startGameAction': 'ПОЕХАЛИ!',
-        'selectContinent': 'Выберите регион!',
+        'america': 'Америка', // Фоллбэк
         
-        // Геймплей
+        // Режимы игры
+        'gameMode': 'РЕЖИМ',
+        'modeCapitalByCountry': 'Угадай столицу',
+        'descCapitalByCountry': 'Тест: Выберите столицу',
+        
+        'modeCountryByCapital': 'Найти на карте',
+        'descCountryByCapital': 'Поиск: Кликните по карте',
+        
+        'modeCountryByCapitalText': 'Угадай страну',
+        'descCountryByCapitalText': 'Тест + Камера',
+        
+        // Настройки партии
+        'questionsCount': 'ВОПРОСЫ',
+        'timer': 'ТАЙМЕР',
+        
+        // Подписи к кнопкам (НОВОЕ)
+        'quick': 'Быстро',
+        'short': 'Коротко',
+        'medium': 'Средне',
+        'long': 'Длинно',
+        'all': 'Все',
+        'allDesc': 'Все страны',
+        
+        'unlimited': 'Безгранично', // No Time
+        'fast': 'Быстро',
+        'normal': 'Нормально',
+        'relaxed': 'Спокойно',
+        'noRush': 'Не спеша',
+        
+        // --- ГЕЙМПЛЕЙ ---
         'pause': 'ПАУЗА',
         'score': 'Очки',
         'question': 'Вопрос',
+        
+        // Вопросы
         'guessCapital': 'Столица этой страны?',
         'findCountry': 'Где находится {capital}?',
         'guessCountry': 'Чья это столица?',
         'clickOnCountry': 'Найдите страну на карте',
-        'in': 'в',
+        'in': 'в', // предлог "в Европе"
+        
+        // Ответы
         'correct': 'Верно!',
         'wrong': 'Ошибка!',
         'correctAnswer': '{country} — столица {capital}',
         
-        // Пауза/Финал
+        // --- ПАУЗА И ФИНАЛ ---
         'pauseTitle': 'ПАУЗА',
         'resume': 'ПРОДОЛЖИТЬ',
         'restart': 'ЗАНОВО',
         'quit': 'В МЕНЮ',
-        'restartConfirm': 'Начать заново?',
-        'quitConfirm': 'Выйти в меню?',
-        'languageChangeWarning': 'Смена языка сбросит игру.',
-        'gameReset': 'Сброс',
-        'settingsSaved': 'Сохранено',
+        'progress': 'Прогресс',
+        'timePlayed': 'Время',
         
+        'restartConfirm': 'Начать заново? Текущий прогресс будет потерян.',
+        'quitConfirm': 'Выйти в меню? Прогресс будет потерян.',
+        'languageChangeWarning': 'Смена языка сбросит текущую игру.',
+        'gameReset': 'Игра сброшена',
+        'settingsSaved': 'Настройки сохранены',
+        
+        // Результаты
         'resultsTitle': 'ФИНАЛ',
         'correctAnswers': 'Верно',
         'wrongAnswers': 'Ошибки',
         'time': 'Время',
         'playAgain': 'ЕЩЁ РАЗ',
         'mainMenu': 'МЕНЮ',
+        
         'perfectResult': 'Гениально! 🏆',
         'greatResult': 'Отлично! 🔥',
         'goodResult': 'Неплохо! 👍',
-        'tryAgain': 'Тренируйся! 🔄'
+        'tryAgain': 'Тренируйся! 🔄',
+        
+        // Дополнительно (на всякий случай)
+        'about': 'Об игре',
+        'aboutText': 'GeoGator v7.0\nSmart TV Edition'
     },
+    
     en: {
-        'gameTitle': 'GeoGator', // REBRANDING
+        // --- HEADERS & MENU ---
+        'gameTitle': 'GeoGator',
         'gameSubtitle': 'Explore the world, beat records.',
+        'statsTitle': 'STATISTICS',
         
         'statTotal': 'Total Correct',
         'statRecord': 'Best Score',
         'statAccuracy': 'Accuracy',
         
-        'startGame': 'START GAME',
+        'startGame': 'PLAY',
         'settings': 'SETTINGS',
+        'back': 'Back',
+        'saveSettings': 'SAVE',
         
-        'modeCapitalByCountry': 'Guess Capital',
-        'descCapitalByCountry': 'Given country - pick capital',
-        'modeCountryByCapital': 'Find on Map',
-        'descCountryByCapital': 'Given capital - click map',
-        'modeCountryByCapitalText': 'Guess Country',
-        'descCountryByCapitalText': 'Given capital - pick country',
-        
+        // --- SETTINGS SCREEN ---
         'settingsTitle': 'SETTINGS',
         'language': 'LANGUAGE',
         'sound': 'SOUND',
         'theme': 'THEME',
         'lightTheme': 'Light',
         'darkTheme': 'Dark',
-        'saveSettings': 'SAVE',
-        'back': 'Back',
         
+        // --- SETUP SCREEN ---
         'gameSettingsTitle': 'NEW GAME',
         'gameContinents': 'REGIONS',
+        'startGameAction': 'GO!',
+        'selectContinent': 'Select at least one region!',
+        
+        // Continents (NEW: Split Americas)
         'europe': 'Europe',
         'asia': 'Asia',
         'africa': 'Africa',
-        'america': 'America',
+        'north_america': 'N. America',
+        'south_america': 'S. America',
         'oceania': 'Oceania',
+        'america': 'America',
+        
+        // Game Modes
         'gameMode': 'MODE',
+        'modeCapitalByCountry': 'Guess Capital',
+        'descCapitalByCountry': 'Quiz: Pick capital',
+        
+        'modeCountryByCapital': 'Find on Map',
+        'descCountryByCapital': 'Search: Click map',
+        
+        'modeCountryByCapitalText': 'Guess Country',
+        'descCountryByCapitalText': 'Quiz + Camera',
+        
+        // Setup Options
         'questionsCount': 'QUESTIONS',
         'timer': 'TIMER',
-        'startGameAction': 'GO!',
-        'selectContinent': 'Select a region!',
         
+        // Button Labels
+        'quick': 'Quick',
+        'short': 'Short',
+        'medium': 'Medium',
+        'long': 'Long',
+        'all': 'All',
+        'allDesc': 'All countries',
+        
+        'unlimited': 'Unlimited', // No Time
+        'fast': 'Fast',
+        'normal': 'Normal',
+        'relaxed': 'Relaxed',
+        'noRush': 'No Rush',
+        
+        // --- GAMEPLAY ---
         'pause': 'PAUSE',
         'score': 'Score',
         'question': 'Q',
+        
+        // Questions
         'guessCapital': 'Capital of this country?',
         'findCountry': 'Where is {capital}?',
         'guessCountry': 'Whose capital is this?',
-        'clickOnCountry': 'Find on map',
+        'clickOnCountry': 'Find country on map',
         'in': 'in',
+        
+        // Feedback
         'correct': 'Correct!',
         'wrong': 'Wrong!',
         'correctAnswer': '{country} — capital is {capital}',
         
+        // --- PAUSE & RESULTS ---
         'pauseTitle': 'PAUSED',
         'resume': 'RESUME',
         'restart': 'RESTART',
         'quit': 'MENU',
-        'restartConfirm': 'Restart game?',
-        'quitConfirm': 'Quit to menu?',
-        'languageChangeWarning': 'Language change resets game.',
-        'gameReset': 'Game reset',
-        'settingsSaved': 'Saved',
+        'progress': 'Progress',
+        'timePlayed': 'Time',
         
+        'restartConfirm': 'Restart game? Progress will be lost.',
+        'quitConfirm': 'Quit to menu? Progress will be lost.',
+        'languageChangeWarning': 'Changing language resets the game.',
+        'gameReset': 'Game reset',
+        'settingsSaved': 'Settings saved',
+        
+        // Results
         'resultsTitle': 'RESULTS',
         'correctAnswers': 'Correct',
         'wrongAnswers': 'Wrong',
         'time': 'Time',
         'playAgain': 'AGAIN',
         'mainMenu': 'MENU',
+        
         'perfectResult': 'Perfect! 🏆',
         'greatResult': 'Great! 🔥',
         'goodResult': 'Good! 👍',
-        'tryAgain': 'Try again! 🔄'
+        'tryAgain': 'Try again! 🔄',
+        
+        'about': 'About',
+        'aboutText': 'GeoGator v7.0\nSmart TV Edition'
     }
 };
