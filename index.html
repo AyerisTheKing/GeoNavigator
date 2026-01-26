@@ -11,6 +11,7 @@
         rel="stylesheet">
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
@@ -117,24 +118,9 @@
                     </div>
                 </div>
 
-                <div class="settings-section">
-                    <h3><i class="fas fa-palette"></i> <span data-i18n="theme">ТЕМА</span></h3>
-                    <div class="theme-options">
-                        <button class="theme-btn" data-theme="light">
-                            <i class="fas fa-sun"></i>
-                            <span data-i18n="lightTheme">Светлая</span>
-                        </button>
-                        <button class="theme-btn active" data-theme="dark">
-                            <i class="fas fa-moon"></i>
-                            <span data-i18n="darkTheme">Тёмная</span>
-                        </button>
-                    </div>
-                </div>
 
-                <button class="btn-save">
-                    <i class="fas fa-save"></i>
-                    <span data-i18n="saveSettings">СОХРАНИТЬ НАСТРОЙКИ</span>
-                </button>
+
+
             </div>
         </div>
     </div>
@@ -579,7 +565,7 @@
             <h3 data-i18n="statistics">Статистика</h3>
             <ul class="stats-list">
                 <li data-i18n="totalGames">Всего игр: <span id="statTotalGames">0</span></li>
-                <li data-i18n="totalCorrect">Всего правильных: <span id="statTotalCorrect">0</span></li>
+                <li data-i18n="totalCorrect">Всего правильных: <span id="statProfileTotalCorrect">0</span></li>
                 <li data-i18n="totalWrong">Всего неправильных: <span id="statTotalWrong">0</span></li>
                 <li data-i18n="totalTime">Время в игре: <span id="statTotalTime">0s</span></li>
                 <li data-i18n="overallSuccess">Успешность: <span id="statOverallSuccess">0%</span></li>

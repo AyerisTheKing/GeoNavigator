@@ -1,8 +1,21 @@
 // GeoGator v7.0 - Main Logic
 // Features: Split Americas, Unlimited Timer, "All" Questions mode, Smart Slider, Profile System
 
-class GeoNavigator {
+const SUPABASE_URL = "https://tdlhwokrmuyxsdleepht.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkbGh3b2tybXV5eHNkbGVlcGh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDc3ODAsImV4cCI6MjA4NDk4Mzc4MH0.RlfUmejx2ywHNcFofZM4mNE8nIw6qxaTNzqxmf4N4-4";
+
+// Will be initialized in constructor
+let supabase;
+
+class GeoGator {
     constructor() {
+        // Initialize Supabase Client
+        if (window.supabase) {
+            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        } else {
+            console.error("Supabase SDK not loaded!");
+        }
+
         this.config = {
             answerCooldown: 1500,
             currentGame: null,
@@ -50,30 +63,60 @@ class GeoNavigator {
         this.init();
     }
 
-    init() {
-        console.log('GeoGator v7.0 initialized');
+    async init() {
+        console.log('GeoGator v7.0 initialized with Supabase');
         this.loadSettings();
+        // Load local stats first as fallback
         this.loadPlayerStats();
+
         this.setupEventListeners();
         this.showScreen('mainMenu');
         this.setupNotifications();
         this.updateStatsUI();
         this.initVolumeSliderVisuals();
 
-        // Load User Profile
-        // Auto-login logic would go here if we implemented full auth flow
-        // For now, load local profile info
-        const storedLogin = localStorage.getItem('geoGatorLogin');
-        const storedNick = localStorage.getItem('geoGatorNickname');
-        if (storedLogin) this.config.user.login = storedLogin;
-        if (storedNick) {
-            this.config.user.nickname = storedNick;
+        // Check for existing session
+        const { data: { session } } = await supabase.auth.getSession();
+        if (session) {
+            this.handleAuthSession(session);
         } else {
             this.config.user.nickname = this.getLocalizedText('guest');
+            document.getElementById('profileName').textContent = this.config.user.nickname;
         }
-        document.getElementById('profileName').textContent = this.config.user.nickname;
 
         document.addEventListener('click', () => this.manageMusic(), { once: true });
+    }
+
+    async handleAuthSession(session) {
+        this.config.user.id = session.user.id;
+        // Fetch profile data
+        const { data: profile, error } = await supabase
+            .from('profiles')
+            .select('*')
+            .eq('id', this.config.user.id)
+            .single();
+
+        if (profile && !error) {
+            this.config.user.login = profile.username;
+            this.config.user.nickname = profile.nickname;
+            document.getElementById('profileName').textContent = this.config.user.nickname;
+
+            // Sync stats from DB to local state
+            this.config.playerStats = {
+                bestScore: profile.best_score || 0,
+                totalCorrect: profile.total_correct || 0,
+                totalGames: profile.total_games || 0,
+                totalWrong: profile.total_wrong || 0,
+                totalTime: profile.total_time || 0,
+                totalQuestions: (profile.total_correct || 0) + (profile.total_wrong || 0),
+                regionStats: profile.region_stats || {}
+            };
+            this.updateProfileStatsUI();
+            this.updateStatsUI();
+
+            // Store simple auth flag/data locally if needed for logic, but primary is session
+            localStorage.setItem('geoGatorLogin', profile.username);
+        }
     }
 
     manageMusic() {
@@ -92,7 +135,7 @@ class GeoNavigator {
     // === 1. DATA & SETTINGS ===
 
     loadSettings() {
-        try { Object.assign(this.config.settings, JSON.parse(localStorage.getItem('geoNavigatorSettings'))); } catch (e) { }
+        try { Object.assign(this.config.settings, JSON.parse(localStorage.getItem('geoGatorSettings'))); } catch (e) { }
         this.applySettings();
     }
 
@@ -101,9 +144,7 @@ class GeoNavigator {
             const stats = localStorage.getItem('geoGatorStats');
             if (stats) {
                 const parsed = JSON.parse(stats);
-                // Merge carefully to preserve new fields if old structure was used
                 this.config.playerStats = { ...this.config.playerStats, ...parsed };
-                // Ensure regionStats exists
                 if (!this.config.playerStats.regionStats) this.config.playerStats.regionStats = {};
             }
         } catch (e) { console.error('Stats load error', e); }
@@ -127,15 +168,17 @@ class GeoNavigator {
         const s = this.config.playerStats;
 
         // Basic Stats
-        document.getElementById('statTotalGames').textContent = s.totalGames || 0;
-        document.getElementById('statTotalCorrect').textContent = s.totalCorrect || 0;
-        document.getElementById('statTotalWrong').textContent = s.totalWrong || 0;
-        document.getElementById('statTotalTime').textContent = `${s.totalTime || 0}s`;
+        const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+
+        setText('statTotalGames', s.totalGames || 0);
+        setText('statProfileTotalCorrect', s.totalCorrect || 0);
+        setText('statTotalWrong', s.totalWrong || 0);
+        setText('statTotalTime', `${s.totalTime || 0}s`);
 
         // Overall Success
         const totalAnswers = (s.totalCorrect || 0) + (s.totalWrong || 0);
         const overall = totalAnswers > 0 ? Math.round((s.totalCorrect / totalAnswers) * 100) : 0;
-        document.getElementById('statOverallSuccess').textContent = `${overall}%`;
+        setText('statOverallSuccess', `${overall}%`);
 
         // Region Table
         const tbody = document.querySelector('#regionStatsTable tbody');
@@ -203,6 +246,7 @@ class GeoNavigator {
         document.getElementById('restartGameBtn')?.addEventListener('click', () => {
             if (confirm(this.getLocalizedText('restartConfirm'))) { this.resetGameState(); this.showScreen('gameSetupScreen'); }
         });
+        document.getElementById('openSettingsFromPauseBtn')?.addEventListener('click', () => this.navigateToSettings('pauseScreen'));
         document.getElementById('quitToMenuFromPauseBtn')?.addEventListener('click', () => {
             if (confirm(this.getLocalizedText('quitConfirm'))) { this.resetGameState(); this.showScreen('mainMenu'); }
         });
@@ -243,9 +287,7 @@ class GeoNavigator {
 
     // 1. Logic for Profile Button
     handleProfileClick() {
-        // Check local storage for auth
-        const login = localStorage.getItem('geoGatorLogin');
-        if (login) {
+        if (this.config.user.id) {
             this.openStatsModal(); // User is authorized -> open stats
         } else {
             this.openLoginModal(); // User is guest -> open login
@@ -270,7 +312,7 @@ class GeoNavigator {
         }
     }
 
-    performLogin() {
+    async performLogin() {
         const login = document.getElementById('loginUsernameInput').value.trim();
         const pass = document.getElementById('loginPasswordInput').value;
         const errorDiv = document.getElementById('loginError');
@@ -280,50 +322,23 @@ class GeoNavigator {
             return;
         }
 
-        fetch('login.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ username: login, password: pass })
-        })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    // Success
-                    this.showError(errorDiv, "", false); // clear error
-                    this.config.user.login = data.username;
-                    this.config.user.nickname = data.nickname || data.username;
-                    this.config.user.id = data.id;
+        // Construct email from username/login
+        const email = `${login}@geogator.game`;
 
-                    // Save to local storage
-                    localStorage.setItem('geoGatorLogin', data.username);
-                    localStorage.setItem('geoGatorNickname', this.config.user.nickname);
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: pass,
+        });
 
-                    // Load stats
-                    if (data.stats) {
-                        // Map backend stats to frontend structure if needed or just merge
-                        // Assuming backend sends correct structure or we adapt
-                        // For now, let's create a local stats object merging current with server
-                        const s = data.stats;
-                        this.config.playerStats.bestScore = parseInt(s.bestScore) || 0;
-                        this.config.playerStats.totalCorrect = parseInt(s.totalCorrect) || 0;
-                        this.config.playerStats.totalGames = parseInt(s.totalGames) || 0;
-                        this.config.playerStats.totalWrong = parseInt(s.totalWrong) || 0;
-                        this.config.playerStats.totalTime = parseInt(s.totalTime) || 0;
-                        this.config.playerStats.totalQuestions = this.config.playerStats.totalCorrect + this.config.playerStats.totalWrong;
-                        this.config.playerStats.regionStats = s.regionStats || {};
-
-                        this.saveStats(); // Save synced stats to local
-                    }
-
-                    // Update UI
-                    this.updateProfileUI();
-                    this.closeLoginModal();
-                    this.showNotification(`Добро пожаловать, ${this.config.user.nickname}!`, 'success');
-                } else {
-                    this.showError(errorDiv, data.message || "Ошибка входа");
-                }
-            })
-            .catch(e => this.showError(errorDiv, "Ошибка сети"));
+        if (error) {
+            this.showError(errorDiv, "Ошибка входа: " + error.message);
+        } else {
+            this.showError(errorDiv, "", false);
+            this.closeLoginModal();
+            this.showNotification(`Вход выполнен!`, 'success');
+            // Session handling logic in 'init' and 'handleAuthSession' handles the UI update
+            await this.handleAuthSession(data.session);
+        }
     }
 
     // 3. Registration Modal Logic
@@ -344,7 +359,7 @@ class GeoNavigator {
         }
     }
 
-    performRegister() {
+    async performRegister() {
         const nick = document.getElementById('regNicknameInput').value.trim();
         const login = document.getElementById('regLoginInput').value.trim();
         const pass = document.getElementById('regPasswordInput').value;
@@ -365,42 +380,50 @@ class GeoNavigator {
             return;
         }
 
-        fetch('register.php', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            // Ensure backend supports 'nickname'
-            body: JSON.stringify({ username: login, password: pass, nickname: nick })
-        })
-            .then(r => r.json())
-            .then(data => {
-                if (data.success) {
-                    // Determine if we auto-login or ask to login.
-                    // Simpler flow: Auto-login or just tell user to login?
-                    // Request says: "Window registration...". User likely expects to be able to login or auto-login.
-                    // Let's just forward to login screen with prefilled data or just auto-login logic if we want to be fancy.
-                    // For safety/simplicity, let's switch to login modal.
-                    this.showNotification("Регистрация успешна! Теперь войдите.", "success");
-                    this.closeRegisterModal();
-                    this.openLoginModal();
-                    document.getElementById('loginUsernameInput').value = login; // Prefill
-                } else {
-                    this.showError(errorDiv, data.message || "Ошибка регистрации");
-                }
-            })
-            .catch(e => this.showError(errorDiv, "Ошибка сети"));
+        const email = `${login}@geogator.game`;
+
+        // 1. Create Auth User
+        const { data, error } = await supabase.auth.signUp({
+            email: email,
+            password: pass,
+        });
+
+        if (error) {
+            this.showError(errorDiv, error.message);
+            return;
+        }
+
+        if (data.user) {
+            // 2. Create Profile
+            const { error: profileError } = await supabase
+                .from('profiles')
+                .insert([
+                    { id: data.user.id, username: login, nickname: nick }
+                ]);
+
+            if (profileError) {
+                this.showError(errorDiv, "Ошибка создания профиля: " + profileError.message);
+            } else {
+                this.showNotification("Регистрация успешна! Теперь войдите.", "success");
+                this.closeRegisterModal();
+                this.openLoginModal();
+                document.getElementById('loginUsernameInput').value = login;
+            }
+        }
     }
 
     // 4. Authorized Profile/Stats Logic
     openStatsModal() {
         this.closeAllModals();
-        const modal = document.getElementById('profileModal'); // This is now the "Authorized" modal
+        const modal = document.getElementById('profileModal');
         if (modal) {
             modal.classList.remove('hidden');
             modal.style.display = 'flex';
 
-            // Update Headers
-            document.getElementById('profileDisplayNickname').textContent = this.config.user.nickname;
-            document.getElementById('profileDisplayLogin').textContent = '@' + this.config.user.login;
+            const dNick = document.getElementById('profileDisplayNickname');
+            const dLogin = document.getElementById('profileDisplayLogin');
+            if (dNick) dNick.textContent = this.config.user.nickname;
+            if (dLogin) dLogin.textContent = '@' + this.config.user.login;
 
             this.updateProfileStatsUI();
         }
@@ -414,21 +437,21 @@ class GeoNavigator {
         }
     }
 
-    performLogout() {
+    async performLogout() {
         if (confirm(this.getLocalizedText('quitConfirm') || "Выйти из аккаунта?")) {
+            await supabase.auth.signOut();
+
             // Clear Local Storage
             localStorage.removeItem('geoGatorLogin');
             localStorage.removeItem('geoGatorNickname');
-            localStorage.removeItem('geoGatorStats'); // Optional: clear stats on logout or keep local? usually clear to avoid mixing
+            localStorage.removeItem('geoGatorStats');
 
             // Reset Config
             this.config.user.login = '';
-            this.config.user.nickname = 'guest';
+            this.config.user.nickname = this.getLocalizedText('guest');
             this.config.user.id = null;
-            this.resetGameStateForNewGame(); // Reset game state too
+            this.resetGameStateForNewGame();
 
-            // Reset Stats to zero visually? Or keep until new game?
-            // Safer to reset stats object
             this.config.playerStats = { totalCorrect: 0, totalQuestions: 0, bestScore: 0, totalGames: 0, totalWrong: 0, totalTime: 0, regionStats: {} };
 
             this.updateProfileUI(); // Set UI back to guest
@@ -881,24 +904,28 @@ class GeoNavigator {
         this.showResults();
     }
 
-    saveStats() {
+    async saveStats() {
         localStorage.setItem('geoGatorStats', JSON.stringify(this.config.playerStats));
-        // Server Sync
-        if (this.config.user.login) {
-            fetch('save_stats.php', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    username: this.config.user.login, // Send login as username
-                    bestScore: this.config.playerStats.bestScore,
-                    totalCorrect: this.config.playerStats.totalCorrect,
-                    // Additional Stats
-                    totalGames: this.config.playerStats.totalGames,
-                    totalWrong: this.config.playerStats.totalWrong,
-                    totalTime: this.config.playerStats.totalTime,
-                    regionStats: this.config.playerStats.regionStats
-                })
-            }).catch(console.error);
+
+        // Server Sync via Supabase
+        if (this.config.user.id) {
+            const updates = {
+                best_score: this.config.playerStats.bestScore,
+                total_correct: this.config.playerStats.totalCorrect,
+                total_games: this.config.playerStats.totalGames,
+                total_wrong: this.config.playerStats.totalWrong,
+                total_time: this.config.playerStats.totalTime,
+                region_stats: this.config.playerStats.regionStats
+            };
+
+            const { error } = await supabase
+                .from('profiles')
+                .update(updates)
+                .eq('id', this.config.user.id);
+
+            if (error) {
+                console.error('Error saving stats to Supabase:', error);
+            }
         }
     }
 
@@ -930,7 +957,7 @@ class GeoNavigator {
     }
 
     getLocalizedText(key) { return LOCALES?.[this.config.settings.language]?.[key] || key; }
-    saveSettings() { localStorage.setItem('geoNavigatorSettings', JSON.stringify(this.config.settings)); }
+    saveSettings() { localStorage.setItem('geoGatorSettings', JSON.stringify(this.config.settings)); }
     applySettings() {
         document.querySelectorAll('[data-i18n]').forEach(e => { e.textContent = this.getLocalizedText(e.getAttribute('data-i18n')); });
         document.querySelectorAll('.lang-btn').forEach(b => { b.classList.toggle('active', b.dataset.lang === this.config.settings.language); });
@@ -943,6 +970,12 @@ class GeoNavigator {
         document.getElementById('loginUsernameInput').placeholder = loginPh;
         document.getElementById('regLoginInput').placeholder = loginPh;
         document.getElementById('regNicknameInput').placeholder = nickPh;
+
+        // Update Guest text if not logged in
+        if (!this.config.user.id && !localStorage.getItem('geoGatorLogin')) {
+            this.config.user.nickname = this.getLocalizedText('guest');
+            this.updateProfileUI();
+        }
     }
     changeLanguage(lang) {
         if (this.config.navigation.gameActive && confirm(this.getLocalizedText('languageChangeWarning'))) {
@@ -1044,4 +1077,4 @@ class GeoNavigator {
     }
 }
 
-document.addEventListener('DOMContentLoaded', () => window.geoNavigator = new GeoNavigator());
+document.addEventListener('DOMContentLoaded', () => window.geoGator = new GeoGator());
