@@ -2333,3 +2333,44 @@ body.dark-theme::before {
 .btn-save-profile:hover {
     background: var(--secondary-color);
 }
+
+/* === GeoGator v7.8 Redesign === */
+
+/* Quick Start Button */
+.btn-quick-start {
+    width: 100%;
+    padding: 20px 30px;
+    background: rgba(6, 182, 212, 0.1);
+    /* Cyan tint */
+    border: 2px solid #06b6d4;
+    /* Cyan */
+    border-radius: var(--border-radius);
+    color: #06b6d4;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: var(--transition);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
+    backdrop-filter: blur(5px);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
+}
+
+.btn-quick-start:hover {
+    background: rgba(6, 182, 212, 0.2);
+    box-shadow: 0 0 25px rgba(6, 182, 212, 0.4);
+    transform: translateY(-2px);
+    color: white;
+    text-shadow: 0 0 10px rgba(6, 182, 212, 0.8);
+}
+
+/* Enhance btn-secondary to match row height */
+.menu-row .btn-secondary {
+    padding: 18px;
+    /* Slightly taller to match play buttons roughly */
+    height: 100%;
+}

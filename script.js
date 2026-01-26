@@ -8,10 +8,10 @@
  * 
  * === CHANGELOG ===
  * v7.1: Переход на Supabase (Auth, DB sync).
- * v7.7: Быстрый старт, Разделение статистики и профиля, Фикс UI (мигающие окна), Версионирование.
+ * v7.8: Редизайн меню (Blue Theme), фикс закрытия модальных окон.
  */
 
-// GeoGator v7.7 - Основная логика игры
+// GeoGator v7.8 - Основная логика игры
 // Функционал: Разделение Америк, Безлимитный таймер, Режим "Все вопросы", Умный слайдер, Система профилей (Supabase)
 
 const SUPABASE_URL = "https://tdlhwokrmuyxsdleepht.supabase.co";
@@ -244,8 +244,14 @@ class GeoGator {
         this.listenersAttached = true;
 
         // Profile & Auth
-        document.getElementById('profileBtn')?.addEventListener('click', () => this.handleProfileClick());
-        document.getElementById('openStatisticsBtn')?.addEventListener('click', () => this.openStatisticsModal());
+        document.getElementById('profileBtn')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.handleProfileClick();
+        });
+        document.getElementById('openStatisticsBtn')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.openStatisticsModal();
+        });
 
         // Modals Close Only
 
@@ -269,8 +275,10 @@ class GeoGator {
 
         document.getElementById('logoutBtn')?.addEventListener('click', () => this.performLogout());
 
-        document.getElementById('modalOverlay')?.addEventListener('click', (e) => {
-            if (e.target.id === 'modalOverlay') this.closeAllModals();
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.addEventListener('click', (e) => {
+                if (e.target === modal) this.closeAllModals();
+            });
         });
 
         // Menu
@@ -280,7 +288,10 @@ class GeoGator {
             this.showScreen('gameSetupScreen');
         });
         document.getElementById('quickStartBtn')?.addEventListener('click', () => this.quickStartGame()); // New Quick Start Listener
-        document.getElementById('openSettingsBtn')?.addEventListener('click', () => this.navigateToSettings('mainMenu'));
+        document.getElementById('openSettingsBtn')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.navigateToSettings('mainMenu');
+        });
 
         // Game Setup
         document.getElementById('backFromSetupBtn')?.addEventListener('click', () => this.showScreen('mainMenu'));

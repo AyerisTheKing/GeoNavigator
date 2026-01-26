@@ -43,29 +43,31 @@
             </p>
 
             <div class="menu-actions"
-                style="display: flex; flex-direction: column; align-items: center; gap: 15px; margin: 30px auto;">
-                <button id="quickStartBtn" class="btn-secondary"
-                    style="border-color: #f59e0b; color: #f59e0b; width: 100%;">
-                    <i class="fas fa-bolt"></i>
-                    <span data-i18n="quickStart">БЫСТРЫЙ СТАРТ</span>
-                </button>
+                style="display: flex; flex-direction: column; align-items: center; gap: 15px; margin: 30px auto; width: 100%; max-width: 400px;">
 
-                <button id="startGameBtn" class="btn-start-game">
+                <button id="startGameBtn" class="btn-start-game" style="width: 100%; justify-content: center;">
                     <div class="btn-glow"></div>
                     <i class="fas fa-rocket"></i>
                     <span data-i18n="startGame">НАЧАТЬ ИГРУ</span>
                 </button>
 
-                <!-- New Statistics Button -->
-                <button id="openStatisticsBtn" class="btn-secondary">
-                    <i class="fas fa-chart-bar"></i>
-                    <span data-i18n="statsTitle">СТАТИСТИКА</span>
+                <button id="quickStartBtn" class="btn-quick-start">
+                    <i class="fas fa-bolt"></i>
+                    <span data-i18n="quickStart">БЫСТРЫЙ СТАРТ</span>
                 </button>
 
-                <button id="openSettingsBtn" class="btn-secondary">
-                    <i class="fas fa-cog"></i>
-                    <span data-i18n="settings">Настройки</span>
-                </button>
+                <!-- Secondary Row: Stats & Settings -->
+                <div class="menu-row" style="display: flex; gap: 15px; width: 100%;">
+                    <button id="openStatisticsBtn" class="btn-secondary" style="flex: 1; justify-content: center;">
+                        <i class="fas fa-chart-bar"></i>
+                        <span data-i18n="statsTitle">СТАТИСТИКА</span>
+                    </button>
+
+                    <button id="openSettingsBtn" class="btn-secondary" style="flex: 1; justify-content: center;">
+                        <i class="fas fa-cog"></i>
+                        <span data-i18n="settings">Настройки</span>
+                    </button>
+                </div>
             </div>
 
             <div class="stats-container"
