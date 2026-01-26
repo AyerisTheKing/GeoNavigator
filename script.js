@@ -8,10 +8,10 @@
  * 
  * === CHANGELOG ===
  * v7.1: Переход на Supabase (Auth, DB sync).
- * v7.9: Полный редизайн меню (Uniform Style), фикс закрытия модалок (Nuclear Option).
+ * v8.0: Редизайн меню (Clean UI) и полная перепись системы модальных окон.
  */
 
-// GeoGator v7.9 - Основная логика игры
+// GeoGator v8.0 - Основная логика игры
 // Функционал: Разделение Америк, Безлимитный таймер, Режим "Все вопросы", Умный слайдер, Система профилей (Supabase)
 
 const SUPABASE_URL = "https://tdlhwokrmuyxsdleepht.supabase.co";
@@ -91,6 +91,7 @@ class GeoGator {
         this.loadPlayerStats();
 
         this.setupEventListeners();
+        this.initModalSystem(); // v8.0 New Modal System
         this.showScreen('mainMenu');
         this.setupNotifications();
         this.updateStatsUI();
@@ -243,49 +244,7 @@ class GeoGator {
         if (this.listenersAttached) return;
         this.listenersAttached = true;
 
-        // Profile & Auth
-        document.getElementById('profileBtn')?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.handleProfileClick();
-        });
-        document.getElementById('openStatisticsBtn')?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.openStatisticsModal();
-        });
-
-        // Modals Close Only
-
-        // Login Modal
-        document.getElementById('closeLoginModal')?.addEventListener('click', () => this.closeLoginModal());
-        document.getElementById('performLoginBtn')?.addEventListener('click', () => this.performLogin());
-        document.getElementById('openRegisterLink')?.addEventListener('click', (e) => {
-            e.preventDefault();
-            this.openRegisterModal();
-        });
-        document.getElementById('toggleLoginPassword')?.addEventListener('click', (e) => this.togglePasswordVisibility(e, 'loginPasswordInput'));
-
-        // Register Modal
-        document.getElementById('closeRegisterModal')?.addEventListener('click', () => this.closeRegisterModal());
-        document.getElementById('performRegisterBtn')?.addEventListener('click', () => this.performRegister());
-        document.getElementById('toggleRegPassword')?.addEventListener('click', (e) => this.togglePasswordVisibility(e, 'regPasswordInput'));
-
-        // Profile Stats Modal (Authorized)
-        document.getElementById('closeProfileModal')?.addEventListener('click', () => this.closeStatsModal());
-        document.getElementById('closeStatisticsModal')?.addEventListener('click', () => this.closeStatisticsModal());
-
-        document.getElementById('logoutBtn')?.addEventListener('click', () => this.performLogout());
-
-        // THE NUCLEAR OPTION: Strict Modal Closing
-        document.querySelectorAll('.modal').forEach(modal => {
-            // Remove any potential old listeners (though in this class-based structure usually handled by not adding duplicates)
-            // Clone node to strip all listeners if desperate, but here we just ensure a strict check
-            modal.addEventListener('click', (e) => {
-                if (e.target === modal) {
-                    e.stopPropagation(); // Stop it from bubbling to window if that was the issue
-                    this.closeAllModals();
-                }
-            });
-        });
+        // Profile & Auth (Listeners handled by initModalSystem now for opening)
 
         // Menu
         document.getElementById('startGameBtn')?.addEventListener('click', () => {
@@ -297,10 +256,10 @@ class GeoGator {
             e.stopPropagation();
             this.quickStartGame();
         }); // New Quick Start Listener
-        document.getElementById('openSettingsBtn')?.addEventListener('click', (e) => {
-            e.stopPropagation();
-            this.navigateToSettings('mainMenu');
-        });
+        // Settings via initModalSystem
+
+        // Game Setup
+        document.getElementById('backFromSetupBtn')?.addEventListener('click', () => this.showScreen('mainMenu'));
 
         // Game Setup
         document.getElementById('backFromSetupBtn')?.addEventListener('click', () => this.showScreen('mainMenu'));
@@ -615,6 +574,112 @@ class GeoGator {
     updateSliderVisual(slider) {
         const val = (slider.value - slider.min) / (slider.max - slider.min) * 100;
         slider.style.background = `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${val}%, #334155 ${val}%, #334155 100%)`;
+    }
+
+    // === v8.0 MODAL SYSTEM REWRITE ===
+    initModalSystem() {
+        // 1. Open Triggers
+        const triggers = [
+            { id: 'profileBtn', action: () => this.handleProfileClick() },
+            { id: 'openStatisticsBtn', action: () => this.openStatisticsModal() },
+            { id: 'openSettingsBtn', action: () => this.navigateToSettings('mainMenu') }
+        ];
+
+        triggers.forEach(({ id, action }) => {
+            const btn = document.getElementById(id);
+            if (btn) {
+                // Remove old listeners to be safe (clone node trick could be used, but let's just add new stable one)
+                btn.onclick = (e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    action();
+                };
+            }
+        });
+
+        // 2. Close Triggers (X buttons)
+        const closeMap = {
+            'closeLoginModal': 'loginModal',
+            'closeRegisterModal': 'registerModal',
+            'closeProfileModal': 'profileModal',
+            'closeStatisticsModal': 'statisticsModal'
+        };
+
+        Object.entries(closeMap).forEach(([btnId, modalId]) => {
+            const btn = document.getElementById(btnId);
+            if (btn) {
+                btn.onclick = (e) => {
+                    e.stopPropagation();
+                    this.closeModal(modalId);
+                };
+            }
+        });
+
+        // 3. Background Close (Strict)
+        document.querySelectorAll('.modal').forEach(modal => {
+            modal.onclick = (e) => {
+                if (e.target === modal) {
+                    this.closeModal(modal.id);
+                }
+            };
+        });
+
+        // 4. Form Actions inside Modals
+        const formActions = [
+            { id: 'performLoginBtn', action: () => this.performLogin() },
+            { id: 'performRegisterBtn', action: () => this.performRegister() },
+            { id: 'openRegisterLink', action: (e) => { e.preventDefault(); this.openRegisterModal(); } },
+            { id: 'toggleLoginPassword', action: (e) => this.togglePasswordVisibility(e, 'loginPasswordInput') },
+            { id: 'toggleRegPassword', action: (e) => this.togglePasswordVisibility(e, 'regPasswordInput') },
+            { id: 'logoutBtn', action: () => this.performLogout() }
+        ];
+
+        formActions.forEach(({ id, action }) => {
+            const el = document.getElementById(id);
+            if (el) el.onclick = action;
+        });
+    }
+
+    openModal(id) {
+        this.closeAllModals(); // Ensure single modal policy
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+        }
+    }
+
+    closeModal(id) {
+        const modal = document.getElementById(id);
+        if (modal) {
+            modal.classList.add('hidden');
+            setTimeout(() => { if (modal.classList.contains('hidden')) modal.style.display = 'none'; }, 300);
+        }
+    }
+
+    // Overwrite old methods to use new system
+    openLoginModal() { this.openModal('loginModal'); }
+    closeLoginModal() { this.closeModal('loginModal'); }
+    openRegisterModal() { this.openModal('registerModal'); }
+    closeRegisterModal() { this.closeModal('registerModal'); }
+    openStatsModal() {
+        this.openModal('profileModal');
+        // Logic to populate data
+        const dNick = document.getElementById('profileDisplayNickname');
+        const dLogin = document.getElementById('profileDisplayLogin');
+        if (dNick) dNick.textContent = this.config.user.nickname;
+        if (dLogin) dLogin.textContent = '@' + this.config.user.login;
+        this.updateProfileStatsUI();
+    }
+    closeStatsModal() { this.closeModal('profileModal'); }
+    openStatisticsModal() {
+        this.updateProfileStatsUI();
+        this.openModal('statisticsModal');
+    }
+    closeStatisticsModal() { this.closeModal('statisticsModal'); }
+
+    closeAllModals() {
+        ['loginModal', 'registerModal', 'profileModal', 'statisticsModal'].forEach(id => this.closeModal(id));
     }
 
     // === 3. ИГРОВАЯ ЛОГИКА ===
