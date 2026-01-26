@@ -1,4 +1,17 @@
-// GeoGator v7.0 - Основная логика игры
+/**
+ * GeoGator - Главный скрипт
+ * 
+ * === ПРАВИЛА ВЕРСИОНИРОВАНИЯ (для разработчиков) ===
+ * Major (+1.0): Глобальные изменения архитектуры, БД или полный рефакторинг.
+ * Minor (+0.5): Новые крупые функции (режимы, экраны, механики).
+ * Patch (+0.1): Исправления багов, мелкие правки UI/текстов.
+ * 
+ * === CHANGELOG ===
+ * v7.1: Переход на Supabase (Auth, DB sync).
+ * v7.7: Быстрый старт, Разделение статистики и профиля, Фикс UI (мигающие окна), Версионирование.
+ */
+
+// GeoGator v7.7 - Основная логика игры
 // Функционал: Разделение Америк, Безлимитный таймер, Режим "Все вопросы", Умный слайдер, Система профилей (Supabase)
 
 const SUPABASE_URL = "https://tdlhwokrmuyxsdleepht.supabase.co";
@@ -227,6 +240,9 @@ class GeoGator {
     // === 2. EVENTS & UI ===
 
     setupEventListeners() {
+        if (this.listenersAttached) return;
+        this.listenersAttached = true;
+
         // Profile & Auth
         document.getElementById('profileBtn')?.addEventListener('click', () => this.handleProfileClick());
         document.getElementById('openStatisticsBtn')?.addEventListener('click', () => this.openStatisticsModal());
@@ -259,9 +275,11 @@ class GeoGator {
 
         // Menu
         document.getElementById('startGameBtn')?.addEventListener('click', () => {
+            this.resetSetupUI(); // Reset to defaults for fresh game setup
             this.config.navigation.previousScreen = 'mainMenu';
             this.showScreen('gameSetupScreen');
         });
+        document.getElementById('quickStartBtn')?.addEventListener('click', () => this.quickStartGame()); // New Quick Start Listener
         document.getElementById('openSettingsBtn')?.addEventListener('click', () => this.navigateToSettings('mainMenu'));
 
         // Game Setup
@@ -583,13 +601,24 @@ class GeoGator {
     /*
      * Запуск новой игры.
      * Считывает параметры, сбрасывает состояние, генерирует вопросы и показывает экран игры.
+     * Также сохраняет конфиг для Быстрого Старта.
      */
-    startGame() {
-        const params = this.getGameParameters();
-        if (!this.validateGameParameters(params)) return;
+    async startGame(existingConfig = null) {
+        let params;
+        if (existingConfig) {
+            params = existingConfig;
+            this.config.currentGame = params;
+            // Validate? Assume valid if loaded from DB/Storage
+        } else {
+            params = this.getGameParameters();
+            if (!this.validateGameParameters(params)) return;
+            this.config.currentGame = params;
+        }
 
-        this.config.currentGame = params;
         this.resetGameStateForNewGame();
+
+        // Save Config for Quick Start (Async, don't wait)
+        this.saveLastGameConfig(params);
 
         // Увеличиваем счетчик игр
         this.config.playerStats.totalGames = (this.config.playerStats.totalGames || 0) + 1;
@@ -606,6 +635,51 @@ class GeoGator {
         this.config.gameState.gameStartTime = Date.now();
         this.showScreen('gameScreen');
         this.showQuestion();
+    }
+
+    async saveLastGameConfig(config) {
+        // Local
+        localStorage.setItem('geoGatorLastConfig', JSON.stringify(config));
+
+        // Server
+        if (this.config.user.id) {
+            await supabaseClient.from('profiles').update({ last_game_config: config }).eq('id', this.config.user.id);
+        }
+    }
+
+    async quickStartGame() {
+        let config = null;
+
+        // Try Server First (if logged in)
+        if (this.config.user.id) {
+            const { data } = await supabaseClient.from('profiles').select('last_game_config').eq('id', this.config.user.id).single();
+            if (data && data.last_game_config) config = data.last_game_config;
+        }
+
+        // Try Local Fallback
+        if (!config) {
+            try { config = JSON.parse(localStorage.getItem('geoGatorLastConfig')); } catch (e) { }
+        }
+
+        if (config) {
+            this.startGame(config);
+        } else {
+            this.showNotification(this.getLocalizedText('noQuickStart') || "Нет сохраненной конфигурации", 'error');
+            this.resetSetupUI();
+            this.showScreen('gameSetupScreen');
+        }
+    }
+
+    resetSetupUI() {
+        // Reset to defaults: 10 Qs, 15s Timer, All Continents, Capital by Country
+        // This is purely visual reset for the "New Game" screen
+        document.querySelectorAll('input[name="continent"]').forEach(cb => cb.checked = true);
+        const modeRadio = document.querySelector('input[name="gameMode"][value="capitalByCountry"]');
+        if (modeRadio) modeRadio.checked = true;
+        const qRadio = document.querySelector('input[name="questionCount"][value="10"]');
+        if (qRadio) qRadio.checked = true;
+        const tRadio = document.querySelector('input[name="timer"][value="15"]');
+        if (tRadio) tRadio.checked = true;
     }
 
     getGameParameters() {

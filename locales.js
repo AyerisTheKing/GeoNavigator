@@ -40,6 +40,8 @@ const LOCALES = {
         'success': 'Успех',
 
         'startGame': 'ИГРАТЬ',
+        'quickStart': 'БЫСТРЫЙ СТАРТ',
+        'noQuickStart': 'Нет сохраненной игры',
         'settings': 'НАСТРОЙКИ',
         'back': 'Назад',
         'saveSettings': 'СОХРАНИТЬ',
@@ -185,6 +187,8 @@ const LOCALES = {
         'success': 'Success',
 
         'startGame': 'PLAY',
+        'quickStart': 'QUICK START',
+        'noQuickStart': 'No saved game config',
         'settings': 'SETTINGS',
         'back': 'Back',
         'saveSettings': 'SAVE',
