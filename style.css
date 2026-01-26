@@ -2334,20 +2334,19 @@ body.dark-theme::before {
     background: var(--secondary-color);
 }
 
-/* === GeoGator v7.8 Redesign === */
+/* === GeoGator v7.9 Redesign (Uniform Style) === */
 
-/* Quick Start Button */
-.btn-quick-start {
+/* Base Menu Item Style (Vertical Uniformity) */
+.btn-menu-item {
     width: 100%;
     padding: 20px 30px;
-    background: rgba(6, 182, 212, 0.1);
-    /* Cyan tint */
-    border: 2px solid #06b6d4;
-    /* Cyan */
+    background: rgba(255, 255, 255, 0.05);
+    /* Glass style like continent cards */
+    border: 2px solid transparent;
     border-radius: var(--border-radius);
-    color: #06b6d4;
-    font-size: 1.2rem;
-    font-weight: 700;
+    color: white;
+    font-size: 1.1rem;
+    font-weight: 600;
     cursor: pointer;
     transition: var(--transition);
     display: flex;
@@ -2355,22 +2354,20 @@ body.dark-theme::before {
     justify-content: center;
     gap: 15px;
     backdrop-filter: blur(5px);
-    position: relative;
-    overflow: hidden;
-    box-shadow: 0 0 15px rgba(6, 182, 212, 0.2);
 }
 
-.btn-quick-start:hover {
-    background: rgba(6, 182, 212, 0.2);
-    box-shadow: 0 0 25px rgba(6, 182, 212, 0.4);
+.btn-menu-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+    border-color: var(--primary-color);
+    /* Blue/Cyan highlight */
     transform: translateY(-2px);
-    color: white;
-    text-shadow: 0 0 10px rgba(6, 182, 212, 0.8);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
 }
 
-/* Enhance btn-secondary to match row height */
-.menu-row .btn-secondary {
-    padding: 18px;
-    /* Slightly taller to match play buttons roughly */
-    height: 100%;
+/* Quick Start Specifics (Icon Color) */
+#quickStartBtn i {
+    color: #f59e0b;
+    /* Orange/Yellow Lightning */
+    font-size: 1.2rem;
+    filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.5));
 }

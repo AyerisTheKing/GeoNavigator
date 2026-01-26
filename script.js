@@ -8,10 +8,10 @@
  * 
  * === CHANGELOG ===
  * v7.1: Переход на Supabase (Auth, DB sync).
- * v7.8: Редизайн меню (Blue Theme), фикс закрытия модальных окон.
+ * v7.9: Полный редизайн меню (Uniform Style), фикс закрытия модалок (Nuclear Option).
  */
 
-// GeoGator v7.8 - Основная логика игры
+// GeoGator v7.9 - Основная логика игры
 // Функционал: Разделение Америк, Безлимитный таймер, Режим "Все вопросы", Умный слайдер, Система профилей (Supabase)
 
 const SUPABASE_URL = "https://tdlhwokrmuyxsdleepht.supabase.co";
@@ -275,9 +275,15 @@ class GeoGator {
 
         document.getElementById('logoutBtn')?.addEventListener('click', () => this.performLogout());
 
+        // THE NUCLEAR OPTION: Strict Modal Closing
         document.querySelectorAll('.modal').forEach(modal => {
+            // Remove any potential old listeners (though in this class-based structure usually handled by not adding duplicates)
+            // Clone node to strip all listeners if desperate, but here we just ensure a strict check
             modal.addEventListener('click', (e) => {
-                if (e.target === modal) this.closeAllModals();
+                if (e.target === modal) {
+                    e.stopPropagation(); // Stop it from bubbling to window if that was the issue
+                    this.closeAllModals();
+                }
             });
         });
 
@@ -287,7 +293,10 @@ class GeoGator {
             this.config.navigation.previousScreen = 'mainMenu';
             this.showScreen('gameSetupScreen');
         });
-        document.getElementById('quickStartBtn')?.addEventListener('click', () => this.quickStartGame()); // New Quick Start Listener
+        document.getElementById('quickStartBtn')?.addEventListener('click', (e) => {
+            e.stopPropagation();
+            this.quickStartGame();
+        }); // New Quick Start Listener
         document.getElementById('openSettingsBtn')?.addEventListener('click', (e) => {
             e.stopPropagation();
             this.navigateToSettings('mainMenu');
