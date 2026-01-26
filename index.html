@@ -50,6 +50,12 @@
                     <span data-i18n="startGame">НАЧАТЬ ИГРУ</span>
                 </button>
 
+                <!-- New Statistics Button -->
+                <button id="openStatisticsBtn" class="btn-secondary">
+                    <i class="fas fa-chart-bar"></i>
+                    <span data-i18n="statsTitle">СТАТИСТИКА</span>
+                </button>
+
                 <button id="openSettingsBtn" class="btn-secondary">
                     <i class="fas fa-cog"></i>
                     <span data-i18n="settings">Настройки</span>
@@ -563,6 +569,7 @@
     </div>
 
     <!-- МОДАЛЬНОЕ ОКНО: ПРОФИЛЬ ИГРОКА (ТОЛЬКО ДЛЯ АВТОРИЗОВАННЫХ) -->
+    <!-- МОДАЛЬНОЕ ОКНО: ПРОФИЛЬ ИГРОКА (ТОЛЬКО ДЛЯ АВТОРИЗОВАННЫХ) -->
     <div id="profileModal" class="modal hidden">
         <div class="modal-content">
             <span class="close" id="closeProfileModal">&times;</span>
@@ -584,22 +591,47 @@
             <hr />
             <h3 data-i18n="statistics">Статистика</h3>
             <ul class="stats-list">
-                <li data-i18n="totalGames">Всего игр: <span id="statTotalGames">0</span></li>
-                <li data-i18n="totalCorrect">Всего правильных: <span id="statProfileTotalCorrect">0</span></li>
-                <li data-i18n="totalWrong">Всего неправильных: <span id="statTotalWrong">0</span></li>
-                <li data-i18n="totalTime">Время в игре: <span id="statTotalTime">0s</span></li>
-                <li data-i18n="overallSuccess">Успешность: <span id="statOverallSuccess">0%</span></li>
+                <li data-i18n="statRecord">Рекорд: <span id="statProfileBestScore">0</span></li>
+                <li data-i18n="totalTime">Время в игре: <span id="statProfileTotalTime">0s</span></li>
+                <li data-i18n="overallSuccess">Успешность: <span id="statProfileAccuracy">0%</span></li>
             </ul>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО: СТАТИСТИКА (Полное) -->
+    <div id="statisticsModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 600px;">
+            <span class="close" id="closeStatisticsModal">&times;</span>
+            <h2 data-i18n="statsTitle">СТАТИСТИКА</h2>
+
+            <div class="stats-summary"
+                style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 20px; text-align: center;">
+                <div>
+                    <strong style="font-size: 1.5rem; color: #4cc9f0;" id="statFullGames">0</strong>
+                    <div style="font-size: 0.8rem; color: #94a3b8;" data-i18n="totalGames">Всего игр</div>
+                </div>
+                <div>
+                    <strong style="font-size: 1.5rem; color: #4ade80;" id="statFullCorrect">0</strong>
+                    <div style="font-size: 0.8rem; color: #94a3b8;" data-i18n="totalCorrect">Верно</div>
+                </div>
+                <div>
+                    <strong style="font-size: 1.5rem; color: #ef4444;" id="statFullWrong">0</strong>
+                    <div style="font-size: 0.8rem; color: #94a3b8;" data-i18n="totalWrong">Ошибки</div>
+                </div>
+            </div>
+
             <h4 data-i18n="regionSuccess">Успешность по регионам</h4>
-            <table id="regionStatsTable" class="region-table">
-                <thead>
-                    <tr>
-                        <th data-i18n="region">Регион</th>
-                        <th data-i18n="success">Успешность</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
+            <div style="max-height: 300px; overflow-y: auto;">
+                <table id="regionStatsTable" class="region-table">
+                    <thead>
+                        <tr>
+                            <th data-i18n="region">Регион</th>
+                            <th data-i18n="success">Успешность</th>
+                        </tr>
+                    </thead>
+                    <tbody></tbody>
+                </table>
+            </div>
         </div>
     </div>
 </body>

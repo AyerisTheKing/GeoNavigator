@@ -187,34 +187,38 @@ class GeoGator {
 
     updateProfileStatsUI() {
         const s = this.config.playerStats;
-
-        // Basic Stats
         const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-        setText('statTotalGames', s.totalGames || 0);
-        setText('statProfileTotalCorrect', s.totalCorrect || 0);
-        setText('statTotalWrong', s.totalWrong || 0);
-        setText('statTotalTime', `${s.totalTime || 0}s`);
+        // --- 1. Profile Modal (Brief) ---
+        setText('statProfileBestScore', s.bestScore || 0);
+        setText('statProfileTotalTime', `${s.totalTime || 0}s`);
 
-        // Overall Success
+        // Accuracy
         const totalAnswers = (s.totalCorrect || 0) + (s.totalWrong || 0);
         const overall = totalAnswers > 0 ? Math.round((s.totalCorrect / totalAnswers) * 100) : 0;
-        setText('statOverallSuccess', `${overall}%`);
+        setText('statProfileAccuracy', `${overall}%`);
 
-        // Region Table
+        // --- 2. Statistics Modal (Detailed) ---
+        setText('statFullGames', s.totalGames || 0);
+        setText('statFullCorrect', s.totalCorrect || 0);
+        setText('statFullWrong', s.totalWrong || 0);
+
+        // Region Table (Only if Statistics Modal is open or prepared)
         const tbody = document.querySelector('#regionStatsTable tbody');
         if (tbody) {
             tbody.innerHTML = '';
-            for (const [region, data] of Object.entries(s.regionStats)) {
-                if (data.total > 0) {
+            // Only show regions with data
+            const regions = Object.entries(s.regionStats).filter(([_, d]) => d.total > 0);
+
+            if (regions.length > 0) {
+                for (const [region, data] of regions) {
                     const mk = this.getLocalizedText(region) || region;
                     const perc = Math.round((data.correct / data.total) * 100);
                     const tr = document.createElement('tr');
                     tr.innerHTML = `<td>${mk}</td><td>${perc}% (${data.correct}/${data.total})</td>`;
                     tbody.appendChild(tr);
                 }
-            }
-            if (tbody.innerHTML === '') {
+            } else {
                 tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; color:#64748b;">Нет данных</td></tr>';
             }
         }
@@ -225,6 +229,9 @@ class GeoGator {
     setupEventListeners() {
         // Profile & Auth
         document.getElementById('profileBtn')?.addEventListener('click', () => this.handleProfileClick());
+        document.getElementById('openStatisticsBtn')?.addEventListener('click', () => this.openStatisticsModal());
+
+        // Modals Close Only
 
         // Login Modal
         document.getElementById('closeLoginModal')?.addEventListener('click', () => this.closeLoginModal());
@@ -242,6 +249,8 @@ class GeoGator {
 
         // Profile Stats Modal (Authorized)
         document.getElementById('closeProfileModal')?.addEventListener('click', () => this.closeStatsModal());
+        document.getElementById('closeStatisticsModal')?.addEventListener('click', () => this.closeStatisticsModal());
+
         document.getElementById('logoutBtn')?.addEventListener('click', () => this.performLogout());
 
         document.getElementById('modalOverlay')?.addEventListener('click', (e) => {
@@ -446,7 +455,7 @@ class GeoGator {
         }
     }
 
-    // 4. Authorized Profile/Stats Logic
+    // 4. Authorized Profile (Simplified)
     openStatsModal() {
         this.closeAllModals();
         const modal = document.getElementById('profileModal');
@@ -495,11 +504,29 @@ class GeoGator {
     }
 
     // Helpers
+    openStatisticsModal() {
+        this.closeAllModals();
+        const modal = document.getElementById('statisticsModal');
+        if (modal) {
+            this.updateProfileStatsUI(); // Ensure fresh data
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+        }
+    }
+
+    closeStatisticsModal() {
+        const modal = document.getElementById('statisticsModal');
+        if (modal) {
+            modal.classList.add('hidden');
+            setTimeout(() => modal.style.display = 'none', 300);
+        }
+    }
+
     closeAllModals() {
-        document.querySelectorAll('.modal').forEach(m => {
-            m.classList.add('hidden');
-            m.style.display = 'none'; // Force hide immediately to prevent overlaps in logic
-        });
+        this.closeLoginModal();
+        this.closeRegisterModal();
+        this.closeStatsModal();
+        this.closeStatisticsModal();
     }
 
     showError(element, msg, show = true) {
@@ -958,6 +985,20 @@ class GeoGator {
         this.config.playerStats.totalTime = (this.config.playerStats.totalTime || 0) + elapsed;
 
         this.saveStats();
+        // Pass current game score/stats explicitly to showResults before reset (or just use gameState)
+        // Note: gameState is NOT reset yet here, so showResults can read from it.
+        // However, we need to ensure 'correctAnswers' and 'wrongAnswers' DOM elements are updated.
+        // The bug was that showResults might be relying on something that isn't set.
+        // Let's explicitly update the DOM for the result screen here or inside showResults.
+        // Actually, showResults reads from config.gameState. But 'correct' and 'wrong' counts on result screen
+        // were usually taken from config.gameState stats if we tracked them per game.
+        // We usually track score (correct) but maybe not wrong?
+        // Let's check logic:
+        // score matches correct answers count in current game.
+        // What about wrong answers? config.gameState doesn't explicitly have 'wrongCount' for the *current* game in the constructor?
+        // Ah, let's calculate it: total questions - score = wrong (assuming all answered). 
+        // Or better, track it.
+
         this.showResults();
     }
 
@@ -1006,9 +1047,16 @@ class GeoGator {
         const { score, questions, gameStartTime } = this.config.gameState;
         const total = questions.length;
         const totalTimeSeconds = Math.round((Date.now() - gameStartTime) / 1000);
+        const wrong = total - score; // Simple calculation for game over
+
         document.getElementById('resultScore').textContent = score;
         document.getElementById('resultTotal').textContent = total;
         document.getElementById('totalTime').textContent = totalTimeSeconds;
+
+        // FIX: Update correct/wrong specific counters
+        document.getElementById('correctAnswers').textContent = score;
+        document.getElementById('wrongAnswers').textContent = wrong;
+
         const p = total > 0 ? Math.round((score / total) * 100) : 0;
         document.getElementById('resultPercentage').textContent = `${p}%`;
         document.getElementById('resultMessage').textContent = this.getLocalizedText(p == 100 ? 'perfectResult' : p >= 80 ? 'greatResult' : 'tryAgain');
