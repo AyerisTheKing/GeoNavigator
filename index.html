@@ -15,6 +15,14 @@
 
 <body>
     <div id="mainMenu" class="screen active">
+        <!-- Profile Button (Moved Inside Main Menu) -->
+        <div class="menu-header">
+            <button id="profileBtn" class="profile-btn">
+                <i class="fas fa-user-circle"></i>
+                <span id="profileName">Guest</span>
+            </button>
+        </div>
+
         <div class="hero-content">
             <div class="game-title">
                 <i class="fas fa-globe-americas"></i>
@@ -488,6 +496,106 @@
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="script.js"></script>
+    <!-- Login Modal -->
+    <div id="loginModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" id="closeLoginModal">&times;</span>
+            <h2 data-i18n="loginTitle">Вход</h2>
+            <div class="profile-section">
+                <label data-i18n="login">Логин:</label>
+                <input type="text" id="loginUsernameInput" placeholder="login" />
+            </div>
+            <div class="profile-section">
+                <label data-i18n="password">Пароль:</label>
+                <div class="input-wrapper" style="position: relative;">
+                    <input type="password" id="loginPasswordInput" placeholder="******" />
+                    <i id="toggleLoginPassword" class="fas fa-eye"
+                        style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8;"></i>
+                </div>
+            </div>
+            <div id="loginError" class="warning hidden"></div>
+            <button id="performLoginBtn" class="btn-save-profile" data-i18n="loginAction">Войти</button>
+            <div style="margin-top: 15px; text-align: center;">
+                <span style="color: #94a3b8;" data-i18n="noAccount">Нет аккаунта? </span>
+                <a href="#" id="openRegisterLink" style="color: var(--accent-color); text-decoration: none;"
+                    data-i18n="registerLink">Зарегистрироваться</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Registration Modal -->
+    <div id="registerModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" id="closeRegisterModal">&times;</span>
+            <h2 data-i18n="registerTitle">Регистрация</h2>
+            <div class="profile-section">
+                <label data-i18n="nickname">Отображаемое имя:</label>
+                <input type="text" id="regNicknameInput" placeholder="Имя игрока" />
+            </div>
+            <div class="profile-section">
+                <label data-i18n="login">Логин (латиница):</label>
+                <input type="text" id="regLoginInput" placeholder="login" />
+            </div>
+            <div class="profile-section">
+                <label data-i18n="password">Пароль:</label>
+                <div class="input-wrapper" style="position: relative;">
+                    <input type="password" id="regPasswordInput" placeholder="******" />
+                    <i id="toggleRegPassword" class="fas fa-eye"
+                        style="position: absolute; right: 10px; top: 50%; transform: translateY(-50%); cursor: pointer; color: #94a3b8;"></i>
+                </div>
+            </div>
+            <div class="profile-section">
+                <label data-i18n="confirmPassword">Повторите пароль:</label>
+                <div class="input-wrapper" style="position: relative;">
+                    <input type="password" id="regPasswordConfirmInput" placeholder="******" />
+                </div>
+            </div>
+            <div id="registerError" class="warning hidden"></div>
+            <button id="performRegisterBtn" class="btn-save-profile"
+                data-i18n="registerAction">Зарегистрироваться</button>
+        </div>
+    </div>
+
+    <!-- Profile/Stats Modal (Authorized Only) -->
+    <div id="profileModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" id="closeProfileModal">&times;</span>
+            <h2 data-i18n="profileTitle">Профиль</h2>
+
+            <div class="profile-header" style="text-align: center; margin-bottom: 20px;">
+                <i class="fas fa-user-circle" style="font-size: 3rem; color: var(--accent-color);"></i>
+                <h3 id="profileDisplayNickname" style="color: white; margin: 10px 0;">Guest</h3>
+                <small id="profileDisplayLogin" style="color: #64748b;">@guest</small>
+            </div>
+
+            <div class="profile-actions" style="margin-bottom: 20px; text-align: right;">
+                <button id="logoutBtn" class="btn-secondary"
+                    style="padding: 5px 10px; font-size: 0.8rem; background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444;">
+                    <i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">Выйти</span>
+                </button>
+            </div>
+
+            <hr />
+            <h3 data-i18n="statistics">Статистика</h3>
+            <ul class="stats-list">
+                <li data-i18n="totalGames">Всего игр: <span id="statTotalGames">0</span></li>
+                <li data-i18n="totalCorrect">Всего правильных: <span id="statTotalCorrect">0</span></li>
+                <li data-i18n="totalWrong">Всего неправильных: <span id="statTotalWrong">0</span></li>
+                <li data-i18n="totalTime">Время в игре: <span id="statTotalTime">0s</span></li>
+                <li data-i18n="overallSuccess">Успешность: <span id="statOverallSuccess">0%</span></li>
+            </ul>
+            <h4 data-i18n="regionSuccess">Успешность по регионам</h4>
+            <table id="regionStatsTable" class="region-table">
+                <thead>
+                    <tr>
+                        <th data-i18n="region">Регион</th>
+                        <th data-i18n="success">Успешность</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+    </div>
 </body>
 
 </html>

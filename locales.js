@@ -4,13 +4,39 @@
 const LOCALES = {
     ru: {
         // --- ЗАГОЛОВКИ И МЕНЮ ---
-        'gameTitle': 'GeoGator',
+        'gameTitle': 'ГеоГатор', // Capitalized Cyrillic
         'gameSubtitle': 'Исследуй мир, ставь рекорды.',
         'statsTitle': 'СТАТИСТИКА',
+        'guest': 'Гость',
 
-        'statTotal': 'Всего верно',
+        'statTotal': 'Всего Верно',
         'statRecord': 'Рекорд',
         'statAccuracy': 'Точность',
+
+        // --- ПРОФИЛЬ И АВТОРИЗАЦИЯ ---
+        'profileTitle': 'Профиль',
+        'loginTitle': 'Вход',
+        'registerTitle': 'Регистрация',
+        'nickname': 'Имя',
+        'login': 'Логин',
+        'password': 'Пароль',
+        'confirmPassword': 'Повторите Пароль',
+        'loginAction': 'Войти',
+        'registerAction': 'Зарегистрироваться',
+        'logout': 'Выйти',
+        'noAccount': 'Нет аккаунта?',
+        'registerLink': 'Зарегистрироваться',
+        'loginInvalid': 'Недопустимый Логин',
+
+        // --- ПОЛНАЯ СТАТИСТИКА ---
+        'totalGames': 'Всего Игр',
+        'totalCorrect': 'Всего Верно',
+        'totalWrong': 'Всего Неверно',
+        'totalTime': 'Время в Игре',
+        'overallSuccess': 'Успешность',
+        'regionSuccess': 'Успешность по Регионам',
+        'region': 'Регион',
+        'success': 'Успех',
 
         'startGame': 'ИГРАТЬ',
         'settings': 'НАСТРОЙКИ',
@@ -125,10 +151,36 @@ const LOCALES = {
         'gameTitle': 'GeoGator',
         'gameSubtitle': 'Explore the world, beat records.',
         'statsTitle': 'STATISTICS',
+        'guest': 'Guest',
 
         'statTotal': 'Total Correct',
         'statRecord': 'Best Score',
         'statAccuracy': 'Accuracy',
+
+        // --- PROFILE & AUTH ---
+        'profileTitle': 'Profile',
+        'loginTitle': 'Sign In',
+        'registerTitle': 'Registration',
+        'nickname': 'Nickname',
+        'login': 'Login',
+        'password': 'Password',
+        'confirmPassword': 'Confirm Password',
+        'loginAction': 'Sign In',
+        'registerAction': 'Register',
+        'logout': 'Logout',
+        'noAccount': 'No account?',
+        'registerLink': 'Register',
+        'loginInvalid': 'Invalid Login',
+
+        // --- FULL STATISTICS ---
+        'totalGames': 'Total Games',
+        'totalCorrect': 'Total Correct',
+        'totalWrong': 'Total Wrong',
+        'totalTime': 'Time Played',
+        'overallSuccess': 'Success Rate',
+        'regionSuccess': 'Regional Success',
+        'region': 'Region',
+        'success': 'Success',
 
         'startGame': 'PLAY',
         'settings': 'SETTINGS',
