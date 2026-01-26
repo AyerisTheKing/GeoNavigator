@@ -4,6 +4,8 @@
 class GeoNavigator {
     constructor() {
         this.config = {
+            // Add answer cooldown (ms) to control delay after answering before next question
+            answerCooldown: 1500, // default 1.5 seconds, can be adjusted in settings if needed
             currentGame: null,
             settings: { language: 'ru', volume: 80, theme: 'dark', isMuted: false },
             gameState: {
@@ -389,7 +391,7 @@ class GeoNavigator {
         });
 
         pool = [...new Set(pool)].filter(i => i !== correct);
-        const wrong = this.shuffleArray(pool).slice(0, 3);
+        const wrong = this.shuffleArray(pool).slice(0, 5);
         const options = this.shuffleArray([correct, ...wrong]);
 
         options.forEach(ans => {
@@ -421,7 +423,7 @@ class GeoNavigator {
                 'info'
             ), 1000);
         }
-        setTimeout(() => this.nextQuestion(), 1500);
+        setTimeout(() => this.nextQuestion(), this.config.answerCooldown);
     }
 
     markButtons(correct, selected) {

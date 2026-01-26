@@ -16,13 +16,13 @@
     --dark-color: #1e293b;
     --gray-color: #64748b;
     --gray-light: #e2e8f0;
-    
+
     --gradient-primary: linear-gradient(135deg, #4361ee, #3a0ca3);
     --gradient-success: linear-gradient(135deg, #4ade80, #16a34a);
     --gradient-warning: linear-gradient(135deg, #f59e0b, #d97706);
     --gradient-danger: linear-gradient(135deg, #ef4444, #dc2626);
     --gradient-secondary: linear-gradient(135deg, #4cc9f0, #4895ef);
-    
+
     --border-radius: 12px;
     --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
@@ -44,7 +44,7 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: 
+    background:
         radial-gradient(circle at 20% 80%, rgba(76, 201, 240, 0.15) 0%, transparent 50%),
         radial-gradient(circle at 80% 20%, rgba(67, 97, 238, 0.15) 0%, transparent 50%),
         radial-gradient(circle at 40% 40%, rgba(58, 12, 163, 0.15) 0%, transparent 50%);
@@ -53,27 +53,49 @@ body::before {
 
 /* Анимации */
 @keyframes float {
-    0%, 100% { transform: translateY(0) rotate(0deg); }
-    50% { transform: translateY(-10px) rotate(2deg); }
+
+    0%,
+    100% {
+        transform: translateY(0) rotate(0deg);
+    }
+
+    50% {
+        transform: translateY(-10px) rotate(2deg);
+    }
 }
 
 @keyframes pulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
 }
 
 @keyframes gradientShift {
-    0%, 100% { background-position: 0% 50%; }
-    50% { background-position: 100% 50%; }
+
+    0%,
+    100% {
+        background-position: 0% 50%;
+    }
+
+    50% {
+        background-position: 100% 50%;
+    }
 }
 
 @keyframes fadeIn {
-    from { 
-        opacity: 0; 
+    from {
+        opacity: 0;
         transform: translateY(10px);
     }
-    to { 
-        opacity: 1; 
+
+    to {
+        opacity: 1;
         transform: translateY(0);
     }
 }
@@ -83,6 +105,7 @@ body::before {
         transform: translateX(100%);
         opacity: 0;
     }
+
     to {
         transform: translateX(0);
         opacity: 1;
@@ -94,6 +117,7 @@ body::before {
         fill-opacity: 0;
         stroke-opacity: 0;
     }
+
     to {
         fill-opacity: 0.4;
         stroke-opacity: 1;
@@ -101,13 +125,26 @@ body::before {
 }
 
 @keyframes timerPulse {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0.7; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
 }
 
 @keyframes glow {
-    0% { transform: translateX(-100%); }
-    50%, 100% { transform: translateX(100%); }
+    0% {
+        transform: translateX(-100%);
+    }
+
+    50%,
+    100% {
+        transform: translateX(100%);
+    }
 }
 
 @keyframes fadeInPause {
@@ -115,6 +152,7 @@ body::before {
         opacity: 0;
         backdrop-filter: blur(0);
     }
+
     to {
         opacity: 1;
         backdrop-filter: blur(20px);
@@ -122,9 +160,12 @@ body::before {
 }
 
 @keyframes notificationPulse {
-    0%, 100% {
+
+    0%,
+    100% {
         transform: translateX(0) scale(1);
     }
+
     50% {
         transform: translateX(-5px) scale(1.02);
     }
@@ -135,6 +176,7 @@ body::before {
         transform: scale(0, 0);
         opacity: 0.5;
     }
+
     100% {
         transform: scale(40, 40);
         opacity: 0;
@@ -142,9 +184,17 @@ body::before {
 }
 
 @keyframes countrySelected {
-    0% { transform: scale(1); }
-    50% { transform: scale(1.02); }
-    100% { transform: scale(1); }
+    0% {
+        transform: scale(1);
+    }
+
+    50% {
+        transform: scale(1.02);
+    }
+
+    100% {
+        transform: scale(1);
+    }
 }
 
 /* Screen Containers */
@@ -315,10 +365,10 @@ body::before {
     left: 0;
     width: 100%;
     height: 100%;
-    background: linear-gradient(90deg, 
-        transparent 0%,
-        rgba(255, 255, 255, 0.4) 50%,
-        transparent 100%);
+    background: linear-gradient(90deg,
+            transparent 0%,
+            rgba(255, 255, 255, 0.4) 50%,
+            transparent 100%);
     transform: translateX(-100%);
     animation: glow 2s ease-in-out infinite;
 }
@@ -695,7 +745,7 @@ body::before {
     overflow: hidden;
 }
 
-.continent-option input:checked + .continent-card {
+.continent-option input:checked+.continent-card {
     background: linear-gradient(145deg, rgba(67, 97, 238, 0.3), rgba(76, 201, 240, 0.2));
     border-color: var(--primary-color);
     transform: translateY(-2px);
@@ -746,7 +796,7 @@ body::before {
     backdrop-filter: blur(5px);
 }
 
-.mode-option input:checked + .mode-card {
+.mode-option input:checked+.mode-card {
     background: linear-gradient(145deg, rgba(67, 97, 238, 0.3), rgba(76, 201, 240, 0.2));
     border-color: var(--primary-color);
 }
@@ -805,8 +855,8 @@ body::before {
     backdrop-filter: blur(5px);
 }
 
-.question-option input:checked + span,
-.timer-option input:checked + span {
+.question-option input:checked+span,
+.timer-option input:checked+span {
     background: linear-gradient(145deg, rgba(67, 97, 238, 0.3), rgba(76, 201, 240, 0.2));
     border-color: var(--primary-color);
 }
@@ -829,7 +879,7 @@ body::before {
     cursor: not-allowed;
 }
 
-.question-option input:disabled + span {
+.question-option input:disabled+span {
     background: rgba(255, 255, 255, 0.05) !important;
     border-color: rgba(255, 255, 255, 0.1) !important;
     cursor: not-allowed;
@@ -1081,7 +1131,7 @@ body::before {
 /* 8 вариантов ответов */
 .answer-grid {
     display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    grid-template-columns: repeat(3, 1fr);
     gap: 15px;
 }
 
@@ -1738,7 +1788,7 @@ body.dark-theme {
 }
 
 body.dark-theme::before {
-    background: 
+    background:
         radial-gradient(circle at 20% 80%, rgba(76, 201, 240, 0.1) 0%, transparent 50%),
         radial-gradient(circle at 80% 20%, rgba(67, 97, 238, 0.1) 0%, transparent 50%),
         radial-gradient(circle at 40% 40%, rgba(58, 12, 163, 0.1) 0%, transparent 50%);
@@ -1749,7 +1799,7 @@ body.dark-theme::before {
     .game-content {
         grid-template-columns: 1fr;
     }
-    
+
     .game-map {
         height: 400px;
     }
@@ -1759,77 +1809,77 @@ body.dark-theme::before {
     .game-title {
         font-size: 2.5rem;
     }
-    
+
     .game-stats {
         grid-template-columns: 1fr;
     }
-    
+
     .features-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .game-modes {
         flex-direction: column;
         align-items: center;
     }
-    
+
     .game-mode-options {
         grid-template-columns: 1fr;
     }
-    
+
     .results-stats {
         grid-template-columns: 1fr;
     }
-    
+
     .results-actions {
         flex-direction: column;
     }
-    
+
     .btn-start-game {
         padding: 20px 30px;
         font-size: 1.2rem;
     }
-    
+
     .answer-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .game-content {
         grid-template-columns: 1fr;
         grid-template-rows: 1fr auto;
     }
-    
+
     .game-map {
         height: 300px;
     }
-    
+
     .game-question {
         max-height: 400px;
         overflow-y: auto;
     }
-    
+
     .answer-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .country-tooltip {
         font-size: 0.8rem;
         padding: 6px 10px;
     }
-    
+
     .pause-stats {
         grid-template-columns: 1fr;
     }
-    
+
     .pause-actions {
         gap: 10px;
     }
-    
+
     .pause-action-btn {
         padding: 15px;
         font-size: 1rem;
     }
-    
+
     .pause-content {
         padding: 20px;
         margin: 10px;
@@ -1840,38 +1890,39 @@ body.dark-theme::before {
     .container {
         padding: 10px;
     }
-    
+
     .game-title {
         font-size: 2rem;
         flex-direction: column;
         gap: 10px;
     }
-    
+
     .btn-start-game {
         width: 100%;
     }
-    
+
     .answer-grid {
         grid-template-columns: 1fr;
     }
-    
+
     .continent-card span {
         font-size: 1rem;
     }
-    
+
     .mode-card h4 {
         font-size: 1.1rem;
     }
-    
+
     .question-text {
         font-size: 1.4rem;
     }
-    
+
     .capital-hint span {
         font-size: 1rem;
     }
 
 }
+
 /* === НОВЫЕ СТИЛИ МЕНЮ (v6.6) === */
 
 /* Кнопки меню */
@@ -1929,9 +1980,17 @@ body.dark-theme::before {
     margin-bottom: 5px;
 }
 
-.stat-icon.correct { color: var(--success-color); }
-.stat-icon.record { color: var(--warning-color); }
-.stat-icon.accuracy { color: var(--accent-color); }
+.stat-icon.correct {
+    color: var(--success-color);
+}
+
+.stat-icon.record {
+    color: var(--warning-color);
+}
+
+.stat-icon.accuracy {
+    color: var(--accent-color);
+}
 
 .stat-value {
     font-size: 1.8rem;
@@ -1950,18 +2009,35 @@ body.dark-theme::before {
 /* Адаптив для мобильных */
 @media (max-width: 600px) {
     .stats-container {
-        grid-template-columns: 1fr; /* В столбик на телефоне */
+        grid-template-columns: 1fr;
+        /* В столбик на телефоне */
         gap: 10px;
     }
+
     .stat-card {
         display: flex;
         align-items: center;
         justify-content: space-between;
         padding: 10px 20px;
     }
-    .stat-value { font-size: 1.4rem; order: 2; }
-    .stat-icon { font-size: 1.2rem; order: 1; margin: 0; }
-    .stat-label { order: 1; margin-left: 10px; flex-grow: 1; text-align: left; }
+
+    .stat-value {
+        font-size: 1.4rem;
+        order: 2;
+    }
+
+    .stat-icon {
+        font-size: 1.2rem;
+        order: 1;
+        margin: 0;
+    }
+
+    .stat-label {
+        order: 1;
+        margin-left: 10px;
+        flex-grow: 1;
+        text-align: left;
+    }
 }
 
 /* --- GeoGator v7.0 Updates --- */
@@ -1988,7 +2064,8 @@ body.dark-theme::before {
 }
 
 #openSettingsBtn i {
-    color: #9ca3af !important; /* Silver icon */
+    color: #9ca3af !important;
+    /* Silver icon */
 }
 
 /* Ensure Start Button is Blue */
@@ -1999,7 +2076,7 @@ body.dark-theme::before {
 
 /* Volume Slider Fix */
 #volumeSlider {
-    background: #334155; 
+    background: #334155;
 }
 
 
@@ -2037,7 +2114,7 @@ body.dark-theme::before {
 }
 
 #btnMute:hover {
-    background: rgba(255,255,255,0.1);
+    background: rgba(255, 255, 255, 0.1);
 }
 
 #btnMute.muted {
@@ -2048,4 +2125,3 @@ body.dark-theme::before {
     flex: 1;
     margin: 0 !important;
 }
-
