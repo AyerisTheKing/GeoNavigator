@@ -5,16 +5,23 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GeoGator - Географическая игра</title>
+    <!-- Основные стили проекта -->
     <link rel="stylesheet" href="style.css">
+    <!-- Иконки FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Шрифт Google Fonts: Poppins -->
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700;800&display=swap"
         rel="stylesheet">
+    <!-- Библиотека карт Leaflet (CSS) -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
         integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="" />
+    <!-- Библиотека Supabase Client (JS) -->
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
 </head>
 
 <body>
+    <!-- ЭКРАН: ГЛАВНОЕ МЕНЮ -->
+    <!-- Содержит заголовок, кнопку старта, настройки и краткую статистику -->
     <div id="mainMenu" class="screen active">
         <!-- Profile Button (Moved Inside Main Menu) -->
         <div class="menu-header">
@@ -79,6 +86,8 @@
         </div>
     </div>
 
+    <!-- ЭКРАН: ГЛОБАЛЬНЫЕ НАСТРОЙКИ -->
+    <!-- Выбор языка и громкости звука -->
     <div id="settingsScreen" class="screen">
         <div class="container">
             <button class="back-btn" id="backFromSettingsBtn">
@@ -125,6 +134,8 @@
         </div>
     </div>
 
+    <!-- ЭКРАН: НАСТРОЙКИ НОВОЙ ИГРЫ (SETUP) -->
+    <!-- Выбор континентов, режима, количества вопросов и таймера -->
     <div id="gameSetupScreen" class="screen">
         <div class="container">
             <button class="back-btn" id="backFromSetupBtn">
@@ -285,6 +296,8 @@
         </div>
     </div>
 
+    <!-- ЭКРАН: ИГРОВОЙ ПРОЦЕСС -->
+    <!-- Карта, вопрос, варианты ответов, таймер -->
     <div id="gameScreen" class="screen">
         <div class="game-container">
             <div class="game-header">
@@ -353,6 +366,8 @@
         </div>
     </div>
 
+    <!-- ЭКРАН: ПАУЗА -->
+    <!-- Меню во время игры для временной остановки -->
     <div id="pauseScreen" class="screen">
         <div class="container">
             <h2 class="screen-title">
@@ -410,6 +425,8 @@
         </div>
     </div>
 
+    <!-- ЭКРАН: РЕЗУЛЬТАТЫ -->
+    <!-- Финальный экран после завершения раунда -->
     <div id="resultScreen" class="screen">
         <div class="container">
             <h2 class="screen-title">
@@ -465,6 +482,7 @@
         </div>
     </div>
 
+    <!-- ВСПЛЫВАЮЩИЕ УВЕДОМЛЕНИЯ -->
     <div id="notification" class="notification">
         <div class="notification-content">
             <i id="notificationIcon" class="fas fa-info-circle"></i>
@@ -473,16 +491,18 @@
     </div>
 
     <!-- Background Music -->
+    <!-- ФОНОВАЯ МУЗЫКА -->
     <audio id="bgMusic" loop>
         <source src="bg.mp3" type="audio/mpeg">
     </audio>
 
+    <!-- СКРИПТЫ: Данные стран, Переводы, Карта, Основная логика -->
     <script src="countries.js"></script>
     <script src="locales.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="script.js"></script>
-    <!-- Login Modal -->
+    <!-- МОДАЛЬНОЕ ОКНО: ВХОД В СИСТЕМУ -->
     <div id="loginModal" class="modal hidden">
         <div class="modal-content">
             <span class="close" id="closeLoginModal">&times;</span>
@@ -509,14 +529,14 @@
         </div>
     </div>
 
-    <!-- Registration Modal -->
+    <!-- МОДАЛЬНОЕ ОКНО: РЕГИСТРАЦИЯ -->
     <div id="registerModal" class="modal hidden">
         <div class="modal-content">
             <span class="close" id="closeRegisterModal">&times;</span>
             <h2 data-i18n="registerTitle">Регистрация</h2>
             <div class="profile-section">
                 <label data-i18n="nickname">Отображаемое имя:</label>
-                <input type="text" id="regNicknameInput" placeholder="Имя игрока" />
+                <input type="text" id="regNicknameInput" placeholder="Имя игрока" maxlength="10" />
             </div>
             <div class="profile-section">
                 <label data-i18n="login">Логин (латиница):</label>
@@ -542,7 +562,7 @@
         </div>
     </div>
 
-    <!-- Profile/Stats Modal (Authorized Only) -->
+    <!-- МОДАЛЬНОЕ ОКНО: ПРОФИЛЬ ИГРОКА (ТОЛЬКО ДЛЯ АВТОРИЗОВАННЫХ) -->
     <div id="profileModal" class="modal hidden">
         <div class="modal-content">
             <span class="close" id="closeProfileModal">&times;</span>

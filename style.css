@@ -5,7 +5,9 @@
     box-sizing: border-box;
 }
 
+/* Переменные цветовой палитры и общие настройки */
 :root {
+    /* Основные цвета */
     --primary-color: #4361ee;
     --secondary-color: #3a0ca3;
     --accent-color: #4cc9f0;
@@ -17,17 +19,20 @@
     --gray-color: #64748b;
     --gray-light: #e2e8f0;
 
+    /* Градиенты для кнопок и фонов */
     --gradient-primary: linear-gradient(135deg, #4361ee, #3a0ca3);
     --gradient-success: linear-gradient(135deg, #4ade80, #16a34a);
     --gradient-warning: linear-gradient(135deg, #f59e0b, #d97706);
     --gradient-danger: linear-gradient(135deg, #ef4444, #dc2626);
     --gradient-secondary: linear-gradient(135deg, #4cc9f0, #4895ef);
 
+    /* Общие отступы и тени */
     --border-radius: 12px;
     --shadow: 0 10px 25px rgba(0, 0, 0, 0.1);
     --transition: all 0.3s ease;
 }
 
+/* Фон страницы с градиентом */
 body {
     font-family: 'Poppins', sans-serif;
     background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
@@ -36,7 +41,7 @@ body {
     overflow-x: hidden;
 }
 
-/* Добавляем анимированный градиентный фон */
+/* Добавляем анимированный градиентный фон (сложный эффект с radial-gradient) */
 body::before {
     content: '';
     position: fixed;
@@ -51,7 +56,8 @@ body::before {
     z-index: -1;
 }
 
-/* Анимации */
+/* Анимации (Keyframes) */
+/* Плавное покачивание (для заголовка) */
 @keyframes float {
 
     0%,
@@ -64,6 +70,7 @@ body::before {
     }
 }
 
+/* Пульсация (для акцентов) */
 @keyframes pulse {
 
     0%,
@@ -76,6 +83,7 @@ body::before {
     }
 }
 
+/* Сдвиг градиента (для живого текста) */
 @keyframes gradientShift {
 
     0%,
@@ -88,6 +96,7 @@ body::before {
     }
 }
 
+/* Появление экранов */
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -124,6 +133,7 @@ body::before {
     }
 }
 
+/* Пульсация таймера при малом времени */
 @keyframes timerPulse {
 
     0%,
@@ -136,6 +146,7 @@ body::before {
     }
 }
 
+/* Блик на кнопках */
 @keyframes glow {
     0% {
         transform: translateX(-100%);
@@ -147,6 +158,7 @@ body::before {
     }
 }
 
+/* Эффект размытия при паузе */
 @keyframes fadeInPause {
     from {
         opacity: 0;
@@ -197,7 +209,8 @@ body::before {
     }
 }
 
-/* Screen Containers */
+/* Стили для переключения экранов */
+/* .screen скрыт по умолчанию, .active отображается с анимацией */
 .screen {
     position: fixed;
     top: 0;
@@ -231,6 +244,7 @@ body::before {
     overflow-y: auto;
 }
 
+/* Glassmorphism: Эффект матового стекла для карточек */
 .hero-content {
     text-align: center;
     max-width: 800px;
@@ -1794,7 +1808,8 @@ body.dark-theme::before {
         radial-gradient(circle at 40% 40%, rgba(58, 12, 163, 0.1) 0%, transparent 50%);
 }
 
-/* Responsive Design */
+/* Адаптив под мобильные устройства (Media Queries) */
+/* Настройка сетки и шрифтов для планшетов и телефонов */
 @media (max-width: 1024px) {
     .game-content {
         grid-template-columns: 1fr;
@@ -2142,7 +2157,7 @@ body.dark-theme::before {
     pointer-events: none;
 }
 
-/* Profile Button */
+/* Кнопка профиля (с градиентом и тенью) */
 .profile-btn {
     pointer-events: auto;
     /* Position is now handled by .menu-header */
@@ -2174,7 +2189,8 @@ body.dark-theme::before {
     color: var(--accent-color);
 }
 
-/* Modal */
+/* Стили модальных окон (Вход, Регистрация, Профиль) */
+/* Используем backdrop-filter для размытия фона */
 .modal {
     position: fixed;
     top: 0;

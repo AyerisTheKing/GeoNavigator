@@ -1,5 +1,6 @@
-// countries.js - Data module for GeoGator v7.0
-// Full database: 195 countries, Split Americas, Natural Earth compatibility
+// countries.js - Модуль данных для GeoGator v7.0
+// Содержит базу данных 195 стран, их столицы, коды ISO, и регионы.
+// Используется для валидации и генерации вопросов.
 
 const GeoCountries = {
     // 1. Полный список имен (Русский -> Английский)

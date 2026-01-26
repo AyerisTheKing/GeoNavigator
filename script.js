@@ -1,17 +1,20 @@
-// GeoGator v7.0 - Main Logic
-// Features: Split Americas, Unlimited Timer, "All" Questions mode, Smart Slider, Profile System
+// GeoGator v7.0 - Основная логика игры
+// Функционал: Разделение Америк, Безлимитный таймер, Режим "Все вопросы", Умный слайдер, Система профилей (Supabase)
 
 const SUPABASE_URL = "https://tdlhwokrmuyxsdleepht.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkbGh3b2tybXV5eHNkbGVlcGh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDc3ODAsImV4cCI6MjA4NDk4Mzc4MH0.RlfUmejx2ywHNcFofZM4mNE8nIw6qxaTNzqxmf4N4-4";
 
-// Will be initialized in constructor
-let supabase;
+// Будет инициализирован в конструкторе
+let supabaseClient;
 
 class GeoGator {
+    /**
+     * Конструктор инициализирует клиент Supabase и начальное состояние игры.
+     */
     constructor() {
-        // Initialize Supabase Client
+        // Инициализация Supabase Client
         if (window.supabase) {
-            supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
         } else {
             console.error("Supabase SDK not loaded!");
         }
@@ -51,6 +54,7 @@ class GeoGator {
             }
         };
 
+        // Настройки отображения карты для разных континентов
         this.continentViews = {
             'europe': { center: [50, 15], zoom: 4 },
             'asia': { center: [35, 90], zoom: 3 },
@@ -63,6 +67,10 @@ class GeoGator {
         this.init();
     }
 
+    /**
+     * Основная инициализация: загрузка настроек, статистики, слушателей событий
+     * и проверка сессии пользователя в Supabase.
+     */
     async init() {
         console.log('GeoGator v7.0 initialized with Supabase');
         this.loadSettings();
@@ -75,8 +83,8 @@ class GeoGator {
         this.updateStatsUI();
         this.initVolumeSliderVisuals();
 
-        // Check for existing session
-        const { data: { session } } = await supabase.auth.getSession();
+        // Проверка существующей сессии (Supabase Auth)
+        const { data: { session } } = await supabaseClient.auth.getSession();
         if (session) {
             this.handleAuthSession(session);
         } else {
@@ -87,10 +95,15 @@ class GeoGator {
         document.addEventListener('click', () => this.manageMusic(), { once: true });
     }
 
+    /**
+     * Обработка активной сессии пользователя.
+     * Загружает данные профиля из таблицы 'profiles' в базе данных Supabase.
+     * @param {Object} session - Объект сессии Supabase
+     */
     async handleAuthSession(session) {
         this.config.user.id = session.user.id;
-        // Fetch profile data
-        const { data: profile, error } = await supabase
+        // Запрос данных профиля
+        const { data: profile, error } = await supabaseClient
             .from('profiles')
             .select('*')
             .eq('id', this.config.user.id)
@@ -99,9 +112,17 @@ class GeoGator {
         if (profile && !error) {
             this.config.user.login = profile.username;
             this.config.user.nickname = profile.nickname;
-            document.getElementById('profileName').textContent = this.config.user.nickname;
 
-            // Sync stats from DB to local state
+            // Explicitly update DOM elements
+            const pName = document.getElementById('profileName');
+            const dNick = document.getElementById('profileDisplayNickname');
+            const dLogin = document.getElementById('profileDisplayLogin');
+
+            if (pName) pName.textContent = this.config.user.nickname;
+            if (dNick) dNick.textContent = this.config.user.nickname;
+            if (dLogin) dLogin.textContent = '@' + this.config.user.login;
+
+            // Синхронизация статистики из БД
             this.config.playerStats = {
                 bestScore: profile.best_score || 0,
                 totalCorrect: profile.total_correct || 0,
@@ -114,7 +135,7 @@ class GeoGator {
             this.updateProfileStatsUI();
             this.updateStatsUI();
 
-            // Store simple auth flag/data locally if needed for logic, but primary is session
+            // Локальный кеш для оффлайн логики (если нужно)
             localStorage.setItem('geoGatorLogin', profile.username);
         }
     }
@@ -156,8 +177,8 @@ class GeoGator {
         const bestEl = document.getElementById('statBestScore');
         const accEl = document.getElementById('statAccuracy');
 
-        if (totalEl) totalEl.textContent = s.totalCorrect;
-        if (bestEl) bestEl.textContent = s.bestScore;
+        if (totalEl) totalEl.textContent = s.totalCorrect || 0;
+        if (bestEl) bestEl.textContent = s.bestScore || 0;
 
         let acc = 0;
         if (s.totalQuestions > 0) acc = Math.round((s.totalCorrect / s.totalQuestions) * 100);
@@ -312,6 +333,10 @@ class GeoGator {
         }
     }
 
+    /**
+     * Выполняет попытку входа пользователя через Supabase Auth.
+     * Использует email (сформированный из логина) и пароль.
+     */
     async performLogin() {
         const login = document.getElementById('loginUsernameInput').value.trim();
         const pass = document.getElementById('loginPasswordInput').value;
@@ -322,10 +347,10 @@ class GeoGator {
             return;
         }
 
-        // Construct email from username/login
+        // Формируем email из логина, так как Supabase требует email
         const email = `${login}@geogator.game`;
 
-        const { data, error } = await supabase.auth.signInWithPassword({
+        const { data, error } = await supabaseClient.auth.signInWithPassword({
             email: email,
             password: pass,
         });
@@ -336,7 +361,7 @@ class GeoGator {
             this.showError(errorDiv, "", false);
             this.closeLoginModal();
             this.showNotification(`Вход выполнен!`, 'success');
-            // Session handling logic in 'init' and 'handleAuthSession' handles the UI update
+            // Обновляем сессию и UI
             await this.handleAuthSession(data.session);
         }
     }
@@ -359,6 +384,11 @@ class GeoGator {
         }
     }
 
+    /**
+     * Регистрация нового пользователя.
+     * 1. Создает пользователя в Supabase Auth (signUp).
+     * 2. Создает запись в таблице 'profiles' (insert).
+     */
     async performRegister() {
         const nick = document.getElementById('regNicknameInput').value.trim();
         const login = document.getElementById('regLoginInput').value.trim();
@@ -366,9 +396,13 @@ class GeoGator {
         const confirmPass = document.getElementById('regPasswordConfirmInput').value;
         const errorDiv = document.getElementById('registerError');
 
-        // Validation
+        // Валидация
         if (!nick || !login || !pass || !confirmPass) {
             this.showError(errorDiv, "Заполните все поля");
+            return;
+        }
+        if (nick.length > 10) {
+            this.showError(errorDiv, "Максимальная длина имени - 10 символов");
             return;
         }
         if (!/^[a-zA-Z0-9_]+$/.test(login)) {
@@ -382,8 +416,8 @@ class GeoGator {
 
         const email = `${login}@geogator.game`;
 
-        // 1. Create Auth User
-        const { data, error } = await supabase.auth.signUp({
+        // 1. Создание Auth User
+        const { data, error } = await supabaseClient.auth.signUp({
             email: email,
             password: pass,
         });
@@ -394,8 +428,8 @@ class GeoGator {
         }
 
         if (data.user) {
-            // 2. Create Profile
-            const { error: profileError } = await supabase
+            // 2. Создание профиля в БД
+            const { error: profileError } = await supabaseClient
                 .from('profiles')
                 .insert([
                     { id: data.user.id, username: login, nickname: nick }
@@ -439,7 +473,7 @@ class GeoGator {
 
     async performLogout() {
         if (confirm(this.getLocalizedText('quitConfirm') || "Выйти из аккаунта?")) {
-            await supabase.auth.signOut();
+            await supabaseClient.auth.signOut();
 
             // Clear Local Storage
             localStorage.removeItem('geoGatorLogin');
@@ -518,8 +552,11 @@ class GeoGator {
         slider.style.background = `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${val}%, #334155 ${val}%, #334155 100%)`;
     }
 
-    // === 3. GAME LOGIC ===
-
+    // === 3. ИГРОВАЯ ЛОГИКА ===
+    /*
+     * Запуск новой игры.
+     * Считывает параметры, сбрасывает состояние, генерирует вопросы и показывает экран игры.
+     */
     startGame() {
         const params = this.getGameParameters();
         if (!this.validateGameParameters(params)) return;
@@ -527,7 +564,7 @@ class GeoGator {
         this.config.currentGame = params;
         this.resetGameStateForNewGame();
 
-        // Increment Total Games
+        // Увеличиваем счетчик игр
         this.config.playerStats.totalGames = (this.config.playerStats.totalGames || 0) + 1;
         this.saveStats(); // Save immediately
 
@@ -572,6 +609,10 @@ class GeoGator {
         document.getElementById('progressBar').style.width = '0%';
     }
 
+    /*
+     * Генерация пула вопросов на основе выбранных континентов.
+     * Использует window.GeoCountries для получения списка стран.
+     */
     generateQuestions() {
         const { continents: selected, questionCount } = this.config.currentGame;
         let allCountries = [];
@@ -595,6 +636,10 @@ class GeoGator {
         document.getElementById('totalQuestions').textContent = this.config.gameState.questions.length;
     }
 
+    /*
+     * Отображение текущего вопроса.
+     * Настраивает UI в зависимости от режима игры (флаги, карта, текст).
+     */
     showQuestion() {
         this.config.gameState.isInputBlocked = false;
         this.resetCountryColors();
@@ -686,11 +731,15 @@ class GeoGator {
         });
     }
 
+    /*
+     * Обработка выбора ответа (клик по кнопке).
+     * Проверяет правильность, обновляет статистику и запускает переход к следующему вопросу.
+     */
     handleAnswerSelection(selected, correct, q) {
         this.config.gameState.isInputBlocked = true;
         this.stopTimer();
 
-        // Stats Update
+        // Обновление статистики (Регионы)
         const region = q.continent;
         if (!this.config.playerStats.regionStats) this.config.playerStats.regionStats = {};
         if (!this.config.playerStats.regionStats[region]) this.config.playerStats.regionStats[region] = { correct: 0, total: 0 };
@@ -715,7 +764,7 @@ class GeoGator {
             ), 1000);
         }
 
-        this.saveStats(); // Save stats after every answer for reliability
+        this.saveStats(); // Сохраняем статистику после каждого ответа
         setTimeout(() => this.nextQuestion(), this.config.answerCooldown);
     }
 
@@ -754,7 +803,11 @@ class GeoGator {
         setTimeout(() => this.nextQuestion(), 1500);
     }
 
-    // === CART & MAP LOGIC ===
+    // === КАРТА И ЛОГИКА ===
+    /*
+     * Инициализация карты Leaflet.
+     * Загружает карту, устанавливает границы (тайлы) и добавляет слой границ стран из GeoJSON.
+     */
     initMap() {
         if (!document.getElementById('map')) return;
         if (this.config.gameState.map) this.config.gameState.map.remove();
@@ -777,6 +830,10 @@ class GeoGator {
         }).catch(e => console.error('Map error', e));
     }
 
+    /*
+     * Настройка интерактивности для каждого слоя страны.
+     * Обрабатывает наведение (подсветка, тултип) и клик (выбор страны в режиме "Найти на карте").
+     */
     setupCountryInteractivity(feature, layer, map) {
         const iso = feature.properties.ISO_A2 || feature.properties.ISO_A2_EH;
         const adm3 = feature.properties.ADM0_A3;
@@ -904,10 +961,14 @@ class GeoGator {
         this.showResults();
     }
 
+    /**
+     * Сохраняет статистику игрока.
+     * Сначала в localStorage, затем синхронизирует с Supabase (если пользователь авторизован).
+     */
     async saveStats() {
         localStorage.setItem('geoGatorStats', JSON.stringify(this.config.playerStats));
 
-        // Server Sync via Supabase
+        // Серверная синхронизация через Supabase
         if (this.config.user.id) {
             const updates = {
                 best_score: this.config.playerStats.bestScore,
@@ -918,7 +979,7 @@ class GeoGator {
                 region_stats: this.config.playerStats.regionStats
             };
 
-            const { error } = await supabase
+            const { error } = await supabaseClient
                 .from('profiles')
                 .update(updates)
                 .eq('id', this.config.user.id);

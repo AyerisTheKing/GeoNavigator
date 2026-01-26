@@ -1,5 +1,5 @@
-// locales.js - v7.0 (GeoGator Edition)
-// Updates: Split Americas, Unlimited Time, "All" Questions
+// locales.js - Модуль локализации для GeoGator v7.0
+// Содержит переводы интерфейса и игровых сообщений на Русский (ru) и Английский (en).
 
 const LOCALES = {
     ru: {
@@ -7,6 +7,7 @@ const LOCALES = {
         'gameTitle': 'ГеоГатор', // Capitalized Cyrillic
         'gameSubtitle': 'Исследуй мир, ставь рекорды.',
         'statsTitle': 'СТАТИСТИКА',
+        'statistics': 'Статистика',
         'guest': 'Гость',
 
         'statTotal': 'Всего Верно',
@@ -151,6 +152,7 @@ const LOCALES = {
         'gameTitle': 'GeoGator',
         'gameSubtitle': 'Explore the world, beat records.',
         'statsTitle': 'STATISTICS',
+        'statistics': 'Statistics',
         'guest': 'Guest',
 
         'statTotal': 'Total Correct',
