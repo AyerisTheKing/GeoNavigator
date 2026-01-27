@@ -101,17 +101,81 @@ const GeoCountries = {
             "Антигуа и Барбуда", "Багамские Острова", "Барбадос", "Белиз", "Гаити", "Гватемала", "Гондурас",
             "Гренада", "Доминика", "Доминиканская Республика", "Канада", "Коста-Рика", "Куба", "Мексика",
             "Никарагуа", "Панама", "Сальвадор", "Сент-Винсент и Гренадины", "Сент-Китс и Невис",
-            "Сент-Люсия", "США", "Тринидад и Тобаго", "Ямайка"
+            "Сент-Люсия", "США", "Ямайка"
         ],
         south_america: [
             "Аргентина", "Боливия", "Бразилия", "Венесуэла", "Гайана", "Колумбия", "Парагвай", "Перу",
-            "Суринам", "Уругвай", "Чили", "Эквадор"
+            "Суринам", "Тринидад и Тобаго", "Уругвай", "Чили", "Эквадор"
         ],
         oceania: [
             "Австралия", "Вануату", "Кирибати", "Маршалловы Острова", "Микронезия", "Науру",
             "Новая Зеландия", "Палау", "Папуа — Новая Гвинея", "Самоа", "Соломоновы Острова",
             "Тонга", "Тувалу", "Фиджи"
         ]
+    },
+
+    // 2. Маппирование столиц (Русский -> Английский)
+    capitalMapping: {
+        // Европа
+        "Вена": "Vienna", "Тирана": "Tirana", "Андорра-ла-Велья": "Andorra la Vella", "Минск": "Minsk",
+        "Брюссель": "Brussels", "София": "Sofia", "Сараево": "Sarajevo", "Ватикан": "Vatican City",
+        "Лондон": "London", "Будапешт": "Budapest", "Берлин": "Berlin", "Афины": "Athens",
+        "Копенгаген": "Copenhagen", "Дублин": "Dublin", "Рейкьявик": "Reykjavik", "Мадрид": "Madrid",
+        "Рим": "Rome", "Рига": "Riga", "Вильнюс": "Vilnius", "Вадуц": "Vaduz",
+        "Люксембург": "Luxembourg City", "Валетта": "Valletta", "Кишинёв": "Chișinău", "Монако": "Monaco",
+        "Амстердам": "Amsterdam", "Осло": "Oslo", "Варшава": "Warsaw", "Лиссабон": "Lisbon",
+        "Москва": "Moscow", "Бухарест": "Bucharest", "Сан-Марино": "San Marino", "Скопье": "Skopje",
+        "Белград": "Belgrade", "Братислава": "Bratislava", "Любляна": "Ljubljana", "Киев": "Kyiv",
+        "Хельсинки": "Helsinki", "Париж": "Paris", "Загреб": "Zagreb", "Подгорица": "Podgorica",
+        "Прага": "Prague", "Берн": "Bern", "Стокгольм": "Stockholm", "Таллин": "Tallinn",
+        
+        // Азия
+        "Баку": "Baku", "Ереван": "Yerevan", "Кабул": "Kabul", "Дакка": "Dhaka",
+        "Манама": "Manama", "Бандар-Сери-Бегаван": "Bandar Seri Begawan", "Тхимпху": "Thimphu", "Ханой": "Hanoi",
+        "Тбилиси": "Tbilisi", "Иерусалим": "Jerusalem", "Нью-Дели": "New Delhi", "Джакарта": "Jakarta",
+        "Амман": "Amman", "Багдад": "Baghdad", "Тегеран": "Tehran", "Санаа": "Sana'a",
+        "Астана": "Astana", "Пномпень": "Phnom Penh", "Доха": "Doha", "Никосия": "Nicosia",
+        "Бишкек": "Bishkek", "Пекин": "Beijing", "Кувейт": "Kuwait City", "Вьентьян": "Vientiane",
+        "Бейрут": "Beirut", "Куала-Лумпур": "Kuala Lumpur", "Мале": "Malé", "Улан-Батор": "Ulaanbaatar",
+        "Нейпьидо": "Naypyidaw", "Катманду": "Kathmandu", "Абу-Даби": "Abu Dhabi", "Маскат": "Muscat",
+        "Исламабад": "Islamabad", "Рамалла": "Ramallah", "Эр-Рияд": "Riyadh", "Сингапур": "Singapore",
+        "Дамаск": "Damascus", "Душанбе": "Dushanbe", "Бангкок": "Bangkok", "Ашхабад": "Ashgabat",
+        "Анкара": "Ankara", "Ташкент": "Tashkent", "Манила": "Manila", "Коломбо": "Colombo",
+        "Сеул": "Seoul", "Восточный Тимор": "Dili", "Пхеньян": "Pyongyang",
+        
+        // Африка
+        "Алжир": "Algiers", "Луанда": "Luanda", "Порто-Ново": "Porto-Novo", "Габороне": "Gaborone",
+        "Уагадугу": "Ouagadougou", "Гитега": "Gitega", "Яунде": "Yaoundé", "Прая": "Praia",
+        "Банги": "Bangui", "Коморос": "Moroni", "Киншаса": "Kinshasa", "Браззавиль": "Brazzaville",
+        "Ямусукро": "Yamoussoukro", "Масеру": "Maseru", "Монровия": "Monrovia", "Триполи": "Tripoli",
+        "Порт-Луи": "Port Louis", "Нуакшот": "Nouakchott", "Антананариву": "Antananarivo", "Лилонгве": "Lilongwe",
+        "Бамако": "Bamako", "Рабат": "Rabat", "Мапуту": "Maputo", "Виндхук": "Windhoek",
+        "Нигер": "Niamey", "Абуджа": "Abuja", "Кигали": "Kigali", "Сан-Томе": "São Tomé",
+        "Виктория": "Victoria", "Дакар": "Dakar", "Могадишо": "Mogadishu", "Хартум": "Khartoum",
+        "Фритаун": "Freetown", "Додома": "Dodoma", "Ломе": "Lomé", "Тунис": "Tunis",
+        "Кампала": "Kampala", "Банги": "Bangui", "Нджамена": "N'Djamena", "Малабо": "Malabo",
+        "Асмэра": "Asmara", "Мбабане": "Mbabane", "Аддис-Абеба": "Addis Ababa", "Претория": "Pretoria",
+        "Джуба": "Juba",
+        
+        // Северная Америка
+        "Сент-Джонс": "St. John's", "Нассау": "Nassau", "Бриджтаун": "Bridgetown",
+        "Бельмопан": "Belmopan", "Порт-о-Пренс": "Port-au-Prince", "Гватемала": "Guatemala City",
+        "Тегусигальпа": "Tegucigalpa", "Сент-Джорджес": "St. George's", "Оттава": "Ottawa",
+        "Сан-Хосе": "San José", "Гавана": "Havana", "Мехико": "Mexico City", "Манагуа": "Managua",
+        "Панама": "Panama City", "Сан-Сальвадор": "San Salvador", "Кингстаун": "Kingstown",
+        "Бастер": "Basseterre", "Кастри": "Castries", "Вашингтон": "Washington, D.C.",
+        "Порт-оф-Спейн": "Port of Spain", "Кингстон": "Kingston",
+        
+        // Южная Америка
+        "Буэнос-Айрес": "Buenos Aires", "Сукре": "Sucre", "Бразилиа": "Brasília", "Сантьяго": "Santiago",
+        "Богота": "Bogotá", "Кито": "Quito", "Парамарибо": "Paramaribo", "Монтевидео": "Montevideo",
+        "Каракас": "Caracas", "Джорджтаун": "Georgetown", "Лима": "Lima",
+        
+        // Океания
+        "Канберра": "Canberra", "Порт-Вила": "Port Vila", "Тарава": "Tarawa", "Колония": "Ngerulmud",
+        "Паликир": "Palikir", "Яренн": "Yaren", "Веллингтон": "Wellington", "Корор": "Koror",
+        "Порт-Морсби": "Port Moresby", "Апиа": "Apia", "Хониара": "Honiara",
+        "Нукуалофа": "Nuku'alofa", "Фунафути": "Funafuti", "Сува": "Suva"
     },
 
     // 3. Полная база данных стран (Коды + Столицы + Регионы)
@@ -272,7 +336,7 @@ const GeoCountries = {
         "Антигуа и Барбуда": { capital: "Сент-Джонс", code: "ag", continent: "north_america" },
         "Багамские Острова": { capital: "Нассау", code: "bs", continent: "north_america" },
         "Барбадос": { capital: "Бриджтаун", code: "bb", continent: "north_america" },
-        "Белиз": { capital: "Бelmopan", code: "bz", continent: "north_america" },
+        "Белиз": { capital: "Бельмопан", code: "bz", continent: "north_america" },
         "Гаити": { capital: "Порт-о-Пренс", code: "ht", continent: "north_america" },
         "Гватемала": { capital: "Гватемала-Сити", code: "gt", continent: "north_america" },
         "Гондурас": { capital: "Тегусигальпа", code: "hn", continent: "north_america" },
@@ -291,7 +355,6 @@ const GeoCountries = {
         "Сент-Китс и Невис": { capital: "Бастер", code: "kn", continent: "north_america" },
         "Сент-Люсия": { capital: "Кастри", code: "lc", continent: "north_america" },
         "США": { capital: "Вашингтон", code: "us", continent: "north_america" },
-        "Тринидад и Тобаго": { capital: "Порт-оф-Спейн", code: "tt", continent: "north_america" },
         "Ямайка": { capital: "Кингстон", code: "jm", continent: "north_america" },
 
         // --- ЮЖНАЯ АМЕРИКА ---
@@ -304,6 +367,7 @@ const GeoCountries = {
         "Парагвай": { capital: "Асунсьон", code: "py", continent: "south_america" },
         "Перу": { capital: "Лима", code: "pe", continent: "south_america" },
         "Суринам": { capital: "Парамарибо", code: "sr", continent: "south_america" },
+        "Тринидад и Тобаго": { capital: "Порт-оф-Спейн", code: "tt", continent: "south_america" },
         "Уругвай": { capital: "Монтевидео", code: "uy", continent: "south_america" },
         "Чили": { capital: "Сантьяго", code: "cl", continent: "south_america" },
         "Эквадор": { capital: "Кито", code: "ec", continent: "south_america" },
@@ -354,6 +418,10 @@ const GeoCountries = {
 
     getEnglishName: function (russianName) {
         return this.countryNameMapping[russianName] || russianName;
+    },
+
+    getEnglishCapital: function (russianCapital) {
+        return this.capitalMapping[russianCapital] || russianCapital;
     },
 
     getContinentForCountry: function (countryName) {

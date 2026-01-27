@@ -144,9 +144,23 @@ const LOCALES = {
         'goodResult': 'Неплохо! 👍',
         'tryAgain': 'Тренируйся! 🔄',
 
+        'feedbackTitle': 'Обратная связь',
+        'feedbackDesc': 'Нашли баг или есть идея? Напишите нам!',
+        'writeToUs': 'Написать нам',
+        'send': 'Отправить',
+        'messagePlaceholder': 'Ваше сообщение...',
+        'messageTooShort': 'Сообщение слишком короткое (минимум 5 символов)',
+        'messageSent': 'Спасибо! Ваш отзыв отправлен.',
+        'profanityError': 'Сообщение содержит недопустимые слова. Пожалуйста, будьте вежливы.',
+
         // Дополнительно (на всякий случай)
         'about': 'Об игре',
-        'aboutText': 'GeoGator v7.0\nSmart TV Edition'
+        'aboutText': 'GeoGator v8.6\nSmart TV Edition',
+
+        // --- ДОПОЛНИТЕЛЬНЫЕ ТЕКСТЫ ---
+        'noData': 'Нет данных',
+        'timeOut': 'Время вышло!',
+        'goodResult': 'Неплохо! 👍'
     },
 
     en: {
@@ -291,7 +305,21 @@ const LOCALES = {
         'goodResult': 'Good! 👍',
         'tryAgain': 'Try again! 🔄',
 
+        'feedbackTitle': 'Feedback',
+        'feedbackDesc': 'Found a bug or have an idea? Write to us!',
+        'writeToUs': 'Write to us',
+        'send': 'Send',
+        'messagePlaceholder': 'Your message...',
+        'messageTooShort': 'Message is too short (min 5 chars)',
+        'messageSent': 'Thanks! Your feedback has been sent.',
+        'profanityError': 'Message contains filtered words. Please be polite.',
+
         'about': 'About',
-        'aboutText': 'GeoGator v7.0\nSmart TV Edition'
+        'aboutText': 'GeoGator v8.6\nSmart TV Edition',
+
+        // --- ADDITIONAL TEXTS ---
+        'noData': 'No data',
+        'timeOut': 'Time\'s up!',
+        'goodResult': 'Good! 👍'
     }
 };

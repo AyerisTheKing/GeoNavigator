@@ -11,11 +11,15 @@
  * v8.0: Редизайн меню (Clean UI) и полная перепись системы модальных окон.
  */
 
-// GeoGator v8.0 - Основная логика игры
-// Функционал: Разделение Америк, Безлимитный таймер, Режим "Все вопросы", Умный слайдер, Система профилей (Supabase)
+// GeoGator v8.6 - Основная логика игры
+// Функционал: Разделение Америк, Безлимитный таймер, Режим "Все вопросы", Умный слайдер, Система профилей (Supabase), Feedback System
+// v8.8: Удалена статистика из модального окна профиля.
+// v8.7: Fix profanity filter scope & debug logging.
+// v8.6: Рефакторинг стилей профиля, отображение версии в настройках.
 
 const SUPABASE_URL = "https://tdlhwokrmuyxsdleepht.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkbGh3b2tybXV5eHNkbGVlcGh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDc3ODAsImV4cCI6MjA4NDk4Mzc4MH0.RlfUmejx2ywHNcFofZM4mNE8nIw6qxaTNzqxmf4N4-4";
+const APP_VERSION = "v8.8";
 
 // Будет инициализирован в конструкторе
 let supabaseClient;
@@ -85,7 +89,7 @@ class GeoGator {
      * и проверка сессии пользователя в Supabase.
      */
     async init() {
-        console.log('GeoGator v7.0 initialized with Supabase');
+        console.log(`GeoGator ${APP_VERSION} initialized with Supabase`);
         this.loadSettings();
         // Load local stats first as fallback
         this.loadPlayerStats();
@@ -96,6 +100,10 @@ class GeoGator {
         this.setupNotifications();
         this.updateStatsUI();
         this.initVolumeSliderVisuals();
+
+        // Display Version
+        const verEl = document.getElementById('appVersionDisplay');
+        if (verEl) verEl.textContent = `GeoGator ${APP_VERSION}`;
 
         // Проверка существующей сессии (Supabase Auth)
         const { data: { session } } = await supabaseClient.auth.getSession();
@@ -203,14 +211,9 @@ class GeoGator {
         const s = this.config.playerStats;
         const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
 
-        // --- 1. Profile Modal (Brief) ---
-        setText('statProfileBestScore', s.bestScore || 0);
-        setText('statProfileTotalTime', `${s.totalTime || 0}s`);
+        // --- 1. Profile Modal (Brief) - REMOVED v8.8
 
-        // Accuracy
-        const totalAnswers = (s.totalCorrect || 0) + (s.totalWrong || 0);
-        const overall = totalAnswers > 0 ? Math.round((s.totalCorrect / totalAnswers) * 100) : 0;
-        setText('statProfileAccuracy', `${overall}%`);
+        // --- 2. Statistics Modal (Detailed) ---
 
         // --- 2. Statistics Modal (Detailed) ---
         setText('statFullGames', s.totalGames || 0);
@@ -233,7 +236,7 @@ class GeoGator {
                     tbody.appendChild(tr);
                 }
             } else {
-                tbody.innerHTML = '<tr><td colspan="2" style="text-align:center; color:#64748b;">Нет данных</td></tr>';
+                tbody.innerHTML = `<tr><td colspan="2" style="text-align:center; color:#64748b;">${this.getLocalizedText('noData')}</td></tr>`;
             }
         }
     }
@@ -416,7 +419,13 @@ class GeoGator {
             return;
         }
         if (pass !== confirmPass) {
-            this.showError(errorDiv, "Пароли не совпадают");
+            this.showError(errorDiv, this.getLocalizedText('passwordMismatch') || "Пароли не совпадают");
+            return;
+        }
+
+        // Profanity Check
+        if (this.containsProfanity(nick) || this.containsProfanity(login)) {
+            this.showError(errorDiv, this.getLocalizedText('profanityError') || "Недопустимое имя или логин");
             return;
         }
 
@@ -582,7 +591,10 @@ class GeoGator {
         const triggers = [
             { id: 'profileBtn', action: () => this.handleProfileClick() },
             { id: 'openStatisticsBtn', action: () => this.openStatisticsModal() },
-            { id: 'openSettingsBtn', action: () => this.navigateToSettings('mainMenu') }
+            { id: 'openStatisticsBtn', action: () => this.openStatisticsModal() },
+            { id: 'openSettingsBtn', action: () => this.navigateToSettings('mainMenu') },
+            { id: 'feedbackBtn', action: () => this.openFeedbackModal() },
+            { id: 'openFeedbackFromProfileBtn', action: () => this.openFeedbackModal() }
         ];
 
         triggers.forEach(({ id, action }) => {
@@ -602,7 +614,9 @@ class GeoGator {
             'closeLoginModal': 'loginModal',
             'closeRegisterModal': 'registerModal',
             'closeProfileModal': 'profileModal',
-            'closeStatisticsModal': 'statisticsModal'
+            'closeProfileModal': 'profileModal',
+            'closeStatisticsModal': 'statisticsModal',
+            'closeFeedbackModal': 'feedbackModal'
         };
 
         Object.entries(closeMap).forEach(([btnId, modalId]) => {
@@ -631,7 +645,9 @@ class GeoGator {
             { id: 'openRegisterLink', action: (e) => { e.preventDefault(); this.openRegisterModal(); } },
             { id: 'toggleLoginPassword', action: (e) => this.togglePasswordVisibility(e, 'loginPasswordInput') },
             { id: 'toggleRegPassword', action: (e) => this.togglePasswordVisibility(e, 'regPasswordInput') },
-            { id: 'logoutBtn', action: () => this.performLogout() }
+            { id: 'toggleRegPassword', action: (e) => this.togglePasswordVisibility(e, 'regPasswordInput') },
+            { id: 'logoutBtn', action: () => this.performLogout() },
+            { id: 'sendFeedbackBtn', action: () => this.sendFeedback() }
         ];
 
         formActions.forEach(({ id, action }) => {
@@ -679,7 +695,81 @@ class GeoGator {
     closeStatisticsModal() { this.closeModal('statisticsModal'); }
 
     closeAllModals() {
-        ['loginModal', 'registerModal', 'profileModal', 'statisticsModal'].forEach(id => this.closeModal(id));
+        ['loginModal', 'registerModal', 'profileModal', 'statisticsModal', 'feedbackModal'].forEach(id => this.closeModal(id));
+    }
+
+    // === FEEDBACK SYSTEM (v8.5) ===
+    openFeedbackModal() {
+        if (!this.config.user.id) {
+            this.showNotification("Пожалуйста, войдите в аккаунт, чтобы оставить отзыв", "info");
+            this.openLoginModal();
+            return;
+        }
+        document.getElementById('feedbackMessageInput').value = '';
+        this.showError(document.getElementById('feedbackError'), '', false);
+        this.openModal('feedbackModal');
+    }
+
+    async sendFeedback() {
+        const text = document.getElementById('feedbackMessageInput').value.trim();
+        const errorDiv = document.getElementById('feedbackError');
+
+        if (!text) {
+            this.showError(errorDiv, "Введите сообщение");
+            return;
+        }
+
+        if (text.length < 5) {
+            this.showError(errorDiv, "Сообщение слишком короткое");
+            return;
+        }
+
+        // Profanity Check
+        if (this.containsProfanity(text)) {
+            this.showError(errorDiv, this.getLocalizedText('profanityError') || "Сообщение содержит недопустимые слова. Пожалуйста, будьте вежливы.");
+            return;
+        }
+
+        const payload = {
+            username: this.config.user.login,
+            message: text,
+            app_version: APP_VERSION
+        };
+
+        const { error } = await supabaseClient
+            .from('user_feedback')
+            .insert([payload]);
+
+        if (error) {
+            this.showError(errorDiv, "Ошибка отправки: " + error.message);
+        } else {
+            this.showNotification("Спасибо! Ваш отзыв отправлен.", "success");
+            this.closeModal('feedbackModal');
+        }
+    }
+
+    containsProfanity(text) {
+        console.log("Checking text:", text); // LOG 1
+
+        if (!window.BANNED_WORDS_DATA) {
+            console.error("CRITICAL: BANNED_WORDS_DATA not found!"); // LOG 2
+            return false;
+        }
+
+        const lowerText = text.toLowerCase();
+        // Check standard lists
+        const lists = [
+            window.BANNED_WORDS_DATA.ru || [],
+            window.BANNED_WORDS_DATA.en || [],
+            window.BANNED_WORDS_DATA.mixed || []
+        ];
+
+        for (const list of lists) {
+            for (const word of list) {
+                if (lowerText.includes(word.toLowerCase())) return true;
+            }
+        }
+        return false;
     }
 
     // === 3. ИГРОВАЯ ЛОГИКА ===
@@ -807,6 +897,13 @@ class GeoGator {
                 allCountries = [...allCountries, ...window.GeoCountries.continents[c]];
             }
         });
+
+        // Исключить страны, которых нет на карте для режима countryByCapital
+        const excludedCountries = ['Сан-Марино', 'Андорра', 'Ватикан', 'Монако', 'Лихтенштейн'];
+        if (this.config.currentGame.mode === 'countryByCapital') {
+            allCountries = allCountries.filter(country => !excludedCountries.includes(country));
+        }
+
         const shuffled = this.shuffleArray(allCountries);
         let finalSelection = [];
         if (questionCount === 'all') {
@@ -1142,7 +1239,7 @@ class GeoGator {
             const q = this.config.gameState.questions[this.config.gameState.currentQuestionIndex];
             this.highlightCorrectCountry(q.country);
         }
-        this.showNotification('Время вышло!', 'warning');
+        this.showNotification(this.getLocalizedText('timeOut'), 'warning');
         this.saveStats();
         setTimeout(() => this.nextQuestion(), 1500);
     }
@@ -1236,8 +1333,9 @@ class GeoGator {
     }
 
     getLocalizedCapital(capital) {
-        // Placeholder for future capital localization
-        // Currently returns the original capital provided
+        if (this.config.settings.language === 'en') {
+            return window.GeoCountries?.getEnglishCapital(capital) || capital;
+        }
         return capital;
     }
 

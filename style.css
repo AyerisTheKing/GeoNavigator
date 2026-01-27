@@ -2079,15 +2079,26 @@ body.dark-theme::before {
 /* --- v7.1 Updates: Background & Sound --- */
 
 #mainMenu.active {
-    position: relative;
+    position: fixed;
+    /* Ensure it stays fixed like other screens */
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    padding: 0;
+    /* Remove padding that might cause issues, handle spacing inside container */
+    margin: 0;
     /* Context for absolute profile button */
     background: linear-gradient(rgba(15, 23, 42, 0.6), rgba(15, 23, 42, 0.8)), url('worldmapbg.avif') !important;
     background-size: cover !important;
-    background-position: center !important;
+    background-position: center center !important;
+    background-repeat: no-repeat !important;
     background-attachment: fixed !important;
     display: flex !important;
     align-items: center !important;
     justify-content: center !important;
+    z-index: 100;
+    /* Ensure it's on top of body bg */
 }
 
 .volume-control {
@@ -2355,4 +2366,72 @@ body.dark-theme::before {
     /* Orange/Yellow Lightning */
     font-size: 1.2rem;
     filter: drop-shadow(0 0 5px rgba(245, 158, 11, 0.5));
+}
+
+/* Floating Feedback Button */
+.floating-feedback-btn {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #4361ee, #4cc9f0);
+    border: none;
+    color: white;
+    font-size: 1.8rem;
+    cursor: pointer;
+    box-shadow: 0 10px 25px rgba(67, 97, 238, 0.4);
+    transition: all 0.3s ease;
+    z-index: 9999;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: fadeIn 1s ease;
+}
+
+.floating-feedback-btn:hover {
+    transform: scale(1.1) rotate(5deg);
+    box-shadow: 0 15px 35px rgba(67, 97, 238, 0.6);
+}
+
+.floating-feedback-btn i {
+    filter: drop-shadow(0 0 5px rgba(255, 255, 255, 0.5));
+}
+
+/* Profile Buttons Refactoring */
+.btn-profile-feedback {
+    padding: 5px 15px;
+    font-size: 0.8rem;
+    background: rgba(59, 130, 246, 0.2);
+    color: #60a5fa;
+    border: 1px solid #3b82f6;
+}
+
+.btn-profile-feedback:hover {
+    background: rgba(59, 130, 246, 0.3);
+    border-color: #60a5fa;
+}
+
+.btn-profile-logout {
+    padding: 5px 15px;
+    font-size: 0.8rem;
+    background: rgba(239, 68, 68, 0.2);
+    color: #ef4444;
+    border: 1px solid #ef4444;
+}
+
+.btn-profile-logout:hover {
+    background: rgba(239, 68, 68, 0.3);
+    border-color: #f87171;
+}
+
+/* App Version Display */
+.app-version-display {
+    text-align: center;
+    color: rgba(255, 255, 255, 0.3);
+    font-size: 0.8rem;
+    margin-top: 30px;
+    font-family: monospace;
+    letter-spacing: 1px;
 }

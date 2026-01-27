@@ -112,6 +112,8 @@
                     </div>
                 </div>
 
+                <div id="appVersionDisplay" class="app-version-display"></div>
+
 
 
 
@@ -481,9 +483,36 @@
         <source src="bg.mp3" type="audio/mpeg">
     </audio>
 
+    <!-- МОДАЛЬНОЕ ОКНО: ОБРАТНАЯ СВЯЗЬ (FEEDBACK) -->
+    <div id="feedbackModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" id="closeFeedbackModal">&times;</span>
+            <h2 data-i18n="feedbackTitle">Обратная связь</h2>
+            <p data-i18n="feedbackDesc" style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">
+                Нашли баг или есть идея? Напишите нам!
+            </p>
+
+            <div class="profile-section">
+                <textarea id="feedbackMessageInput" placeholder="Ваше сообщение..." rows="5"
+                    style="width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #334155; background: #0f172a; color: white; resize: none;"></textarea>
+            </div>
+
+            <div id="feedbackError" class="warning hidden"></div>
+            <button id="sendFeedbackBtn" class="btn-save-profile">
+                <i class="fas fa-paper-plane"></i> <span data-i18n="send">Отправить</span>
+            </button>
+        </div>
+    </div>
+
+    <!-- FEEDBACK BUTTON (FIXED BOTTOM LEFT) -->
+    <button id="feedbackBtn" class="floating-feedback-btn">
+        <i class="fas fa-comment-dots"></i>
+    </button>
+
     <!-- СКРИПТЫ: Данные стран, Переводы, Карта, Основная логика -->
     <script src="countries.js"></script>
     <script src="locales.js"></script>
+    <script src="bannedwords.js"></script>
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
         integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
     <script src="script.js"></script>
@@ -493,11 +522,11 @@
             <span class="close" id="closeLoginModal">&times;</span>
             <h2 data-i18n="loginTitle">Вход</h2>
             <div class="profile-section">
-                <label data-i18n="login">Логин:</label>
+                <label for="loginUsernameInput" data-i18n="login">Логин:</label>
                 <input type="text" id="loginUsernameInput" placeholder="login" />
             </div>
             <div class="profile-section">
-                <label data-i18n="password">Пароль:</label>
+                <label for="loginPasswordInput" data-i18n="password">Пароль:</label>
                 <div class="input-wrapper" style="position: relative;">
                     <input type="password" id="loginPasswordInput" placeholder="******" />
                     <i id="toggleLoginPassword" class="fas fa-eye"
@@ -520,15 +549,15 @@
             <span class="close" id="closeRegisterModal">&times;</span>
             <h2 data-i18n="registerTitle">Регистрация</h2>
             <div class="profile-section">
-                <label data-i18n="nickname">Отображаемое имя:</label>
+                <label for="regNicknameInput" data-i18n="nickname">Отображаемое имя:</label>
                 <input type="text" id="regNicknameInput" placeholder="Имя игрока" maxlength="10" />
             </div>
             <div class="profile-section">
-                <label data-i18n="login">Логин (латиница):</label>
+                <label for="regLoginInput" data-i18n="login">Логин (латиница):</label>
                 <input type="text" id="regLoginInput" placeholder="login" />
             </div>
             <div class="profile-section">
-                <label data-i18n="password">Пароль:</label>
+                <label for="regPasswordInput" data-i18n="password">Пароль:</label>
                 <div class="input-wrapper" style="position: relative;">
                     <input type="password" id="regPasswordInput" placeholder="******" />
                     <i id="toggleRegPassword" class="fas fa-eye"
@@ -536,7 +565,7 @@
                 </div>
             </div>
             <div class="profile-section">
-                <label data-i18n="confirmPassword">Повторите пароль:</label>
+                <label for="regPasswordConfirmInput" data-i18n="confirmPassword">Повторите пароль:</label>
                 <div class="input-wrapper" style="position: relative;">
                     <input type="password" id="regPasswordConfirmInput" placeholder="******" />
                 </div>
@@ -560,20 +589,17 @@
                 <small id="profileDisplayLogin" style="color: #64748b;">@guest</small>
             </div>
 
-            <div class="profile-actions" style="margin-bottom: 20px; text-align: right;">
-                <button id="logoutBtn" class="btn-secondary"
-                    style="padding: 5px 10px; font-size: 0.8rem; background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444;">
+            <div class="profile-actions"
+                style="margin-bottom: 20px; display: flex; justify-content: center; gap: 10px;">
+                <button id="openFeedbackFromProfileBtn" class="btn-secondary btn-profile-feedback">
+                    <i class="fas fa-comment-alt"></i> <span data-i18n="writeToUs">Написать нам</span>
+                </button>
+                <button id="logoutBtn" class="btn-secondary btn-profile-logout">
                     <i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">Выйти</span>
                 </button>
             </div>
 
-            <hr />
-            <h3 data-i18n="statistics">Статистика</h3>
-            <ul class="stats-list">
-                <li data-i18n="statRecord">Рекорд: <span id="statProfileBestScore">0</span></li>
-                <li data-i18n="totalTime">Время в игре: <span id="statProfileTotalTime">0s</span></li>
-                <li data-i18n="overallSuccess">Успешность: <span id="statProfileAccuracy">0%</span></li>
-            </ul>
+
         </div>
     </div>
 
