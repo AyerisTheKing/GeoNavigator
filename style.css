@@ -2062,26 +2062,7 @@ body.dark-theme::before {
     grid-template-columns: repeat(3, 1fr) !important;
 }
 
-/* 2. Metallic Settings Button */
-#openSettingsBtn {
-    background: linear-gradient(145deg, #4b5563, #374151) !important;
-    border: 1px solid rgba(255, 255, 255, 0.3) !important;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3), inset 0 1px 0 rgba(255, 255, 255, 0.2) !important;
-    color: #e5e7eb !important;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5);
-    padding: 15px 30px;
-}
-
-#openSettingsBtn:hover {
-    background: linear-gradient(145deg, #374151, #1f2937) !important;
-    transform: translateY(-2px);
-    border-color: rgba(255, 255, 255, 0.5) !important;
-}
-
-#openSettingsBtn i {
-    color: #9ca3af !important;
-    /* Silver icon */
-}
+/* 2. Metallic Settings Button (Removed to match .btn-menu-styled) */
 
 /* Ensure Start Button is Blue */
 #startGameBtn {
@@ -2336,13 +2317,14 @@ body.dark-theme::before {
 
 /* === GeoGator v8.0 Redesign (Uniform Style) === */
 
-/* Menu Styled Button (Matching Continent Cards) */
+/* Menu Styled Button (Muted Blue / Secondary Style) */
 .btn-menu-styled {
     width: 100%;
     padding: 20px 30px;
-    background: rgba(255, 255, 255, 0.05);
-    /* Same as continent-card */
-    border: 2px solid transparent;
+    /* Приглушенный серо-голубой (Muted Blue) */
+    background: rgba(60, 80, 140, 0.3);
+    /* Рамка в тон, но чуть заметнее */
+    border: 2px solid rgba(60, 80, 140, 0.5);
     border-radius: var(--border-radius);
     color: white;
     font-size: 1.1rem;
@@ -2359,10 +2341,11 @@ body.dark-theme::before {
 }
 
 .btn-menu-styled:hover {
-    background: rgba(255, 255, 255, 0.1);
+    /* При наведении становится плотнее */
+    background: rgba(60, 80, 140, 0.5);
     transform: translateY(-3px);
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
-    /* Extra subtle border highlight as requested */
+    /* Яркая синяя рамка при наведении */
     border-color: var(--primary-color);
 }
 

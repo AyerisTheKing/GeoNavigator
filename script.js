@@ -859,19 +859,19 @@ class GeoGator {
     showCapitalByCountryQuestion(q) {
         this.toggleUIElements({ flag: true, options: true, hint: false });
         document.getElementById('questionText').textContent = this.getLocalizedText('guessCapital');
-        document.getElementById('countryName').textContent = q.country;
+        document.getElementById('countryName').textContent = this.getLocalizedCountry(q.country);
         document.getElementById('countryFlag').innerHTML = `<img src="https://flagcdn.com/w320/${q.code}.png" alt="flag">`;
         this.generateAnswerOptions(q, 'capital');
     }
     showCountryByCapitalQuestion(q) {
         this.toggleUIElements({ flag: false, options: false, hint: true });
-        document.getElementById('questionText').textContent = this.getLocalizedText('findCountry').replace('{capital}', q.capital);
+        document.getElementById('questionText').textContent = this.getLocalizedText('findCountry').replace('{capital}', this.getLocalizedCapital(q.capital));
         this.displayContinentHint(q.continent, q.capital);
     }
     showCountryByCapitalTextQuestion(q) {
         this.toggleUIElements({ flag: false, options: true, hint: true });
         document.getElementById('questionText').textContent = this.getLocalizedText('guessCountry');
-        document.querySelector('.capital-hint span').innerHTML = `<strong>${q.capital}</strong>`;
+        document.querySelector('.capital-hint span').innerHTML = `<strong>${this.getLocalizedCapital(q.capital)}</strong>`;
         if (this.config.gameState.map && this.continentViews[q.continent]) {
             const view = this.continentViews[q.continent];
             this.config.gameState.map.flyTo(view.center, view.zoom, { duration: 0.5 });
@@ -887,7 +887,7 @@ class GeoGator {
         const el = document.querySelector('.capital-hint span');
         const cName = this.getLocalizedText(continent);
         const inText = this.getLocalizedText('in');
-        el.innerHTML = `<strong>${capital}</strong> — ${this.getLocalizedText('clickOnCountry')}<br><small>${inText} ${cName}</small>`;
+        el.innerHTML = `<strong>${this.getLocalizedCapital(capital)}</strong> — ${this.getLocalizedText('clickOnCountry')}<br><small>${inText} ${cName}</small>`;
     }
     generateAnswerOptions(q, type) {
         const grid = document.getElementById('answerOptions');
@@ -909,7 +909,15 @@ class GeoGator {
         options.forEach(ans => {
             const btn = document.createElement('button');
             btn.className = 'answer-option';
-            btn.textContent = ans;
+
+            // Localize text for display
+            const displayText = (type === 'capital')
+                ? this.getLocalizedCapital(ans)
+                : this.getLocalizedCountry(ans);
+
+            btn.textContent = displayText;
+            btn.dataset.val = ans; // Store original value for logic
+
             btn.addEventListener('click', () => {
                 if (!this.config.gameState.isInputBlocked) this.handleAnswerSelection(ans, correct, q);
             });
@@ -944,8 +952,13 @@ class GeoGator {
             this.config.playerStats.totalWrong = (this.config.playerStats.totalWrong || 0) + 1;
             this.showNotification(this.getLocalizedText('wrong'), 'error');
             this.markButtons(correct, selected);
+
+            // Format notification with localized names
+            const correctCountry = this.getLocalizedCountry(q.country);
+            const correctCapital = this.getLocalizedCapital(q.capital);
+
             setTimeout(() => this.showNotification(
-                this.getLocalizedText('correctAnswer').replace('{country}', q.country).replace('{capital}', q.capital),
+                this.getLocalizedText('correctAnswer').replace('{country}', correctCountry).replace('{capital}', correctCapital),
                 'info'
             ), 1000);
         }
@@ -956,8 +969,9 @@ class GeoGator {
 
     markButtons(correct, selected) {
         document.querySelectorAll('.answer-option').forEach(btn => {
-            if (btn.textContent === correct) btn.classList.add('correct');
-            else if (btn.textContent === selected) btn.classList.add('wrong');
+            // Check dataset.val for original value match
+            if (btn.dataset.val === correct) btn.classList.add('correct');
+            else if (btn.dataset.val === selected) btn.classList.add('wrong');
         });
     }
 
@@ -1067,8 +1081,12 @@ class GeoGator {
             this.config.playerStats.totalWrong = (this.config.playerStats.totalWrong || 0) + 1;
             this.showNotification(this.getLocalizedText('wrong'), 'error');
             this.highlightCorrectCountry(q.country);
+
+            const correctCountry = this.getLocalizedCountry(q.country);
+            const correctCapital = this.getLocalizedCapital(q.capital);
+
             setTimeout(() => this.showNotification(
-                this.getLocalizedText('correctAnswer').replace('{country}', q.country).replace('{capital}', q.capital),
+                this.getLocalizedText('correctAnswer').replace('{country}', correctCountry).replace('{capital}', correctCapital),
                 'info'
             ), 1000);
         }
@@ -1144,20 +1162,6 @@ class GeoGator {
         this.config.playerStats.totalTime = (this.config.playerStats.totalTime || 0) + elapsed;
 
         this.saveStats();
-        // Pass current game score/stats explicitly to showResults before reset (or just use gameState)
-        // Note: gameState is NOT reset yet here, so showResults can read from it.
-        // However, we need to ensure 'correctAnswers' and 'wrongAnswers' DOM elements are updated.
-        // The bug was that showResults might be relying on something that isn't set.
-        // Let's explicitly update the DOM for the result screen here or inside showResults.
-        // Actually, showResults reads from config.gameState. But 'correct' and 'wrong' counts on result screen
-        // were usually taken from config.gameState stats if we tracked them per game.
-        // We usually track score (correct) but maybe not wrong?
-        // Let's check logic:
-        // score matches correct answers count in current game.
-        // What about wrong answers? config.gameState doesn't explicitly have 'wrongCount' for the *current* game in the constructor?
-        // Ah, let's calculate it: total questions - score = wrong (assuming all answered). 
-        // Or better, track it.
-
         this.showResults();
     }
 
@@ -1222,6 +1226,19 @@ class GeoGator {
         const circle = document.querySelector('.score-circle');
         if (circle) circle.style.background = `conic-gradient(#4ade80 0deg ${p * 3.6}deg, #ef4444 ${p * 3.6}deg 360deg)`;
         this.showScreen('resultScreen');
+    }
+
+    getLocalizedCountry(name) {
+        if (this.config.settings.language === 'en') {
+            return window.GeoCountries?.getEnglishName(name) || name;
+        }
+        return name;
+    }
+
+    getLocalizedCapital(capital) {
+        // Placeholder for future capital localization
+        // Currently returns the original capital provided
+        return capital;
     }
 
     getLocalizedText(key) { return LOCALES?.[this.config.settings.language]?.[key] || key; }
