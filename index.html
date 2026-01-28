@@ -141,6 +141,18 @@
             </h2>
 
             <div class="setup-content">
+                <!-- DIFFICULTY SELECTOR (v9.5) -->
+                <div class="setup-section">
+                    <h3><i class="fas fa-layer-group"></i> <span data-i18n="difficulty">СЛОЖНОСТЬ</span></h3>
+                    <div class="difficulty-selector">
+                        <button id="diffPrevBtn" class="btn-secondary diff-arrow"><i
+                                class="fas fa-chevron-left"></i></button>
+                        <span id="difficultyLabel" class="diff-label">Нормальный</span>
+                        <button id="diffNextBtn" class="btn-secondary diff-arrow"><i
+                                class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+
                 <div class="setup-section">
                     <h3><i class="fas fa-globe"></i> <span data-i18n="gameContinents">КОНТИНЕНТЫ</span></h3>
                     <div class="continents-grid">
@@ -250,7 +262,7 @@
 
                 <div class="setup-section">
                     <h3><i class="fas fa-clock"></i> <span data-i18n="timer">ТАЙМЕР</span></h3>
-                    <div class="timer-options">
+                    <div class="timer-options" id="timerContainer">
                         <!-- Removed 5s -->
                         <label class="timer-option">
                             <input type="radio" name="timer" value="15" checked>

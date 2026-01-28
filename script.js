@@ -9,14 +9,22 @@
  * === CHANGELOG ===
  */
 
-// v8.9: Кнопка обратной связи перенесена только в главное меню.
-// v8.8: Удалена статистика из модального окна профиля.
-// v8.7: Fix profanity filter scope & debug logging.
-// v8.6: Рефакторинг стилей профиля, отображение версии в настройках.
+// v9.5: Система уровней сложности (Easy, Normal, Hard, Extreme) с динамическими таймерами.
+// v9.3: Реализована визуальная проверка мата в реальном времени (красная рамка).
+// v9.2: Добавлена поддержка Enter для входа.
+// v9.1: Скрыт скроллбар во всем приложении (CSS).
+// v9.0: Улучшен фильтр мата (нормализация текста перед проверкой).
 
 const SUPABASE_URL = "https://tdlhwokrmuyxsdleepht.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkbGh3b2tybXV5eHNkbGVlcGh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDc3ODAsImV4cCI6MjA4NDk4Mzc4MH0.RlfUmejx2ywHNcFofZM4mNE8nIw6qxaTNzqxmf4N4-4";
-const APP_VERSION = "v8.9";
+const APP_VERSION = "v9.5";
+
+const DIFFICULTY_CONFIG = {
+    easy: { answers: 4, timers: [30, 40, 50, 60], color: '#4ade80', showCorrect: true, zoom: true, label: 'diffEasy' },
+    normal: { answers: 6, timers: [15, 20, 25, 30], color: '#4cc9f0', showCorrect: true, zoom: true, label: 'diffNormal' },
+    hard: { answers: 8, timers: [5, 8, 12, 15], color: '#f59e0b', showCorrect: false, zoom: true, label: 'diffHard' },
+    extreme: { answers: 8, timers: [2, 3, 4, 5], color: '#ef4444', showCorrect: false, zoom: false, label: 'diffExtreme' }
+};
 
 // Будет инициализирован в конструкторе
 let supabaseClient;
@@ -34,6 +42,7 @@ class GeoGator {
         }
 
         this.config = {
+            currentDifficulty: 'normal',
             answerCooldown: 1500,
             currentGame: null,
             settings: { language: 'ru', volume: 80, theme: 'dark', isMuted: false },
@@ -97,6 +106,7 @@ class GeoGator {
         this.setupNotifications();
         this.updateStatsUI();
         this.initVolumeSliderVisuals();
+        this.initDifficultySystem();
 
         // Display Version
         const verEl = document.getElementById('appVersionDisplay');
@@ -169,6 +179,54 @@ class GeoGator {
             audio.play().catch(e => console.log('Autoplay prevented', e));
         } else if ((currentScreen === 'gameScreen' || vol === 0) && !audio.paused) {
             if (currentScreen === 'gameScreen') audio.pause();
+        }
+    }
+
+    initDifficultySystem() {
+        const difficulties = ['easy', 'normal', 'hard', 'extreme'];
+        const prevBtn = document.getElementById('diffPrevBtn');
+        const nextBtn = document.getElementById('diffNextBtn');
+
+        if (prevBtn) prevBtn.addEventListener('click', () => {
+            let idx = difficulties.indexOf(this.config.currentDifficulty);
+            // Fix modulo for negative numbers
+            idx = (idx - 1 + difficulties.length) % difficulties.length;
+            this.config.currentDifficulty = difficulties[idx];
+            this.updateDifficultyUI();
+        });
+
+        if (nextBtn) nextBtn.addEventListener('click', () => {
+            let idx = difficulties.indexOf(this.config.currentDifficulty);
+            idx = (idx + 1) % difficulties.length;
+            this.config.currentDifficulty = difficulties[idx];
+            this.updateDifficultyUI();
+        });
+
+        this.updateDifficultyUI();
+    }
+
+    updateDifficultyUI() {
+        const diff = this.config.currentDifficulty;
+        const cfg = DIFFICULTY_CONFIG[diff];
+        const label = document.getElementById('difficultyLabel');
+        const timerContainer = document.getElementById('timerContainer');
+
+        if (label) {
+            label.textContent = this.getLocalizedText(cfg.label);
+            label.style.color = cfg.color;
+            label.setAttribute('data-i18n', cfg.label);
+        }
+
+        if (timerContainer) {
+            timerContainer.innerHTML = '';
+            cfg.timers.forEach((t, i) => {
+                const label = document.createElement('label');
+                label.className = 'timer-option';
+                label.innerHTML = `
+                <input type="radio" name="timer" value="${t}" ${i === 0 ? 'checked' : ''}>
+                <span>${t}s</span>`;
+                timerContainer.appendChild(label);
+            });
         }
     }
 
@@ -651,6 +709,27 @@ class GeoGator {
             const el = document.getElementById(id);
             if (el) el.onclick = action;
         });
+
+        // 5. Enter Key Support for Login
+        ['loginUsernameInput', 'loginPasswordInput'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('keydown', (e) => {
+                    if (e.key === 'Enter') this.performLogin();
+                });
+            }
+        });
+
+        // 6. Real-time Profanity Check
+        ['regNicknameInput', 'regLoginInput', 'feedbackMessageInput'].forEach(id => {
+            const el = document.getElementById(id);
+            if (el) {
+                el.addEventListener('input', () => {
+                    const isBad = this.containsProfanity(el.value);
+                    el.style.borderColor = isBad ? '#ef4444' : '#334155';
+                });
+            }
+        });
     }
 
     openModal(id) {
@@ -747,15 +826,18 @@ class GeoGator {
     }
 
     containsProfanity(text) {
-        console.log("Checking text:", text); // LOG 1
-
+        // 1. Проверка загрузки базы
         if (!window.BANNED_WORDS_DATA) {
-            console.error("CRITICAL: BANNED_WORDS_DATA not found!"); // LOG 2
+            console.error("CRITICAL: BANNED_WORDS_DATA not found!");
             return false;
         }
 
-        const lowerText = text.toLowerCase();
-        // Check standard lists
+        // 2. Нормализация: оставляем только буквы
+        // Это превратит "с.у.к.а" в "сука", а "f.u_c k" в "fuck"
+        const normalizedText = text.toLowerCase().replace(/[^a-zа-яё]/g, '');
+        console.log(`Profanity check: "${text}" -> "${normalizedText}"`);
+
+        // 3. Проверка
         const lists = [
             window.BANNED_WORDS_DATA.ru || [],
             window.BANNED_WORDS_DATA.en || [],
@@ -764,7 +846,11 @@ class GeoGator {
 
         for (const list of lists) {
             for (const word of list) {
-                if (lowerText.includes(word.toLowerCase())) return true;
+                // Ищем запрещенный корень внутри сплошного текста
+                if (normalizedText.includes(word.toLowerCase())) {
+                    console.log(`Filter caught: "${word}" inside "${normalizedText}"`);
+                    return true;
+                }
             }
         }
         return false;
@@ -851,8 +937,16 @@ class GeoGator {
         if (modeRadio) modeRadio.checked = true;
         const qRadio = document.querySelector('input[name="questionCount"][value="10"]');
         if (qRadio) qRadio.checked = true;
-        const tRadio = document.querySelector('input[name="timer"][value="15"]');
-        if (tRadio) tRadio.checked = true;
+
+        // Reset Difficulty to Normal
+        this.config.currentDifficulty = 'normal';
+        this.updateDifficultyUI();
+
+        // Now select the default timer (which exists in Normal mode)
+        setTimeout(() => {
+            const tRadio = document.querySelector('input[name="timer"][value="15"]');
+            if (tRadio) tRadio.checked = true;
+        }, 0);
     }
 
     getGameParameters() {
@@ -862,7 +956,7 @@ class GeoGator {
         const questionCount = (qVal === 'all') ? 'all' : parseInt(qVal);
         let tVal = document.querySelector('input[name="timer"]:checked')?.value || '10';
         const timerDuration = (tVal === 'unlimited') ? 'unlimited' : parseInt(tVal);
-        return { continents, mode: gameMode, questionCount, timerDuration };
+        return { continents, mode: gameMode, questionCount, timerDuration, difficulty: this.config.currentDifficulty };
     }
 
     validateGameParameters(params) {
@@ -999,7 +1093,12 @@ class GeoGator {
             }
         });
         pool = [...new Set(pool)].filter(i => i !== correct);
-        const wrong = this.shuffleArray(pool).slice(0, 5);
+        
+        const difficulty = this.config.currentGame?.difficulty || 'normal';
+        const diffCfg = DIFFICULTY_CONFIG[difficulty];
+        const totalOptions = diffCfg ? diffCfg.answers : 6;
+        
+        const wrong = this.shuffleArray(pool).slice(0, totalOptions - 1);
         const options = this.shuffleArray([correct, ...wrong]);
         options.forEach(ans => {
             const btn = document.createElement('button');
@@ -1052,10 +1151,13 @@ class GeoGator {
             const correctCountry = this.getLocalizedCountry(q.country);
             const correctCapital = this.getLocalizedCapital(q.capital);
 
-            setTimeout(() => this.showNotification(
-                this.getLocalizedText('correctAnswer').replace('{country}', correctCountry).replace('{capital}', correctCapital),
-                'info'
-            ), 1000);
+            const difficulty = this.config.currentGame?.difficulty || 'normal';
+            if (DIFFICULTY_CONFIG[difficulty]?.showCorrect !== false) {
+                setTimeout(() => this.showNotification(
+                    this.getLocalizedText('correctAnswer').replace('{country}', correctCountry).replace('{capital}', correctCapital),
+                    'info'
+                ), 1000);
+            }
         }
 
         this.saveStats(); // Сохраняем статистику после каждого ответа
@@ -1197,8 +1299,11 @@ class GeoGator {
             if (window.GeoCountries?.getCountryNameByCode(iso, adm3) === name) {
                 layer.setStyle({ weight: 3, color: '#4ade80', fillColor: '#4ade80', fillOpacity: 0.4, dashArray: '' });
                 if (this.config.currentGame.mode !== 'countryByCapitalText') {
-                    const bounds = layer.getBounds();
-                    if (bounds.isValid()) this.config.gameState.map.flyToBounds(bounds, { padding: [50, 50], maxZoom: 5, duration: 1.5 });
+                    const difficulty = this.config.currentGame?.difficulty || 'normal';
+                    if (DIFFICULTY_CONFIG[difficulty]?.zoom !== false) {
+                        const bounds = layer.getBounds();
+                        if (bounds.isValid()) this.config.gameState.map.flyToBounds(bounds, { padding: [50, 50], maxZoom: 5, duration: 1.5 });
+                    }
                 }
             }
         });

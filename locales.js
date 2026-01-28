@@ -99,6 +99,14 @@ const LOCALES = {
         'noRush': 'Не спеша',
         'marathon': 'Марафон',
 
+        // --- СЛОЖНОСТЬ (v9.5) ---
+        'difficulty': 'СЛОЖНОСТЬ',
+        'diffEasy': 'Легкий',
+        'diffNormal': 'Нормальный',
+        'diffHard': 'Сложный',
+        'diffExtreme': 'Экстримальный',
+        'questions': 'ВОПРОСЫ',
+
         // --- ГЕЙМПЛЕЙ ---
         'pause': 'ПАУЗА',
         'score': 'Очки',
@@ -273,6 +281,14 @@ const LOCALES = {
         'relaxed': 'Relaxed',
         'noRush': 'No Rush',
         'marathon': 'Marathon',
+
+        // --- DIFFICULTY (v9.5) ---
+        'difficulty': 'DIFFICULTY',
+        'diffEasy': 'Easy',
+        'diffNormal': 'Normal',
+        'diffHard': 'Hard',
+        'diffExtreme': 'Extreme',
+        'questions': 'QUESTIONS',
 
         // --- GAMEPLAY ---
         'pause': 'PAUSE',
