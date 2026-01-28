@@ -7,19 +7,16 @@
  * Patch (+0.1): Исправления багов, мелкие правки UI/текстов.
  * 
  * === CHANGELOG ===
- * v7.1: Переход на Supabase (Auth, DB sync).
- * v8.0: Редизайн меню (Clean UI) и полная перепись системы модальных окон.
  */
 
-// GeoGator v8.6 - Основная логика игры
-// Функционал: Разделение Америк, Безлимитный таймер, Режим "Все вопросы", Умный слайдер, Система профилей (Supabase), Feedback System
+// v8.9: Кнопка обратной связи перенесена только в главное меню.
 // v8.8: Удалена статистика из модального окна профиля.
 // v8.7: Fix profanity filter scope & debug logging.
 // v8.6: Рефакторинг стилей профиля, отображение версии в настройках.
 
 const SUPABASE_URL = "https://tdlhwokrmuyxsdleepht.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkbGh3b2tybXV5eHNkbGVlcGh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDc3ODAsImV4cCI6MjA4NDk4Mzc4MH0.RlfUmejx2ywHNcFofZM4mNE8nIw6qxaTNzqxmf4N4-4";
-const APP_VERSION = "v8.8";
+const APP_VERSION = "v8.9";
 
 // Будет инициализирован в конструкторе
 let supabaseClient;
@@ -352,7 +349,7 @@ class GeoGator {
         const errorDiv = document.getElementById('loginError');
 
         if (!login || !pass) {
-            this.showError(errorDiv, "Заполните все поля");
+            this.showError(errorDiv, this.getLocalizedText('fillAllFields'));
             return;
         }
 
@@ -365,11 +362,11 @@ class GeoGator {
         });
 
         if (error) {
-            this.showError(errorDiv, "Ошибка входа: " + error.message);
+            this.showError(errorDiv, this.getLocalizedText('loginErrorPrefix') + error.message);
         } else {
             this.showError(errorDiv, "", false);
             this.closeLoginModal();
-            this.showNotification(`Вход выполнен!`, 'success');
+            this.showNotification(this.getLocalizedText('loginSuccess'), 'success');
             // Обновляем сессию и UI
             await this.handleAuthSession(data.session);
         }
@@ -407,19 +404,19 @@ class GeoGator {
 
         // Валидация
         if (!nick || !login || !pass || !confirmPass) {
-            this.showError(errorDiv, "Заполните все поля");
+            this.showError(errorDiv, this.getLocalizedText('fillAllFields'));
             return;
         }
         if (nick.length > 10) {
-            this.showError(errorDiv, "Максимальная длина имени - 10 символов");
+            this.showError(errorDiv, this.getLocalizedText('nameTooLong'));
             return;
         }
         if (!/^[a-zA-Z0-9_]+$/.test(login)) {
-            this.showError(errorDiv, "Логин может содержать только латинские буквы, цифры и _");
+            this.showError(errorDiv, this.getLocalizedText('loginCharError'));
             return;
         }
         if (pass !== confirmPass) {
-            this.showError(errorDiv, this.getLocalizedText('passwordMismatch') || "Пароли не совпадают");
+            this.showError(errorDiv, this.getLocalizedText('passwordMismatch'));
             return;
         }
 
@@ -451,9 +448,9 @@ class GeoGator {
                 ]);
 
             if (profileError) {
-                this.showError(errorDiv, "Ошибка создания профиля: " + profileError.message);
+                this.showError(errorDiv, this.getLocalizedText('profileCreationError') + profileError.message);
             } else {
-                this.showNotification("Регистрация успешна! Теперь войдите.", "success");
+                this.showNotification(this.getLocalizedText('registerSuccess'), "success");
                 this.closeRegisterModal();
                 this.openLoginModal();
                 document.getElementById('loginUsernameInput').value = login;
@@ -505,7 +502,7 @@ class GeoGator {
 
             this.updateProfileUI(); // Set UI back to guest
             this.closeStatsModal();
-            this.showNotification("Вы вышли из системы", "info");
+            this.showNotification(this.getLocalizedText('loggedOut'), "info");
         }
     }
 
@@ -699,9 +696,10 @@ class GeoGator {
     }
 
     // === FEEDBACK SYSTEM (v8.5) ===
+    // === FEEDBACK SYSTEM (v8.5) ===
     openFeedbackModal() {
         if (!this.config.user.id) {
-            this.showNotification("Пожалуйста, войдите в аккаунт, чтобы оставить отзыв", "info");
+            this.showNotification(this.getLocalizedText('feedbackLoginReq'), "info");
             this.openLoginModal();
             return;
         }
@@ -715,12 +713,12 @@ class GeoGator {
         const errorDiv = document.getElementById('feedbackError');
 
         if (!text) {
-            this.showError(errorDiv, "Введите сообщение");
+            this.showError(errorDiv, this.getLocalizedText('enterMessage'));
             return;
         }
 
         if (text.length < 5) {
-            this.showError(errorDiv, "Сообщение слишком короткое");
+            this.showError(errorDiv, this.getLocalizedText('messageTooShort'));
             return;
         }
 
@@ -741,9 +739,9 @@ class GeoGator {
             .insert([payload]);
 
         if (error) {
-            this.showError(errorDiv, "Ошибка отправки: " + error.message);
+            this.showError(errorDiv, this.getLocalizedText('sendErrorPrefix') + error.message);
         } else {
-            this.showNotification("Спасибо! Ваш отзыв отправлен.", "success");
+            this.showNotification(this.getLocalizedText('messageSent'), "success");
             this.closeModal('feedbackModal');
         }
     }
@@ -1353,6 +1351,11 @@ class GeoGator {
         document.getElementById('loginUsernameInput').placeholder = loginPh;
         document.getElementById('regLoginInput').placeholder = loginPh;
         document.getElementById('regNicknameInput').placeholder = nickPh;
+        
+        // Localize Feedback Placeholder
+        const msgPh = this.getLocalizedText('messagePlaceholder');
+        const feedbackInput = document.getElementById('feedbackMessageInput');
+        if (feedbackInput) feedbackInput.placeholder = msgPh;
 
         // Update Guest text if not logged in
         if (!this.config.user.id && !localStorage.getItem('geoGatorLogin')) {
