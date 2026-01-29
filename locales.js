@@ -4,7 +4,7 @@
 const LOCALES = {
     ru: {
         // --- ЗАГОЛОВКИ И МЕНЮ ---
-        'gameTitle': 'ГеоГатор', // Capitalized Cyrillic
+        'gameTitle': 'Юный Навигатор', // Capitalized Cyrillic
         'gameSubtitle': 'Исследуй мир, ставь рекорды.',
         'statsTitle': 'СТАТИСТИКА',
         'statistics': 'Статистика',
@@ -194,7 +194,7 @@ const LOCALES = {
 
     en: {
         // --- HEADERS & MENU ---
-        'gameTitle': 'GeoGator',
+        'gameTitle': 'Young Navigator',
         'gameSubtitle': 'Explore the world, beat records.',
         'statsTitle': 'STATISTICS',
         'statistics': 'Statistics',

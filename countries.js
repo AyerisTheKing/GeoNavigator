@@ -344,7 +344,7 @@ const GeoCountries = {
         "Доминика": { capital: "Розо", code: "dm", continent: "north_america" },
         "Доминиканская Республика": { capital: "Санто-Доминго", code: "do", continent: "north_america" },
         "Канада": { capital: "Оттава", code: "ca", continent: "north_america" },
-        "Колумбия": { capital: "Богота", code: "co", continent: "south_america" }, // Исправлено: Южная, но иногда спорно, оставим Юг
+
         "Коста-Рика": { capital: "Сан-Хосе", code: "cr", continent: "north_america" },
         "Куба": { capital: "Гавана", code: "cu", continent: "north_america" },
         "Мексика": { capital: "Мехико", code: "mx", continent: "north_america" },
