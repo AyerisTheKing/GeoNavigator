@@ -81,7 +81,7 @@ const LOCALES = {
         'descCountryByCapitalText': 'Выбери страну по столице',
 
         'modeTheMost': 'Самый-самый',
-        'descTheMost': 'Режим рекордов: укажите самый... на карте',
+        'descTheMost': 'Режим рекордов: найдите указанную точку на карте',
 
         // Настройки партии
         'questionsCount': 'ВОПРОСЫ',
@@ -275,7 +275,7 @@ const LOCALES = {
         'descCountryByCapitalText': 'Quiz + Camera',
 
         'modeTheMost': 'The Most',
-        'descTheMost': 'Records mode: pick the most... on the map',
+        'descTheMost': 'Record Breaker: Find the spot on the map',
 
         // Setup Options
         'questionsCount': 'QUESTIONS',

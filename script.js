@@ -1,16 +1,45 @@
 /**
  * GeoGator Core
- * Current Version: v11.8
+ * Current Version: v12.2
  * See CHANGELOG.md for full history.
- * * === ПРАВИЛА ВЕРСИОНИРОВАНИЯ ===
- * Major (+1.0): Глобальные изменения (новая БД, архитектура).
- * Minor (+0.5): Новые фичи (режимы, экраны).
- * Patch (+0.1): Багфиксы, тексты, рефакторинг.
  */
 
 const SUPABASE_URL = "https://tdlhwokrmuyxsdleepht.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkbGh3b2tybXV5eHNkbGVlcGh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDc3ODAsImV4cCI6MjA4NDk4Mzc4MH0.RlfUmejx2ywHNcFofZM4mNE8nIw6qxaTNzqxmf4N4-4";
-const APP_VERSION = "v11.8";
+const APP_VERSION = "v12.2";
+
+const THE_MOST_QUESTIONS = [
+    { id: '1', question: 'Самая высокая гора в мире', answer: 'Эверест', fact: 'Высота 8849 м. Находится в Гималаях.' },
+    { id: '2', question: 'Самая низкая точка суши', answer: 'Мертвое море', fact: '430 м ниже уровня моря.' },
+    { id: '3', question: 'Самая большая жаркая пустыня', answer: 'Сахара', fact: 'Площадь около 9.2 млн км².' },
+    { id: '4', question: 'Самая полноводная река', answer: 'Амазонка', fact: 'Бассейн охватывает 7 млн км².' },
+    { id: '5', question: 'Самая длинная река', answer: 'Нил', fact: 'Длина около 6650 км.' },
+    { id: '6', question: 'Самый высокий водопад', answer: 'Анхель', fact: 'Высота 979 м (Венесуэла).' },
+    { id: '7', question: 'Самое высокое здание', answer: 'Бурдж Халифа', fact: 'Высота 828 м (Дубай).' },
+    { id: '8', question: 'Самая маленькая страна', answer: 'Ватикан', fact: 'Площадь всего 0.49 км².' },
+    { id: '9', question: 'Самая большая страна', answer: 'Россия', fact: 'Площадь 17.1 млн км².' },
+    { id: '10', question: 'Самое глубокое озеро', answer: 'Байкал', fact: 'Глубина 1642 м.' },
+    { id: '11', question: 'Самое большое озеро (по площади)', answer: 'Каспийское море', fact: 'Площадь 371 000 км².' },
+    { id: '12', question: 'Самый большой остров', answer: 'Гренландия', fact: 'Площадь 2.16 млн км².' },
+    { id: '13', question: 'Самый населенный город', answer: 'Токио', fact: 'Население агломерации > 37 млн.' },
+    { id: '14', question: 'Самое глубокое место океана', answer: 'Марианская впадина', fact: 'Глубина около 11 000 м.' },
+    { id: '15', question: 'Самое холодное место на Земле', answer: 'Станция Восток', fact: 'Рекорд: -89.2°C (Антарктида).' },
+    { id: '16', question: 'Самое сухое место (не полярное)', answer: 'Атакама', fact: 'В некоторых местах дождей не было столетиями.' },
+    { id: '17', question: 'Точка, наиболее удаленная от центра Земли', answer: 'Чимборасо', fact: 'Из-за выпуклости Земли выше Эвереста.' },
+    { id: '18', question: 'Самая высокая гора от основания', answer: 'Мауна-Кеа', fact: 'Более 10 000 м от дна океана.' },
+    { id: '19', question: 'Самый холодный населенный пункт', answer: 'Оймякон', fact: 'Температуры опускаются ниже -60°C.' },
+    { id: '20', question: 'Самый высокогорный город', answer: 'Ла-Ринконада', fact: 'Высота 5100 м (Перу).' },
+    { id: '21', question: 'Самый высокий вулкан Африки', answer: 'Килиманджаро', fact: '5895 м над уровнем моря.' },
+    { id: '22', question: 'Самое объёмное дерево', answer: 'Генерал Шерман', fact: 'Секвойядендрон в Калифорнии.' },
+    { id: '23', question: 'Самый глубокий каньон', answer: 'Гранд-Каньон', fact: 'Глубина до 1800 м.' },
+    { id: '24', question: 'Самый большой коралловый риф', answer: 'ББ Риф', fact: 'Длина более 2500 км.' },
+    { id: '25', question: 'Самый изолированный архипелаг', answer: 'Гавайи', fact: 'В центре Тихого океана.' },
+    { id: '26', question: 'Одно из самых жарких мест', answer: 'Эль-Азизия', fact: 'Регистрировалось +58°C.' },
+    { id: '27', question: 'Самое высокогорное судоходное озеро', answer: 'Титикака', fact: 'Высота 3812 м.' },
+    { id: '28', question: 'Самый широкий водопад', answer: 'Виктория', fact: 'Ширина около 1700 м.' },
+    { id: '29', question: 'Самый большой солончак', answer: 'Салар-де-Уюни', fact: 'Более 10 000 км² соли.' },
+    { id: '30', question: 'Первый национальный парк', answer: 'Йеллоустоун', fact: 'Основан в 1872 году.' }
+];
 
 const DIFFICULTY_CONFIG = {
     easy: { answers: 4, timers: [30, 40, 50, 60], color: '#4ade80', showCorrect: true, zoom: true, label: 'diffEasy' },
@@ -18,41 +47,6 @@ const DIFFICULTY_CONFIG = {
     hard: { answers: 8, timers: [5, 8, 12, 15], color: '#f59e0b', showCorrect: false, zoom: true, label: 'diffHard' },
     extreme: { answers: 8, timers: [2, 3, 4, 5], color: '#ef4444', showCorrect: false, zoom: false, label: 'diffExtreme' }
 };
-
-// Данные режима "Самый-самый" (The Most) — обновлённый список точек.
-// id: строка-идентификатор (совпадает с feature.properties.id в GeoJSON)
-const THE_MOST_QUESTIONS = [
-    { id: '1', question: 'Укажите самую высокую гору', answer: 'Эверест', fact: '8849 м. Гималаи, Азия.' },
-    { id: '2', question: 'Укажите самый глубокий океан', answer: 'Тихий океан', fact: 'Средняя глубина 3984 м, содержит Марианскую впадину.' },
-    { id: '3', question: 'Укажите самую длинную реку', answer: 'Нил', fact: 'Около 6650 км. Африка.' },
-    { id: '4', question: 'Укажите самую полноводную реку', answer: 'Амазонка', fact: 'Южная Америка.' },
-    { id: '5', question: 'Укажите самое глубокое озеро', answer: 'Байкал', fact: 'Глубина 1642 м. Россия, Сибирь.' },
-    { id: '6', question: 'Укажите самое большое озеро', answer: 'Каспийское море', fact: '371 000 км². Евразия.' },
-    { id: '7', question: 'Укажите самый большой остров', answer: 'Гренландия', fact: '2,1 млн км². Северная Америка.' },
-    { id: '8', question: 'Укажите самый большой материк', answer: 'Евразия', fact: '54,8 млн км².' },
-    { id: '9', question: 'Укажите самый маленький материк', answer: 'Австралия', fact: '7,7 млн км².' },
-    { id: '10', question: 'Укажите самую большую жаркую пустыню', answer: 'Сахара', fact: 'Около 9,2 млн км². Африка.' },
-    { id: '11', question: 'Укажите самый высокий водопад', answer: 'Анхель', fact: '979 м. Венесуэла.' },
-    { id: '12', question: 'Укажите самый мощный водопад', answer: 'Игуасу', fact: 'Средний расход ~1750 м³/с. Бразилия/Аргентина.' },
-    { id: '13', question: 'Укажите самый большой коралловый риф', answer: 'Большой Барьерный риф', fact: 'Более 2300 км. Австралия.' },
-    { id: '14', question: 'Укажите самую глубокую точку Земли', answer: 'Марианская впадина', fact: '≈11 км. Тихий океан.' },
-    { id: '15', question: 'Укажите самое холодное место', answer: 'Станция «Восток»', fact: 'Рекорд -89,2°C. Антарктида.' },
-    { id: '16', question: 'Укажите самое жаркое место', answer: 'Долина Смерти', fact: 'Рекорд +56,7°C. Калифорния, США.' },
-    { id: '17', question: 'Укажите самое влажное место', answer: 'Черапунджи/Мавсинрам', fact: 'Около 12 000 мм осадков в год. Индия.' },
-    { id: '18', question: 'Укажите самое солёное море', answer: 'Красное море', fact: 'Солёность около 41‰.' },
-    { id: '19', question: 'Укажите самый знаменитый вулкан с идеальным конусом', answer: 'Фудзияма', fact: '3776 м. Япония.' },
-    { id: '20', question: 'Укажите самый знаменитый каньон', answer: 'Гранд-Каньон', fact: 'Река Колорадо, Аризона, США.' },
-    { id: '21', question: 'Укажите самую длинную горную цепь', answer: 'Анды', fact: '≈9000 км. Южная Америка.' },
-    { id: '22', question: 'Укажите самую большую страну', answer: 'Россия', fact: '17,1 млн км².' },
-    { id: '23', question: 'Укажите самую маленькую страну', answer: 'Ватикан', fact: '0,49 км². Внутри Рима.' },
-    { id: '24', question: 'Укажите самую густонаселённую страну (по плотности)', answer: 'Монако', fact: 'Плотность населения ~19 000 чел./км².' },
-    { id: '25', question: 'Укажите самый известный разлом', answer: 'Сан-Андреас', fact: 'Калифорния, США.' },
-    { id: '26', question: 'Укажите самый знаменитый гейзер', answer: '«Старый служака»', fact: 'Йеллоустон, США.' },
-    { id: '27', question: 'Укажите самый большой солончак', answer: 'Солончак Уюни', fact: '10 582 км². Боливия.' },
-    { id: '28', question: 'Укажите самый известный водопад Африки', answer: 'Водопад Виктория', fact: 'Река Замбези.' },
-    { id: '29', question: 'Укажите самую низкую точку на суше', answer: 'Побережье Мёртвого моря', fact: '-430 м. Израиль/Иордания.' },
-    { id: '30', question: 'Укажите самый удалённый от суши остров', answer: 'Остров Пасхи (Рапануи)', fact: 'Тихий океан. Принадлежит Чили.' }
-];
 
 // Будет инициализирован в конструкторе
 let supabaseClient;
@@ -219,10 +213,10 @@ class GeoGator {
                 total_games: profile.total_games || 0,
                 total_time: profile.total_time || 0
             },
-            easy: profile.stats_easy || {},
-            normal: profile.stats_normal || {},
-            hard: profile.stats_hard || {},
-            extreme: profile.stats_extreme || {}
+            easy: profile.stat_easy || {},
+            normal: profile.stat_normal || {},
+            hard: profile.stat_hard || {},
+            extreme: profile.stat_extreme || {}
         };
 
         this.updateProfileUI();
@@ -590,13 +584,14 @@ class GeoGator {
 
         const email = `${login}@geogator.game`;
 
-        // 1. Создание Auth User с передачей login в metadata для триггера
+        // 1. Создание Auth User с передачей login И nickname в metadata для триггера
         const { data, error } = await supabaseClient.auth.signUp({
             email: email,
             password: pass,
             options: {
                 data: {
-                    login: login // ВАЖНО: передаем login в raw_user_meta_data
+                    login: login,    // Login for logic (unique)
+                    nickname: nick   // Nickname for display (max 15 chars)
                 }
             }
         });
@@ -607,21 +602,13 @@ class GeoGator {
         }
 
         if (data.user) {
-            // 2. Создание профиля в БД
-            const { error: profileError } = await supabaseClient
-                .from('profiles')
-                .insert([
-                    { id: data.user.id, login: login, nickname: nick }
-                ]);
-
-            if (profileError) {
-                this.showError(errorDiv, this.getLocalizedText('profileCreationError') + profileError.message);
-            } else {
-                this.showNotification(this.getLocalizedText('registerSuccess'), "success");
-                this.closeRegisterModal();
-                this.openLoginModal();
-                document.getElementById('loginUsernameInput').value = login;
-            }
+            // 2. Создание профиля делегировано DB Trigger (handle_new_user)
+            // Мы больше не делаем ручной insert, чтобы избежать Race Condition/Error 500
+            
+            this.showNotification(this.getLocalizedText('registerSuccess'), "success");
+            this.closeRegisterModal();
+            this.openLoginModal();
+            document.getElementById('loginUsernameInput').value = login;
         }
     }
 
@@ -1016,43 +1003,14 @@ class GeoGator {
         }
 
         this.generateQuestions();
-        const map = this.config.gameState.map;
-        const isMostMode = (this.config.currentGame.mode === 'theMost');
-        // Enable/disable interactivity for Most points
-        if (this.config.gameState.mostLayer) {
-            this.config.gameState.mostLayer.eachLayer(l => l.options.interactive = isMostMode);
-        }
-        // In 'theMost' mode hide country boundaries and disable map interactions so players control zoom/pan themselves
-        if (isMostMode) {
-            if (this.config.gameState.boundariesLayer && map && map.hasLayer && map.hasLayer(this.config.gameState.boundariesLayer)) {
-                try { map.removeLayer(this.config.gameState.boundariesLayer); } catch (e) { }
-            }
-            if (map) {
-                map.dragging?.disable();
-                map.touchZoom?.disable();
-                map.doubleClickZoom?.disable();
-                map.scrollWheelZoom?.disable();
-                map.boxZoom?.disable();
-                try { if (map.keyboard) map.keyboard.disable(); } catch(e) { }
-            }
-        } else {
-            if (this.config.gameState.boundariesLayer && map && map.addLayer && !map.hasLayer(this.config.gameState.boundariesLayer)) {
-                try { map.addLayer(this.config.gameState.boundariesLayer); } catch (e) { }
-                // ensure polygons are interactive again
-                this.config.gameState.boundariesLayer.eachLayer(l => l.options.interactive = true);
-            }
-            if (map) {
-                map.dragging?.enable();
-                map.touchZoom?.enable();
-                map.doubleClickZoom?.enable();
-                map.scrollWheelZoom?.enable();
-                map.boxZoom?.enable();
-                try { if (map.keyboard) map.keyboard.enable(); } catch(e) { }
-            }
-        }
         this.config.gameState.gameStartTime = Date.now();
         this.config.gameState.sessionStart = Date.now();
         this.showScreen('gameScreen');
+        this.showScreen('gameScreen');
+        
+        // LAYER MANAGEMENT
+        // LAYER MANAGEMENT handled in initMap -> addCountryBoundaries flow to avoid race conditions
+        
         this.showQuestion();
     }
 
@@ -1143,50 +1101,45 @@ class GeoGator {
      */
     generateQuestions() {
         const { continents: selected, questionCount } = this.config.currentGame;
-
-        // Special mode: The Most
+        
         if (this.config.currentGame.mode === 'theMost') {
-            const pool = this.shuffleArray(THE_MOST_QUESTIONS.slice());
-            let finalSelection;
-            if (questionCount === 'all') finalSelection = pool;
-            else finalSelection = pool.slice(0, Math.min(questionCount, pool.length));
-            // Map to internal question format
-            this.config.gameState.questions = finalSelection.map(q => ({
-                id: q.id,
-                question: q.question,
-                answer: q.answer,
-                fact: q.fact
-            }));
-            document.getElementById('totalQuestions').textContent = this.config.gameState.questions.length;
-            return;
-        }
-
-        // Default behavior: country-based questions
-        let allCountries = [];
-        selected.forEach(c => {
-            if (window.GeoCountries && window.GeoCountries.continents[c]) {
-                allCountries = [...allCountries, ...window.GeoCountries.continents[c]];
+            // "The Most" mode logic
+            const shuffled = this.shuffleArray(THE_MOST_QUESTIONS);
+            this.config.gameState.questions = shuffled.slice(0, 30); // Use all or limit? Prompt says 30 items total. Game usually 10/20.
+            // Adjust to user setting if 'all' or specific count?
+            // Prompt says: "new mode... 30 objects... If mode 'theMost', use questions from array".
+            // Let's fallback to user count limiting
+            if (questionCount !== 'all') {
+                 this.config.gameState.questions = this.config.gameState.questions.slice(0, questionCount);
             }
-        });
-
-        // Исключить страны, которых нет на карте для режима countryByCapital
-        const excludedCountries = ['Сан-Марино', 'Андорра', 'Ватикан', 'Монако', 'Лихтенштейн'];
-        if (this.config.currentGame.mode === 'countryByCapital') {
-            allCountries = allCountries.filter(country => !excludedCountries.includes(country));
-        }
-
-        const shuffled = this.shuffleArray(allCountries);
-        let finalSelection = [];
-        if (questionCount === 'all') {
-            finalSelection = shuffled;
         } else {
-            finalSelection = shuffled.slice(0, Math.min(questionCount, shuffled.length));
+            // Standard country logic
+            let allCountries = [];
+            selected.forEach(c => {
+                if (window.GeoCountries && window.GeoCountries.continents[c]) {
+                    allCountries = [...allCountries, ...window.GeoCountries.continents[c]];
+                }
+            });
+
+            // Исключить страны, которых нет на карте для режима countryByCapital
+            const excludedCountries = ['Сан-Марино', 'Андорра', 'Ватикан', 'Монако', 'Лихтенштейн'];
+            if (this.config.currentGame.mode === 'countryByCapital') {
+                allCountries = allCountries.filter(country => !excludedCountries.includes(country));
+            }
+
+            const shuffled = this.shuffleArray(allCountries);
+            let finalSelection = [];
+            if (questionCount === 'all') {
+                finalSelection = shuffled;
+            } else {
+                finalSelection = shuffled.slice(0, Math.min(questionCount, shuffled.length));
+            }
+            this.config.gameState.questions = finalSelection.map(c => {
+                const d = window.GeoCountries.countryData[c];
+                if (!d) return null;
+                return { country: c, capital: d.capital, code: d.code, continent: d.continent };
+            }).filter(q => q !== null);
         }
-        this.config.gameState.questions = finalSelection.map(c => {
-            const d = window.GeoCountries.countryData[c];
-            if (!d) return null;
-            return { country: c, capital: d.capital, code: d.code, continent: d.continent };
-        }).filter(q => q !== null);
         document.getElementById('totalQuestions').textContent = this.config.gameState.questions.length;
     }
 
@@ -1221,6 +1174,12 @@ class GeoGator {
         else if (mode === 'countryByCapital') this.showCountryByCapitalQuestion(q);
         else if (mode === 'countryByCapitalText') this.showCountryByCapitalTextQuestion(q);
         else if (mode === 'theMost') this.showTheMostQuestion(q);
+    }
+
+    showTheMostQuestion(q) {
+        this.toggleUIElements({ flag: false, options: false, hint: false });
+        document.getElementById('questionText').textContent = q.question;
+        // No auto-zoom
     }
 
     updateQuestionUI(idx, total) {
@@ -1259,16 +1218,6 @@ class GeoGator {
         }
         this.generateAnswerOptions(q, 'country');
     }
-
-    // Режим "Самый-самый": показывает текст и инструкцию к клику по карте
-    showTheMostQuestion(q) {
-        this.toggleUIElements({ flag: false, options: false, hint: true });
-        // Use provided question text directly
-        document.getElementById('questionText').textContent = q.question;
-        document.querySelector('.capital-hint span').textContent = 'Кликните по крупной точке на карте. После ответа вы увидите короткий факт.';
-        // No automatic centering/zoom in this mode — players control the map themselves
-    }
-
     toggleUIElements({ flag, options, hint }) {
         document.getElementById('countryFlagContainer').style.display = flag ? 'block' : 'none';
         document.getElementById('capitalHint').style.display = hint ? 'flex' : 'none';
@@ -1434,17 +1383,6 @@ class GeoGator {
         } catch (error) {
             console.warn("GeoJSON error: границы стран не загружены, но игра продолжается.", error);
         }
-
-        // Load "The Most" objects layer (points/lines/polygons) if available
-        try {
-            const resp = await fetch('the_most.geo.json');
-            if (resp.ok) {
-                const mostData = await resp.json();
-                this.addMostObjects(mostData);
-            }
-        } catch (e) {
-            console.warn('The Most layer not loaded (optional)', e);
-        }
     }
 
     addCountryBoundaries(data) {
@@ -1455,32 +1393,114 @@ class GeoGator {
             style: { fillColor: 'transparent', weight: 1.5, opacity: 0.6, color: '#4cc9f0', fillOpacity: 0.1, dashArray: '3, 3' },
             onEachFeature: (f, l) => this.setupCountryInteractivity(f, l, map)
         });
-        // Keep reference to the layer, but do not add it to the map if we're in 'theMost' mode.
-        // It will be added when a non-theMost game starts.
+        
         this.config.gameState.boundariesLayer = layer;
+
+        // Condition: Only add boundaries if NOT in 'The Most' mode
+        if (this.config.currentGame?.mode !== 'theMost') {
+            layer.addTo(map);
+        }
+
+        // Try to load 'The Most' layer
+        this.loadMostLayer();
+    }
+
+    async loadMostLayer() {
         try {
-            if (this.config.currentGame?.mode !== 'theMost') layer.addTo(map);
+            const response = await fetch('./the_most.geo.json');
+            if (!response.ok) return;
+            const data = await response.json();
+            this.addMostObjects(data);
         } catch (e) {
-            // If currentGame undefined (during init) it's safe to add by default
-            try { layer.addTo(map); } catch (err) { }
+            console.warn("The Most layer load failed", e);
         }
     }
 
-    // Добавляет слой с объектами режима "Самый-самый" (точки/сегменты). 
     addMostObjects(data) {
-        const map = this.config.gameState.map;
-        if (!map || !data) return;
+        if (!this.config.gameState.map) return;
+
         const layer = L.geoJson(data, {
-            pointToLayer: (feature, latlng) => L.circleMarker(latlng, { radius: 12, color: '#ff8a3d', weight: 2, fillColor: '#ffb86b', fillOpacity: 0.95 }),
-            onEachFeature: (f, l) => this.setupMostInteractivity(f, l)
-        }).addTo(map);
+             pointToLayer: (feature, latlng) => {
+                return L.circleMarker(latlng, {
+                    radius: 12,
+                    fillColor: '#FFD700', // Gold
+                    color: '#fff',
+                    weight: 2,
+                    opacity: 1,
+                    fillOpacity: 0.9
+                });
+            },
+            onEachFeature: (feature, layer) => {
+                layer.bindTooltip(feature.properties.name, { direction: 'top', offset: [0, -10] });
+                // Hover effect
+                // Hover effect
+                layer.on('mouseover', () => { 
+                    if (this.config.currentGame?.mode === 'theMost') layer.setRadius(16); 
+                });
+                layer.on('mouseout', () => { 
+                    if (this.config.currentGame?.mode === 'theMost') layer.setRadius(12); 
+                });
+                // Click
+                layer.on('click', (e) => {
+                    if (this.config.currentGame?.mode === 'theMost') {
+                         L.DomEvent.stop(e);
+                         this.handleMostObjectClick(feature.properties.id, layer);
+                     }
+                });
+            }
+        });
+        
         this.config.gameState.mostLayer = layer;
-        // Ensure points drawn above country fills
-        if (map && map.eachLayer) {
-            layer.bringToFront?.();
+
+        // Condition: Add IMMEDIATELY if in 'The Most' mode
+        if (this.config.currentGame?.mode === 'theMost') {
+            layer.addTo(this.config.gameState.map);
+            console.log("The Most layer added to map");
         }
-        // Initially non-interactive until mode selected
-        layer.eachLayer(l => l.options.interactive = (this.config.currentGame?.mode === 'theMost'));
+    }
+
+    handleMostObjectClick(id, layer) {
+        if (this.config.gameState.isInputBlocked) return;
+        this.config.gameState.isInputBlocked = true;
+        this.stopTimer();
+
+        const q = this.config.gameState.questions[this.config.gameState.currentQuestionIndex];
+        const correctId = q.id;
+
+        if (id === correctId) {
+            // Correct
+            layer.setStyle({ fillColor: '#4ade80', color: '#fff' });
+            this.config.gameState.score++;
+            this.config.playerStats.totalCorrect++;
+            this.showNotification(this.getLocalizedText('correct'), 'success');
+        } else {
+             // Wrong
+            layer.setStyle({ fillColor: '#ef4444', color: '#fff' });
+            this.config.playerStats.totalWrong = (this.config.playerStats.totalWrong || 0) + 1;
+            this.showNotification(this.getLocalizedText('wrong'), 'error');
+
+            // Find correct layer to fly to
+            this.config.gameState.mostLayer.eachLayer(l => {
+                if (l.feature.properties.id === correctId) {
+                     l.setStyle({ fillColor: '#4ade80', radius: 18 });
+                     // Fly to correct
+                     this.config.gameState.map.flyTo(l.getLatLng(), 5, { duration: 1.5 });
+                }
+            });
+            
+            if (q.fact) {
+                 setTimeout(() => this.showNotification(q.fact, 'info'), 1500);
+            }
+        }
+
+        this.saveLocalProgress();
+        setTimeout(() => {
+            // Reset styles
+            this.config.gameState.mostLayer.eachLayer(l => {
+                l.setStyle({ fillColor: '#FFD700', radius: 12 });
+            });
+            this.nextQuestion();
+        }, 3000); // Longer delay to read fact
     }
 
     /*
@@ -1544,7 +1564,7 @@ class GeoGator {
                 'info'
             ), 1000);
         }
-        this.saveStats();
+        this.saveLocalProgress();
         setTimeout(() => this.nextQuestion(), 1500);
     }
 
@@ -1565,92 +1585,7 @@ class GeoGator {
             }
         });
     }
-
-    // Настройка интерактивности для объектов режима "Самый-самый"
-    setupMostInteractivity(feature, layer) {
-        const name = feature.properties && (feature.properties.name || feature.properties.id || 'Объект');
-        // Ensure only large points are interactive in this mode
-        layer.options.interactive = (this.config.currentGame?.mode === 'theMost');
-        layer.on('mouseover', () => {
-            if (this.config.gameState.isInputBlocked) return;
-            if (layer.setStyle) layer.setStyle({ radius: 15, color: '#fff', weight: 2, fillColor: '#ffdb9b' });
-            layer.bindTooltip(name, { direction: 'auto', className: 'country-tooltip' }).openTooltip();
-            if (layer.bringToFront) layer.bringToFront();
-        });
-        layer.on('mouseout', () => {
-            if (this.config.gameState.isInputBlocked) return;
-            if (this.config.gameState.mostLayer) this.config.gameState.mostLayer.resetStyle(layer);
-            layer.closeTooltip();
-        });
-        layer.on('click', (e) => {
-            if (this.config.currentGame?.mode === 'theMost') {
-                L.DomEvent.stop(e);
-                const q = this.config.gameState.questions[this.config.gameState.currentQuestionIndex];
-                this.handleMostObjectClick(String(layer.feature.properties.id), q);
-            }
-        });
-    }
-
-    handleMostObjectClick(clickedId, q) {
-        this.config.gameState.isInputBlocked = true;
-        this.stopTimer();
-
-        // Update stats (generic world region)
-        const region = 'world';
-        if (!this.config.playerStats.regionStats[region]) this.config.playerStats.regionStats[region] = { correct: 0, total: 0 };
-        this.config.playerStats.regionStats[region].total++;
-
-        if (clickedId === q.id) {
-            this.config.gameState.score++;
-            this.config.playerStats.totalCorrect++;
-            this.config.playerStats.regionStats[region].correct++;
-            this.showNotification(this.getLocalizedText('correct'), 'success');
-            this.highlightCorrectMostObject(q.id);
-            setTimeout(() => this.showNotification(q.fact || '', 'info'), 800);
-        } else {
-            this.config.playerStats.totalWrong = (this.config.playerStats.totalWrong || 0) + 1;
-            this.config.gameState.wrong = (this.config.gameState.wrong || 0) + 1;
-            this.showNotification(this.getLocalizedText('wrong'), 'error');
-            this.highlightCorrectMostObject(q.id);
-            // Показываем правильный ответ: центрируем и увеличиваем карту на правильной точке
-            try {
-                const map = this.config.gameState.map;
-                if (this.config.gameState.mostLayer && map) {
-                    this.config.gameState.mostLayer.eachLayer(layer => {
-                        if (String(layer.feature?.properties?.id) === String(q.id)) {
-                            const latlng = (layer.getLatLng && layer.getLatLng()) || (layer.getBounds && layer.getBounds().getCenter && layer.getBounds().getCenter());
-                            if (latlng) map.flyTo(latlng, 6, { duration: 1.2 });
-                        }
-                    });
-                }
-            } catch (e) { }
-            setTimeout(() => this.showNotification(q.fact || '', 'info'), 800);
-        }
-        this.saveStats();
-        setTimeout(() => this.nextQuestion(), 1500);
-    }
-
-    highlightCorrectMostObject(answerId) {
-        if (!this.config.gameState.mostLayer) return;
-        this.config.gameState.mostLayer.eachLayer(layer => {
-            if (layer.feature && layer.feature.properties && String(layer.feature.properties.id) === String(answerId)) {
-                if (layer.setStyle) layer.setStyle({ radius: 14, color: '#4ade80', fillColor: '#4ade80', fillOpacity: 0.95, weight: 2 });
-                if (layer.bringToFront) layer.bringToFront();
-            }
-        });
-    }
-
-    resetCountryColors() {
-        if (this.config.gameState.boundariesLayer) {
-            this.config.gameState.boundariesLayer.eachLayer(l => this.config.gameState.boundariesLayer.resetStyle(l));
-        }
-        if (this.config.gameState.mostLayer) {
-            this.config.gameState.mostLayer.eachLayer(l => {
-                // Reset circle markers to default style
-                if (l.setStyle) l.setStyle({ radius: 7, color: '#ffb86b', weight: 1, fillColor: '#ffb86b', fillOpacity: 0.9 });
-            });
-        }
-    }
+    resetCountryColors() { this.config.gameState.boundariesLayer?.eachLayer(l => this.config.gameState.boundariesLayer.resetStyle(l)); }
 
     // === TIMER ===
     startTimer() {
@@ -1686,7 +1621,7 @@ class GeoGator {
             this.highlightCorrectCountry(q.country);
         }
         this.showNotification(this.getLocalizedText('timeOut'), 'warning');
-        this.saveStats();
+        this.saveLocalProgress();
         setTimeout(() => this.nextQuestion(), 1500);
     }
 
@@ -1703,127 +1638,109 @@ class GeoGator {
         // Total Time
         const duration = Math.round((Date.now() - this.config.gameState.sessionStart) / 1000);
 
-        this.saveStats(duration, true);
+        // Map internal modes to DB Keys
+        const modeMap = {
+            'capitalByCountry': 'GuessCapital',
+            'countryByCapital': 'FoundOnMap',
+            'countryByCapitalText': 'GuessCountry',
+            'theMost': 'MostMost'
+        };
+        const dbMode = modeMap[this.config.currentGame.mode] || this.config.currentGame.mode;
+        
+        // Calculate correct/wrong for this session
+        // Note: gameState.score is usually correct count.
+        const correct = this.config.gameState.score;
+        // wrong is calculated as (Questions Passed - Correct)
+        const wrong = (this.config.gameState.currentQuestionIndex + 1) - correct;
+
+        this.saveGameStats(dbMode, this.config.currentDifficulty, correct, wrong, duration);
+        this.saveLocalProgress(duration);
         this.showResults();
     }
 
     /**
-     * Сохраняет статистику игрока.
-
+     * Alias for saving progress (Backward Compatibility v12.1)
      */
-    async saveStats(sessionDuration = 0, isFinal = false) {
-        if (sessionDuration > 0) {
-            this.config.playerStats.totalTime = (this.config.playerStats.totalTime || 0) + sessionDuration;
+    saveStats() {
+        this.saveLocalProgress();
+    }
+
+    /**
+     * Сохраняет локальный прогресс (localStorage) для восстановления при сбое.
+     */
+    saveLocalProgress(duration = 0) {
+        if (duration > 0) {
+            this.config.playerStats.totalTime = (this.config.playerStats.totalTime || 0) + duration;
         }
         localStorage.setItem('geoGatorStats', JSON.stringify(this.config.playerStats));
+    }
 
+    /**
+     * Основная логика сохранения (v12.0)
+     * Входные параметры: mode, difficulty, correct, wrong, timeSpent
+     */
+    async saveGameStats(mode, difficulty, correct, wrong, timeSpent) {
         if (!this.config.user.id) return;
-        
-        // Use loaded config stats as BASE
-        if (!this.config.game_stats) return;
 
-        // Current game Deltas
-        const gameCorrect = this.config.gameState.score || 0;
-        const totalQs = this.config.gameState.questions.length || 0; // Total planned (usually 10/20)
-        // If game is not finished, we might want to use current index? 
-        // But logic says totalQs is total questions available in the game
-        
-        // Actually for HISTORY "Total" we usually mean "Total questions answered so far" or "Total questions in match"?
-        // The prompt says "t: totalQuestions". Let's use config.gameState.totalQuestions (which needs to be set properly) or questions.length
-        
-        const currentQIndex = this.config.gameState.currentQuestionIndex || 0;
-        const gameWrong = (this.config.gameState.wrong || 0); // Need to ensure 'wrong' is tracked in gameState if we use it directly, but earlier code used playerStats.totalWrong accumulation. 
-        // Wait, the prompt says "w: this.config.gameState.wrong". 
-        // In my current code config.gameState does usually NOT have 'wrong'. 
-        // I should check where 'wrong' is updated. 
-        // In handleAnswerSelection: this.config.playerStats.totalWrong++;
-        // But for *this specific game*, I need to track it locally if I want 'match' stats.
-        // Let's assume for now I should use 'gameWrong' calculated or from a new property.
-        // The prompt says "w: this.config.gameState.wrong". I must ensure this property is populated!
-        
-        // Let's add 'wrong' to gameState in init or update it.
-        // Or calculate it: gameWrong = (currentQIndex + 1) - gameCorrect (approx).
-        // Safest is to follow prompt instruction "w: this.config.gameState.wrong". 
-        // I will assume I need to update 'wrong' in handleAnswerSelection too? 
-        // Actually, looking at handleAnswerSelection, it doesn't update config.gameState.wrong.
-        // I should add it there or just calculate it here implicitly.
-        // But the user Code Prompt explicitly says: "w: this.config.gameState.wrong".
-        // I will fix this by calculating it if it's undefined, OR better, I will check if I can add it to handleAnswerSelection.
-        // However, I am replacing saveStats here. I can't easily change handleAnswerSelection in the same replace block if they are far apart.
-        // I'll calculate it: const wrong = (this.config.gameState.wrong !== undefined) ? this.config.gameState.wrong : (sessionDuration > 0 ? (totalQs - gameCorrect) : 0); 
-        // Wait, if not final, wrong might be undefined.
-        // Let's look at `this.config.playerStats.totalWrong`. This is global.
-        
-        // I will use a local calculation:
-        // totalQuestions in match so far = currentQuestionIndex + (finished ? 0 : 1? no).
-        // Let's rely on what the user PROMPT said: "this.config.gameState.wrong".
-        // If it's missing, it will be undefined.
-        // I will add: this.config.gameState.wrong = (this.config.gameState.wrong || 0); in the method to be safe.
-        
-        const diffKey = this.config.currentDifficulty; 
-        
-        // 1. Берем текущий JSON сложности из конфига (Base)
-        let diffStats = this.config.game_stats[diffKey] || { best_score:0, total_correct:0, total_games:0, total_time:0 };
+        console.log(`Saving Stats: ${mode} (${difficulty}) C:${correct} W:${wrong} T:${timeSpent}`);
 
-        // 2. Обновляем цифры в памяти (Create updated copy for DB)
-        const updatedDiffStats = {
-            ...diffStats,
-            total_correct: diffStats.total_correct + gameCorrect,
-            total_games: diffStats.total_games + (isFinal ? 1 : 0),
-            total_time: diffStats.total_time + sessionDuration,
-            best_score: Math.max(diffStats.best_score, gameCorrect)
+        // 1. Определение целевой колонки (targetColumn)
+        // Если режим MostMost -> всегда пишем в stat_normal
+        const targetDiff = (mode === 'MostMost') ? 'normal' : difficulty;
+        const colName = `stat_${targetDiff}`;
+
+        // 2. Обновление JSON (Read -> Modify -> Write)
+        // Получаем текущий объект сложности
+        const baseStats = this.config.game_stats[targetDiff] || {};
+        
+        // Внутри JSON находим объект режима или создаем
+        const modeStats = baseStats[mode] || { correct: 0, wrong: 0, time: 0 };
+
+        // Инкрементируем значения (Delta Logic)
+        modeStats.correct += correct;
+        modeStats.wrong += wrong;
+        modeStats.time += timeSpent;
+
+        // Сохраняем обновленный объект режима обратно в структуру
+        baseStats[mode] = modeStats;
+        this.config.game_stats[targetDiff] = baseStats;
+
+        // Глобальный счетчик (Optional but requested)
+        this.config.game_stats.global.total_correct = (this.config.game_stats.global.total_correct || 0) + correct;
+
+        // 3. История (recent_games)
+        const newGame = {
+            mode: mode,
+            difficulty: targetDiff, // Store the difficulty it was saved under? Or original? Prompt says "difficulty".
+            correct: correct,
+            wrong: wrong,
+            time: timeSpent,
+            date: new Date()
         };
 
-        // HISTORY LOGIC
-        let history = this.config.user.recent_games || [];
-        
-        // Only add to history if it's a "Final" save (end of game) or maybe user wants it every time?
-        // Usually history is one entry per game. 
-        // The prompt says "In saveStats... Form matchRecord... unshift... slice...".
-        // If I call saveStats after every question, I'll flood the history with the SAME game.
-        // I should ONLY add to history if (isFinal).
-        
-        if (isFinal) {
-            const matchRecord = {
-                d: this.config.currentDifficulty,
-                s: this.config.gameState.score,
-                w: this.config.gameState.wrong || 0, // Fallback if not tracked
-                t: this.config.gameState.questions.length,
-                ts: Date.now()
-            };
-            history.unshift(matchRecord);
-            history = history.slice(0, 10);
-            this.config.user.recent_games = history;
-        }
+        const recent = this.config.user.recent_games || [];
+        recent.unshift(newGame);
+        // Обрежь массив, чтобы хранить только последние 50 игр
+        const trimmedRecent = recent.slice(0, 50);
+        this.config.user.recent_games = trimmedRecent;
 
-        // Global Stats Updates
-        const globalBase = this.config.game_stats.global;
+        // 4. Отправка в Supabase
         const updates = {
-            total_correct: globalBase.total_correct + gameCorrect,
-            total_wrong: (this.config.user_profile?.total_wrong || 0) + (this.config.gameState.wrong || 0),
-            total_games: globalBase.total_games + (isFinal ? 1 : 0),
-            total_time: globalBase.total_time + sessionDuration,
-            best_score: Math.max(globalBase.best_score, gameCorrect),
-            [`stats_${diffKey}`]: updatedDiffStats,
-            recent_games: history // Send history
+            [colName]: baseStats, // Обновляем всю колонку JSONB
+            recent_games: trimmedRecent,
+            total_correct: this.config.game_stats.global.total_correct
         };
 
-        // 3. Отправляем в БД
         const { error } = await supabaseClient
             .from('profiles')
             .update(updates)
             .eq('id', this.config.user.id);
-            
+
         if (error) {
-            console.error('SaveStats Error:', error);
-        } else if (isFinal) {
-            this.config.game_stats[diffKey] = updatedDiffStats;
-            this.config.game_stats.global = {
-                total_correct: updates.total_correct,
-                best_score: updates.best_score,
-                total_games: updates.total_games,
-                total_time: updates.total_time
-            };
+            console.error('DATABASE ERROR:', error.message);
+            this.showNotification('Ошибка сохранения: ' + error.message, 'error');
+        } else {
+            console.log('Stats saved successfully');
         }
     }
 
