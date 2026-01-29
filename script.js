@@ -19,33 +19,39 @@ const DIFFICULTY_CONFIG = {
     extreme: { answers: 8, timers: [2, 3, 4, 5], color: '#ef4444', showCorrect: false, zoom: false, label: 'diffExtreme' }
 };
 
-// Данные режима "Самый-самый" (The Most).
-// Каждый объект содержит id (slug), descriptor — окончание вопроса, answerId совпадает с id, и факт.
+// Данные режима "Самый-самый" (The Most) — обновлённый список точек.
+// id: строка-идентификатор (совпадает с feature.properties.id в GeoJSON)
 const THE_MOST_QUESTIONS = [
-    { id: 'eurasia', descriptor: 'большой материк', answerId: 'eurasia', name: 'Евразия', fact: 'Площадь около 54 млн км². Состоит из Европы и Азии.' },
-    { id: 'australia_continent', descriptor: 'маленький материк', answerId: 'australia_continent', name: 'Австралия', fact: 'Площадь около 7,7 млн км². Расположен в Южном полушарии.' },
-    { id: 'antarctica', descriptor: 'холодный материк', answerId: 'antarctica', name: 'Антарктида', fact: 'Покрыт ледяным щитом толщиной до 4,8 км. Находится на Южном полюсе.' },
-    { id: 'africa', descriptor: 'жаркий материк', answerId: 'africa', name: 'Африка', fact: 'Здесь находится крупнейшая жаркая пустыня мира — Сахара. Пересекается экватором.' },
-    { id: 'pacific_ocean', descriptor: 'большой океан', answerId: 'pacific_ocean', name: 'Тихий океан', fact: 'Площадь 165,2 млн км². Занимает почти половину площади Мирового океана.' },
-    { id: 'arctic_ocean', descriptor: 'маленький океан', answerId: 'arctic_ocean', name: 'Северный Ледовитый океан', fact: 'Площадь 14,75 млн км². Расположен вокруг Северного полюса.' },
-    { id: 'everest', descriptor: 'высокая гора', answerId: 'everest', name: 'Эверест', fact: 'Высота 8848,86 м над уровнем моря. Находится в Гималаях, в Азии.' },
-    { id: 'nile', descriptor: 'длинная река', answerId: 'nile', name: 'Нил', fact: 'Длина около 6650 км. Протекает в Африке с юга на север.' },
-    { id: 'amazon', descriptor: 'полноводная река', answerId: 'amazon', name: 'Амазонка', fact: 'Переносит 20% всей пресной речной воды планеты. Протекает в Южной Америке.' },
-    { id: 'greenland', descriptor: 'большой остров', answerId: 'greenland', name: 'Гренландия', fact: 'Площадь 2,1 млн км². Автономная территория Дании, расположена в Северной Америке.' },
-    { id: 'baikal', descriptor: 'глубокое озеро', answerId: 'baikal', name: 'Байкал', fact: 'Максимальная глубина 1642 м. Находится в России.' },
-    { id: 'caspian', descriptor: 'большое озеро', answerId: 'caspian', name: 'Каспийское море', fact: 'Площадь 371 000 км². Солёное озеро на границе Европы и Азии.' },
-    { id: 'angel', descriptor: 'высокий водопад', answerId: 'angel', name: 'Анхель', fact: 'Общая высота падения 979 метров. Находится в Венесуэле.' },
-    { id: 'sahara', descriptor: 'жаркая пустыня', answerId: 'sahara', name: 'Сахара', fact: 'Площадь около 9,2 млн км². Расположена в Северной Африке.' },
-    { id: 'russia', descriptor: 'большая страна', answerId: 'russia', name: 'Россия', fact: 'Площадь 17,1 млн км². Расположена в Восточной Европе и Северной Азии.' },
-    { id: 'vatican', descriptor: 'маленькая страна', answerId: 'vatican', name: 'Ватикан', fact: 'Площадь 0,49 км². Анклав внутри города Рим.' },
-    { id: 'mariana_trench', descriptor: 'глубокая впадина', answerId: 'mariana_trench', name: 'Марианская впадина', fact: 'Глубина около 11 000 метров. Находится в западной части Тихого океана.' },
-    { id: 'great_barrier', descriptor: 'большой коралловый риф', answerId: 'great_barrier', name: 'Большой Барьерный риф', fact: 'Протяжённость более 2300 км. Расположен у северо-восточного побережья Австралии.' },
-    { id: 'andes', descriptor: 'длинная горная система', answerId: 'andes', name: 'Анды', fact: 'Протяжённость около 9000 км. Расположена вдоль западного побережья Южной Америки.' },
-    { id: 'iguazu', descriptor: 'мощный водопад', answerId: 'iguazu', name: 'Игуасу', fact: 'Средний расход воды около 1750 м³/с. Находится на границе Бразилии и Аргентины.' },
-    { id: 'monaco', descriptor: 'густонаселённая страна', answerId: 'monaco', name: 'Монако', fact: 'Плотность населения около 19 000 чел./км². Карликовое государство.' },
-    { id: 'india', descriptor: 'населенная страна', answerId: 'india', name: 'Индия', fact: 'Численность населения превышает 1,4 млрд человек. Находится в Южной Азии.' },
-    { id: 'arabian_peninsula', descriptor: 'большой полуостров', answerId: 'arabian_peninsula', name: 'Аравийский полуостров', fact: 'Площадь около 3,25 млн км². Расположен в Юго-Западной Азии.' },
-    { id: 'dead_sea', descriptor: 'низкая точка суши', answerId: 'dead_sea', name: 'Побережье Мёртвого моря', fact: 'Находится примерно на 430 метров ниже уровня мирового океана.' }
+    { id: '1', question: 'Укажите самую высокую гору', answer: 'Эверест', fact: '8849 м. Гималаи, Азия.' },
+    { id: '2', question: 'Укажите самый глубокий океан', answer: 'Тихий океан', fact: 'Средняя глубина 3984 м, содержит Марианскую впадину.' },
+    { id: '3', question: 'Укажите самую длинную реку', answer: 'Нил', fact: 'Около 6650 км. Африка.' },
+    { id: '4', question: 'Укажите самую полноводную реку', answer: 'Амазонка', fact: 'Южная Америка.' },
+    { id: '5', question: 'Укажите самое глубокое озеро', answer: 'Байкал', fact: 'Глубина 1642 м. Россия, Сибирь.' },
+    { id: '6', question: 'Укажите самое большое озеро', answer: 'Каспийское море', fact: '371 000 км². Евразия.' },
+    { id: '7', question: 'Укажите самый большой остров', answer: 'Гренландия', fact: '2,1 млн км². Северная Америка.' },
+    { id: '8', question: 'Укажите самый большой материк', answer: 'Евразия', fact: '54,8 млн км².' },
+    { id: '9', question: 'Укажите самый маленький материк', answer: 'Австралия', fact: '7,7 млн км².' },
+    { id: '10', question: 'Укажите самую большую жаркую пустыню', answer: 'Сахара', fact: 'Около 9,2 млн км². Африка.' },
+    { id: '11', question: 'Укажите самый высокий водопад', answer: 'Анхель', fact: '979 м. Венесуэла.' },
+    { id: '12', question: 'Укажите самый мощный водопад', answer: 'Игуасу', fact: 'Средний расход ~1750 м³/с. Бразилия/Аргентина.' },
+    { id: '13', question: 'Укажите самый большой коралловый риф', answer: 'Большой Барьерный риф', fact: 'Более 2300 км. Австралия.' },
+    { id: '14', question: 'Укажите самую глубокую точку Земли', answer: 'Марианская впадина', fact: '≈11 км. Тихий океан.' },
+    { id: '15', question: 'Укажите самое холодное место', answer: 'Станция «Восток»', fact: 'Рекорд -89,2°C. Антарктида.' },
+    { id: '16', question: 'Укажите самое жаркое место', answer: 'Долина Смерти', fact: 'Рекорд +56,7°C. Калифорния, США.' },
+    { id: '17', question: 'Укажите самое влажное место', answer: 'Черапунджи/Мавсинрам', fact: 'Около 12 000 мм осадков в год. Индия.' },
+    { id: '18', question: 'Укажите самое солёное море', answer: 'Красное море', fact: 'Солёность около 41‰.' },
+    { id: '19', question: 'Укажите самый знаменитый вулкан с идеальным конусом', answer: 'Фудзияма', fact: '3776 м. Япония.' },
+    { id: '20', question: 'Укажите самый знаменитый каньон', answer: 'Гранд-Каньон', fact: 'Река Колорадо, Аризона, США.' },
+    { id: '21', question: 'Укажите самую длинную горную цепь', answer: 'Анды', fact: '≈9000 км. Южная Америка.' },
+    { id: '22', question: 'Укажите самую большую страну', answer: 'Россия', fact: '17,1 млн км².' },
+    { id: '23', question: 'Укажите самую маленькую страну', answer: 'Ватикан', fact: '0,49 км². Внутри Рима.' },
+    { id: '24', question: 'Укажите самую густонаселённую страну (по плотности)', answer: 'Монако', fact: 'Плотность населения ~19 000 чел./км².' },
+    { id: '25', question: 'Укажите самый известный разлом', answer: 'Сан-Андреас', fact: 'Калифорния, США.' },
+    { id: '26', question: 'Укажите самый знаменитый гейзер', answer: '«Старый служака»', fact: 'Йеллоустон, США.' },
+    { id: '27', question: 'Укажите самый большой солончак', answer: 'Солончак Уюни', fact: '10 582 км². Боливия.' },
+    { id: '28', question: 'Укажите самый известный водопад Африки', answer: 'Водопад Виктория', fact: 'Река Замбези.' },
+    { id: '29', question: 'Укажите самую низкую точку на суше', answer: 'Побережье Мёртвого моря', fact: '-430 м. Израиль/Иордания.' },
+    { id: '30', question: 'Укажите самый удалённый от суши остров', answer: 'Остров Пасхи (Рапануи)', fact: 'Тихий океан. Принадлежит Чили.' }
 ];
 
 // Будет инициализирован в конструкторе
@@ -1014,6 +1020,10 @@ class GeoGator {
         if (this.config.gameState.mostLayer) {
             this.config.gameState.mostLayer.eachLayer(l => l.options.interactive = (this.config.currentGame.mode === 'theMost'));
         }
+        // When in 'theMost' mode, disable interactivity for country polygons so only points are clickable
+        if (this.config.gameState.boundariesLayer) {
+            this.config.gameState.boundariesLayer.eachLayer(l => l.options.interactive = (this.config.currentGame.mode !== 'theMost'));
+        }
         this.config.gameState.gameStartTime = Date.now();
         this.config.gameState.sessionStart = Date.now();
         this.showScreen('gameScreen');
@@ -1117,10 +1127,9 @@ class GeoGator {
             // Map to internal question format
             this.config.gameState.questions = finalSelection.map(q => ({
                 id: q.id,
-                descriptor: q.descriptor,
-                answerId: q.answerId,
-                fact: q.fact,
-                name: q.name
+                question: q.question,
+                answer: q.answer,
+                fact: q.fact
             }));
             document.getElementById('totalQuestions').textContent = this.config.gameState.questions.length;
             return;
@@ -1228,13 +1237,14 @@ class GeoGator {
     // Режим "Самый-самый": показывает текст и инструкцию к клику по карте
     showTheMostQuestion(q) {
         this.toggleUIElements({ flag: false, options: false, hint: true });
-        document.getElementById('questionText').textContent = `Укажите самый ${q.descriptor}`;
-        document.querySelector('.capital-hint span').textContent = 'Кликните по карте на область, которую считаете ответом. Краткий факт будет показан после ответа.';
+        // Use provided question text directly
+        document.getElementById('questionText').textContent = q.question;
+        document.querySelector('.capital-hint span').textContent = 'Кликните по крупной точке на карте. После ответа вы увидите короткий факт.';
         // Try to center map on object if feature present
         try {
             if (this.config.gameState.mostLayer) {
                 this.config.gameState.mostLayer.eachLayer(l => {
-                    if (l.feature && l.feature.properties && l.feature.properties.id === q.answerId) {
+                    if (l.feature && l.feature.properties && String(l.feature.properties.id) === String(q.id)) {
                         const latlng = (l.getLatLng && l.getLatLng()) || (l.getBounds && l.getBounds().getCenter());
                         if (latlng && this.config.currentDifficulty !== 'extreme') this.config.gameState.map.flyTo(latlng, 4, { duration: 1.2 });
                     }
@@ -1437,10 +1447,14 @@ class GeoGator {
         const map = this.config.gameState.map;
         if (!map || !data) return;
         const layer = L.geoJson(data, {
-            pointToLayer: (feature, latlng) => L.circleMarker(latlng, { radius: 7, color: '#ffb86b', weight: 1, fillColor: '#ffb86b', fillOpacity: 0.9 }),
+            pointToLayer: (feature, latlng) => L.circleMarker(latlng, { radius: 12, color: '#ff8a3d', weight: 2, fillColor: '#ffb86b', fillOpacity: 0.95 }),
             onEachFeature: (f, l) => this.setupMostInteractivity(f, l)
         }).addTo(map);
         this.config.gameState.mostLayer = layer;
+        // Ensure points drawn above country fills
+        if (map && map.eachLayer) {
+            layer.bringToFront?.();
+        }
         // Initially non-interactive until mode selected
         layer.eachLayer(l => l.options.interactive = (this.config.currentGame?.mode === 'theMost'));
     }
@@ -1530,11 +1544,12 @@ class GeoGator {
 
     // Настройка интерактивности для объектов режима "Самый-самый"
     setupMostInteractivity(feature, layer) {
-        const name = feature.properties && (feature.properties.name || feature.properties.id);
+        const name = feature.properties && (feature.properties.name || feature.properties.id || 'Объект');
+        // Ensure only large points are interactive in this mode
         layer.options.interactive = (this.config.currentGame?.mode === 'theMost');
         layer.on('mouseover', () => {
             if (this.config.gameState.isInputBlocked) return;
-            if (layer.setStyle) layer.setStyle({ radius: 9, color: '#fff', weight: 1, fillColor: '#fffbeb' });
+            if (layer.setStyle) layer.setStyle({ radius: 15, color: '#fff', weight: 2, fillColor: '#ffdb9b' });
             layer.bindTooltip(name, { direction: 'auto', className: 'country-tooltip' }).openTooltip();
             if (layer.bringToFront) layer.bringToFront();
         });
@@ -1547,7 +1562,7 @@ class GeoGator {
             if (this.config.currentGame?.mode === 'theMost') {
                 L.DomEvent.stop(e);
                 const q = this.config.gameState.questions[this.config.gameState.currentQuestionIndex];
-                this.handleMostObjectClick(layer.feature.properties.id, q);
+                this.handleMostObjectClick(String(layer.feature.properties.id), q);
             }
         });
     }
@@ -1561,18 +1576,18 @@ class GeoGator {
         if (!this.config.playerStats.regionStats[region]) this.config.playerStats.regionStats[region] = { correct: 0, total: 0 };
         this.config.playerStats.regionStats[region].total++;
 
-        if (clickedId === q.answerId) {
+        if (clickedId === q.id) {
             this.config.gameState.score++;
             this.config.playerStats.totalCorrect++;
             this.config.playerStats.regionStats[region].correct++;
             this.showNotification(this.getLocalizedText('correct'), 'success');
-            this.highlightCorrectMostObject(q.answerId);
+            this.highlightCorrectMostObject(q.id);
             setTimeout(() => this.showNotification(q.fact || '', 'info'), 800);
         } else {
             this.config.playerStats.totalWrong = (this.config.playerStats.totalWrong || 0) + 1;
             this.config.gameState.wrong = (this.config.gameState.wrong || 0) + 1;
             this.showNotification(this.getLocalizedText('wrong'), 'error');
-            this.highlightCorrectMostObject(q.answerId);
+            this.highlightCorrectMostObject(q.id);
             setTimeout(() => this.showNotification(q.fact || '', 'info'), 800);
         }
         this.saveStats();
