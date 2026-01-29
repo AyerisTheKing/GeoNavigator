@@ -1,0 +1,29 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "properties": { "id": "eurasia", "name": "Евразия" }, "geometry": { "type": "Point", "coordinates": [80, 54] } },
+    { "type": "Feature", "properties": { "id": "australia_continent", "name": "Австралия" }, "geometry": { "type": "Point", "coordinates": [133, -25] } },
+    { "type": "Feature", "properties": { "id": "antarctica", "name": "Антарктида" }, "geometry": { "type": "Point", "coordinates": [135, -82] } },
+    { "type": "Feature", "properties": { "id": "africa", "name": "Африка" }, "geometry": { "type": "Point", "coordinates": [20, 0] } },
+    { "type": "Feature", "properties": { "id": "pacific_ocean", "name": "Тихий океан" }, "geometry": { "type": "Point", "coordinates": [-160, 0] } },
+    { "type": "Feature", "properties": { "id": "arctic_ocean", "name": "Северный Ледовитый океан" }, "geometry": { "type": "Point", "coordinates": [0, 80] } },
+    { "type": "Feature", "properties": { "id": "everest", "name": "Эверест" }, "geometry": { "type": "Point", "coordinates": [86.9250, 27.9881] } },
+    { "type": "Feature", "properties": { "id": "nile", "name": "Нил" }, "geometry": { "type": "Point", "coordinates": [30, 15] } },
+    { "type": "Feature", "properties": { "id": "amazon", "name": "Амазонка" }, "geometry": { "type": "Point", "coordinates": [-60, -3] } },
+    { "type": "Feature", "properties": { "id": "greenland", "name": "Гренландия" }, "geometry": { "type": "Point", "coordinates": [-40, 72] } },
+    { "type": "Feature", "properties": { "id": "baikal", "name": "Байкал" }, "geometry": { "type": "Point", "coordinates": [108.1, 53.5] } },
+    { "type": "Feature", "properties": { "id": "caspian", "name": "Каспийское море" }, "geometry": { "type": "Point", "coordinates": [49.3, 41.9] } },
+    { "type": "Feature", "properties": { "id": "angel", "name": "Анхель" }, "geometry": { "type": "Point", "coordinates": [-62.53, 5.97] } },
+    { "type": "Feature", "properties": { "id": "sahara", "name": "Сахара" }, "geometry": { "type": "Point", "coordinates": [12, 23] } },
+    { "type": "Feature", "properties": { "id": "russia", "name": "Россия" }, "geometry": { "type": "Point", "coordinates": [100, 60] } },
+    { "type": "Feature", "properties": { "id": "vatican", "name": "Ватикан" }, "geometry": { "type": "Point", "coordinates": [12.4534, 41.9029] } },
+    { "type": "Feature", "properties": { "id": "mariana_trench", "name": "Марианская впадина" }, "geometry": { "type": "Point", "coordinates": [142.2, 11.35] } },
+    { "type": "Feature", "properties": { "id": "great_barrier", "name": "Большой Барьерный риф" }, "geometry": { "type": "Point", "coordinates": [147.6992, -18.2871] } },
+    { "type": "Feature", "properties": { "id": "andes", "name": "Анды" }, "geometry": { "type": "Point", "coordinates": [-70, -20] } },
+    { "type": "Feature", "properties": { "id": "iguazu", "name": "Игуасу" }, "geometry": { "type": "Point", "coordinates": [-54.4367, -25.6953] } },
+    { "type": "Feature", "properties": { "id": "monaco", "name": "Монако" }, "geometry": { "type": "Point", "coordinates": [7.4246, 43.7384] } },
+    { "type": "Feature", "properties": { "id": "india", "name": "Индия" }, "geometry": { "type": "Point", "coordinates": [78.9629, 20.5937] } },
+    { "type": "Feature", "properties": { "id": "arabian_peninsula", "name": "Аравийский полуостров" }, "geometry": { "type": "Point", "coordinates": [45, 21] } },
+    { "type": "Feature", "properties": { "id": "dead_sea", "name": "Побережье Мёртвого моря" }, "geometry": { "type": "Point", "coordinates": [35.5, 31.5] } }
+  ]
+}

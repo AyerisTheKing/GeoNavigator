@@ -80,6 +80,9 @@ const LOCALES = {
         'modeCountryByCapitalText': 'Угадай страну',
         'descCountryByCapitalText': 'Выбери страну по столице',
 
+        'modeTheMost': 'Самый-самый',
+        'descTheMost': 'Режим рекордов: укажите самый... на карте',
+
         // Настройки партии
         'questionsCount': 'ВОПРОСЫ',
         'timer': 'ТАЙМЕР',
@@ -270,6 +273,9 @@ const LOCALES = {
 
         'modeCountryByCapitalText': 'Guess Country',
         'descCountryByCapitalText': 'Quiz + Camera',
+
+        'modeTheMost': 'The Most',
+        'descTheMost': 'Records mode: pick the most... on the map',
 
         // Setup Options
         'questionsCount': 'QUESTIONS',
