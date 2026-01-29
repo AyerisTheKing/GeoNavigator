@@ -450,7 +450,7 @@ body::before {
     letter-spacing: 1px;
 }
 
-/* === v9.5 DIFFICULTY SYSTEM === */
+/* === DIFFICULTY SYSTEM === */
 
 .difficulty-selector {
     display: flex;
@@ -2688,4 +2688,62 @@ body.dark-theme::before {
     text-align: center;
     padding: 40px;
     color: var(--accent-color);
+}
+
+/* === HISTORY MODAL (v11.1) === */
+.profile-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 15px;
+}
+
+.history-container {
+    max-height: 400px;
+    overflow-y: auto;
+    margin-top: 15px;
+    padding-right: 5px; /* space for scrollbar */
+}
+
+.history-item {
+    background: rgba(255, 255, 255, 0.05);
+    padding: 10px;
+    margin-bottom: 8px;
+    border-radius: 8px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    transition: background 0.2s ease;
+}
+
+.history-item:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.history-info {
+    font-size: 0.9rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.stat-wrong {
+    color: #ef4444;
+    font-weight: bold;
+    margin-left: 5px;
+}
+
+.history-date {
+    font-size: 0.8rem;
+    color: var(--gray-color);
+}
+
+.diff-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    display: inline-block;
+    margin-right: 5px;
 }

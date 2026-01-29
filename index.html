@@ -141,7 +141,7 @@
             </h2>
 
             <div class="setup-content">
-                <!-- DIFFICULTY SELECTOR (v9.5) -->
+                <!-- DIFFICULTY SELECTOR -->
                 <div class="setup-section">
                     <h3><i class="fas fa-layer-group"></i> <span data-i18n="difficulty">СЛОЖНОСТЬ</span></h3>
                     <div class="difficulty-selector">
@@ -603,27 +603,34 @@
                 <small id="profileDisplayLogin" style="color: #64748b;">@guest</small>
             </div>
 
-            <div class="profile-actions"
-                style="margin-bottom: 20px; display: flex; justify-content: center; gap: 10px;">
+            <div class="profile-actions">
                 <button id="openLeaderboardBtn" class="btn-secondary btn-gold">
                     <i class="fas fa-trophy"></i> <span data-i18n="leaderboard">Таблица лидеров</span>
                 </button>
-                <button id="logoutBtn" class="btn-secondary btn-profile-logout">
-                    <i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">Выйти</span>
+                <button id="btnHistory" class="btn-secondary">
+                    <i class="fas fa-history"></i> <span data-i18n="history">История</span>
                 </button>
             </div>
+            <button id="logoutBtn" class="btn-secondary btn-profile-logout" style="width: 100%; margin-top: 10px;">
+                <i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">Выйти</span>
+            </button>
             
 
         </div>
     </div>
 
-    <!-- МОДАЛЬНОЕ ОКНО: ТАБЛИЦА ЛИДЕРОВ (v10.0) -->
+    <!-- МОДАЛЬНОЕ ОКНО: ТАБЛИЦА ЛИДЕРОВ -->
     <div id="leaderboardModal" class="modal hidden">
         <div class="modal-content leaderboard-content">
             <span class="close" id="closeLeaderboardModal">&times;</span>
-            <h2 class="leaderboard-title">
-                <i class="fas fa-globe"></i> <span data-i18n="globalLeaderboard">ТОП-100 ИГРОКОВ</span>
-            </h2>
+            <div class="leaderboard-title-container" style="display: flex; justify-content: center; align-items: center; margin-bottom: 15px; gap: 15px;">
+                <button id="refreshLeaderboardBtn" class="btn-icon-small" title="Обновить" style="background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color: white; cursor: pointer; padding: 8px; border-radius: 8px; transition: all 0.2s;">
+                    <i class="fas fa-sync-alt"></i>
+                </button>
+                <h2 class="leaderboard-title" style="margin: 0;">
+                    <i class="fas fa-globe"></i> <span data-i18n="globalLeaderboard">Таблица лидеров</span>
+                </h2>
+            </div>
 
             <div class="leaderboard-tabs">
                 <button class="lb-tab active" data-diff="easy">Easy</button>
@@ -645,7 +652,7 @@
                     <!-- Rows will be injected by JS -->
                 </table>
                 <div id="leaderboardLoading" class="hidden">
-                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                    <i class="fas fa-spinner fa-spin"></i>
                 </div>
             </div>
 
@@ -658,6 +665,20 @@
                 <div class="footer-score" id="myScore">0</div>
                 <div class="footer-answers" id="myCorrect">0</div>
             </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО: ИСТОРИЯ ИГР -->
+    <div id="historyModal" class="modal hidden">
+        <div class="modal-content">
+            <span class="close" id="closeHistoryModal">&times;</span>
+            <h2 data-i18n="historyTitle">История Игр</h2>
+            <div id="historyList" class="history-container">
+                <!-- Items will be injected by JS -->
+            </div>
+            <button class="btn-primary" id="closeHistoryBtn" style="width: 100%; margin-top: 15px;">
+                <i class="fas fa-arrow-left"></i> <span data-i18n="back">Назад</span>
+            </button>
+        </div>
+    </div>
         </div>
     </div>
 

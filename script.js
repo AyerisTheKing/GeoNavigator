@@ -1,26 +1,16 @@
 /**
- * GeoGator - Главный скрипт
- * 
- * === ПРАВИЛА ВЕРСИОНИРОВАНИЯ (для разработчиков) ===
- * Major (+1.0): Глобальные изменения архитектуры, БД или полный рефакторинг.
- * Minor (+0.5): Новые крупые функции (режимы, экраны, механики).
- * Patch (+0.1): Исправления багов, мелкие правки UI/текстов.
- * 
- * === CHANGELOG ===
+ * GeoGator Core
+ * Current Version: v11.8
+ * See CHANGELOG.md for full history.
+ * * === ПРАВИЛА ВЕРСИОНИРОВАНИЯ ===
+ * Major (+1.0): Глобальные изменения (новая БД, архитектура).
+ * Minor (+0.5): Новые фичи (режимы, экраны).
+ * Patch (+0.1): Багфиксы, тексты, рефакторинг.
  */
-
-// v10.8: Fix Init Logic & Map Safety. Оптимизация инициализации, защита карты и улучшение UX (Patch).
-// v10.7: Fix Critical Crashes (Auth, Map, Qs). Исправлены 3 критических вылета (Patch).
-// v10.6: Fix Zombie-Account, Map LatLng checks, Registration validation. Исправлены критические ошибки (Patch).
-// v10.5: Fix Auth Zombie-check, Stats Logic, & Leaderboard. Исправлена логика загрузки профиля и статистики (Patch).
-// v10.4: Fix Supabase Auth & Stats. Исправлена регистрация, загрузка профиля и сохранение статистики.
-// v10.3: Fix Data Sync. Исправлена синхронизация данных с Supabase (login, stats).
-// v10.2: Смена названия проекта на "Юный Навигатор" (Young Navigator).
-// v10.1: Database Migration & Leaderboard Logic. Полная переработка сохранения и загрузки статистики.
 
 const SUPABASE_URL = "https://tdlhwokrmuyxsdleepht.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkbGh3b2tybXV5eHNkbGVlcGh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDc3ODAsImV4cCI6MjA4NDk4Mzc4MH0.RlfUmejx2ywHNcFofZM4mNE8nIw6qxaTNzqxmf4N4-4";
-const APP_VERSION = "v10.8";
+const APP_VERSION = "v11.8";
 
 const DIFFICULTY_CONFIG = {
     easy: { answers: 4, timers: [30, 40, 50, 60], color: '#4ade80', showCorrect: true, zoom: true, label: 'diffEasy' },
@@ -51,6 +41,7 @@ class GeoGator {
             settings: { language: 'ru', volume: 80, theme: 'dark', isMuted: false },
             gameState: {
                 score: 0,
+                wrong: 0,
                 currentQuestionIndex: 0,
                 questions: [],
                 startTime: null,
@@ -72,7 +63,7 @@ class GeoGator {
                 totalTime: 0,
                 regionStats: {} // { 'europe': { correct: 0, total: 0 }, ... }
             },
-            // v10.0 New DB Structure Support
+
             gameStats: {
                 easy: { score: 0, time: 0, correct: 0 },
                 normal: { score: 0, time: 0, correct: 0 },
@@ -112,7 +103,7 @@ class GeoGator {
 
         // 1. СНАЧАЛА вешаем обработчики (чтобы интерфейс ожил)
         this.setupEventListeners();
-        this.initModalSystem(); // v8.0 New Modal System
+        this.initModalSystem();
 
         this.showScreen('mainMenu');
         this.setupNotifications();
@@ -181,7 +172,8 @@ class GeoGator {
         this.config.user = { 
             id: profile.id, 
             login: profile.login, 
-            nickname: profile.nickname 
+            nickname: profile.nickname,
+            recent_games: profile.recent_games || []
         };
         
         // Загружаем статистику с защитой от пустых полей
@@ -508,6 +500,21 @@ class GeoGator {
     }
 
     /**
+     * Helper: Validates input against security rules.
+     */
+    validateInput(text, type) {
+        if (type === 'login') {
+            // 5-30 chars, letters, numbers, underscore
+            return /^[a-zA-Z0-9_]{5,30}$/.test(text);
+        }
+        if (type === 'nickname') {
+            // 3-15 chars, cyrillic/latin/numbers/spaces
+            return /^[a-zA-Zа-яА-Я0-9 ]{3,15}$/.test(text);
+        }
+        return false;
+    }
+
+    /**
      * Регистрация нового пользователя.
      * 1. Создает пользователя в Supabase Auth (signUp).
      * 2. Создает запись в таблице 'profiles' (insert).
@@ -519,19 +526,22 @@ class GeoGator {
         const confirmPass = document.getElementById('regPasswordConfirmInput').value;
         const errorDiv = document.getElementById('registerError');
 
-        // Валидация
+        // Валидация (Security Hardening v11.8)
         if (!nick || !login || !pass || !confirmPass) {
             this.showError(errorDiv, this.getLocalizedText('fillAllFields'));
             return;
         }
-        if (nick.length > 10) {
-            this.showError(errorDiv, this.getLocalizedText('nameTooLong'));
+
+        // Strict Validation Check
+        if (!this.validateInput(login, 'login')) {
+            alert("Ошибка: Логин должен содержать от 5 до 30 символов (только латиница, цифры и '_').");
             return;
         }
-        if (!/^[a-zA-Z0-9_]+$/.test(login)) {
-            this.showError(errorDiv, this.getLocalizedText('loginCharError'));
+        if (!this.validateInput(nick, 'nickname')) {
+            alert("Ошибка: Никнейм должен содержать от 3 до 15 символов (буквы, цифры, пробелы).");
             return;
         }
+
         if (pass !== confirmPass) {
             this.showError(errorDiv, this.getLocalizedText('passwordMismatch'));
             return;
@@ -722,7 +732,7 @@ class GeoGator {
         slider.style.background = `linear-gradient(to right, #3b82f6 0%, #3b82f6 ${val}%, #334155 ${val}%, #334155 100%)`;
     }
 
-    // === v8.0 MODAL SYSTEM REWRITE ===
+    // === MODAL SYSTEM ===
     initModalSystem() {
         // 1. Open Triggers
         const triggers = [
@@ -731,7 +741,9 @@ class GeoGator {
             { id: 'openSettingsBtn', action: () => this.navigateToSettings('mainMenu') },
             { id: 'feedbackBtn', action: () => this.openFeedbackModal() },
             { id: 'openFeedbackFromProfileBtn', action: () => this.openFeedbackModal() },
-            { id: 'openLeaderboardBtn', action: () => this.openLeaderboard() }
+            { id: 'openLeaderboardBtn', action: () => this.openLeaderboard() },
+            { id: 'btnHistory', action: () => this.showHistory() },
+            { id: 'refreshLeaderboardBtn', action: () => this.openLeaderboard() }
         ];
 
         triggers.forEach(({ id, action }) => {
@@ -753,7 +765,9 @@ class GeoGator {
             'closeProfileModal': 'profileModal',
             'closeStatisticsModal': 'statisticsModal',
             'closeFeedbackModal': 'feedbackModal',
-            'closeLeaderboardModal': 'leaderboardModal'
+            'closeFeedbackModal': 'feedbackModal',
+            'closeLeaderboardModal': 'leaderboardModal',
+            'closeHistoryModal': 'historyModal'
         };
 
         Object.entries(closeMap).forEach(([btnId, modalId]) => {
@@ -851,8 +865,7 @@ class GeoGator {
         ['loginModal', 'registerModal', 'profileModal', 'statisticsModal', 'feedbackModal', 'leaderboardModal'].forEach(id => this.closeModal(id));
     }
 
-    // === FEEDBACK SYSTEM (v8.5) ===
-    // === FEEDBACK SYSTEM (v8.5) ===
+    // === FEEDBACK SYSTEM ===
     openFeedbackModal() {
         if (!this.config.user.id) {
             this.showNotification(this.getLocalizedText('feedbackLoginReq'), "info");
@@ -1278,6 +1291,7 @@ class GeoGator {
         // User asked for "total wrong" and "success %". Skipped usually counts as not correct, so wrong or separate?
         // Let's count as wrong for simplicity and stricter stats
         this.config.playerStats.totalWrong = (this.config.playerStats.totalWrong || 0) + 1;
+        this.config.gameState.wrong = (this.config.gameState.wrong || 0) + 1;
         const q = this.config.gameState.questions[this.config.gameState.currentQuestionIndex];
         const region = q.continent;
         if (!this.config.playerStats.regionStats[region]) this.config.playerStats.regionStats[region] = { correct: 0, total: 0 };
@@ -1291,10 +1305,6 @@ class GeoGator {
     }
 
     // === КАРТА И ЛОГИКА ===
-    /*
-     * Инициализация карты Leaflet.
-     * Загружает карту, устанавливает границы (тайлы) и добавляет слой границ стран из GeoJSON.
-     */
     /*
      * Инициализация карты Leaflet.
      * Загружает карту, устанавливает границы (тайлы) и добавляет слой границ стран из GeoJSON.
@@ -1387,6 +1397,7 @@ class GeoGator {
             this.highlightCorrectCountry(q.country);
         } else {
             this.config.playerStats.totalWrong = (this.config.playerStats.totalWrong || 0) + 1;
+        this.config.gameState.wrong = (this.config.gameState.wrong || 0) + 1;
             this.showNotification(this.getLocalizedText('wrong'), 'error');
             this.highlightCorrectCountry(q.country);
 
@@ -1444,6 +1455,7 @@ class GeoGator {
         this.config.gameState.isInputBlocked = true;
         // Count as wrong/timeout
         this.config.playerStats.totalWrong = (this.config.playerStats.totalWrong || 0) + 1;
+        this.config.gameState.wrong = (this.config.gameState.wrong || 0) + 1;
         const q = this.config.gameState.questions[this.config.gameState.currentQuestionIndex];
         const region = q.continent;
         if (!this.config.playerStats.regionStats[region]) this.config.playerStats.regionStats[region] = { correct: 0, total: 0 };
@@ -1477,7 +1489,7 @@ class GeoGator {
 
     /**
      * Сохраняет статистику игрока.
-     * v10.1: Атомарное обновление и JSONB манипуляции
+
      */
     async saveStats(sessionDuration = 0, isFinal = false) {
         if (sessionDuration > 0) {
@@ -1492,17 +1504,48 @@ class GeoGator {
 
         // Current game Deltas
         const gameCorrect = this.config.gameState.score || 0;
-        const totalQs = this.config.gameState.questions.length || 0;
+        const totalQs = this.config.gameState.questions.length || 0; // Total planned (usually 10/20)
+        // If game is not finished, we might want to use current index? 
+        // But logic says totalQs is total questions available in the game
+        
+        // Actually for HISTORY "Total" we usually mean "Total questions answered so far" or "Total questions in match"?
+        // The prompt says "t: totalQuestions". Let's use config.gameState.totalQuestions (which needs to be set properly) or questions.length
+        
         const currentQIndex = this.config.gameState.currentQuestionIndex || 0;
-        const gameWrong = Math.max(0, currentQIndex - gameCorrect); // Calc wrong based on progress
-
+        const gameWrong = (this.config.gameState.wrong || 0); // Need to ensure 'wrong' is tracked in gameState if we use it directly, but earlier code used playerStats.totalWrong accumulation. 
+        // Wait, the prompt says "w: this.config.gameState.wrong". 
+        // In my current code config.gameState does usually NOT have 'wrong'. 
+        // I should check where 'wrong' is updated. 
+        // In handleAnswerSelection: this.config.playerStats.totalWrong++;
+        // But for *this specific game*, I need to track it locally if I want 'match' stats.
+        // Let's assume for now I should use 'gameWrong' calculated or from a new property.
+        // The prompt says "w: this.config.gameState.wrong". I must ensure this property is populated!
+        
+        // Let's add 'wrong' to gameState in init or update it.
+        // Or calculate it: gameWrong = (currentQIndex + 1) - gameCorrect (approx).
+        // Safest is to follow prompt instruction "w: this.config.gameState.wrong". 
+        // I will assume I need to update 'wrong' in handleAnswerSelection too? 
+        // Actually, looking at handleAnswerSelection, it doesn't update config.gameState.wrong.
+        // I should add it there or just calculate it here implicitly.
+        // But the user Code Prompt explicitly says: "w: this.config.gameState.wrong".
+        // I will fix this by calculating it if it's undefined, OR better, I will check if I can add it to handleAnswerSelection.
+        // However, I am replacing saveStats here. I can't easily change handleAnswerSelection in the same replace block if they are far apart.
+        // I'll calculate it: const wrong = (this.config.gameState.wrong !== undefined) ? this.config.gameState.wrong : (sessionDuration > 0 ? (totalQs - gameCorrect) : 0); 
+        // Wait, if not final, wrong might be undefined.
+        // Let's look at `this.config.playerStats.totalWrong`. This is global.
+        
+        // I will use a local calculation:
+        // totalQuestions in match so far = currentQuestionIndex + (finished ? 0 : 1? no).
+        // Let's rely on what the user PROMPT said: "this.config.gameState.wrong".
+        // If it's missing, it will be undefined.
+        // I will add: this.config.gameState.wrong = (this.config.gameState.wrong || 0); in the method to be safe.
+        
         const diffKey = this.config.currentDifficulty; 
         
         // 1. Берем текущий JSON сложности из конфига (Base)
         let diffStats = this.config.game_stats[diffKey] || { best_score:0, total_correct:0, total_games:0, total_time:0 };
 
         // 2. Обновляем цифры в памяти (Create updated copy for DB)
-        // Note: We add current game stats to the BASE stats
         const updatedDiffStats = {
             ...diffStats,
             total_correct: diffStats.total_correct + gameCorrect,
@@ -1511,15 +1554,38 @@ class GeoGator {
             best_score: Math.max(diffStats.best_score, gameCorrect)
         };
 
+        // HISTORY LOGIC
+        let history = this.config.user.recent_games || [];
+        
+        // Only add to history if it's a "Final" save (end of game) or maybe user wants it every time?
+        // Usually history is one entry per game. 
+        // The prompt says "In saveStats... Form matchRecord... unshift... slice...".
+        // If I call saveStats after every question, I'll flood the history with the SAME game.
+        // I should ONLY add to history if (isFinal).
+        
+        if (isFinal) {
+            const matchRecord = {
+                d: this.config.currentDifficulty,
+                s: this.config.gameState.score,
+                w: this.config.gameState.wrong || 0, // Fallback if not tracked
+                t: this.config.gameState.questions.length,
+                ts: Date.now()
+            };
+            history.unshift(matchRecord);
+            history = history.slice(0, 10);
+            this.config.user.recent_games = history;
+        }
+
         // Global Stats Updates
         const globalBase = this.config.game_stats.global;
         const updates = {
             total_correct: globalBase.total_correct + gameCorrect,
-            total_wrong: (this.config.user_profile?.total_wrong || 0) + gameWrong, // Fallback to profile for wrong/manual
+            total_wrong: (this.config.user_profile?.total_wrong || 0) + (this.config.gameState.wrong || 0),
             total_games: globalBase.total_games + (isFinal ? 1 : 0),
             total_time: globalBase.total_time + sessionDuration,
             best_score: Math.max(globalBase.best_score, gameCorrect),
-            [`stats_${diffKey}`]: updatedDiffStats // Записываем обновленный JSON
+            [`stats_${diffKey}`]: updatedDiffStats,
+            recent_games: history // Send history
         };
 
         // 3. Отправляем в БД
@@ -1531,7 +1597,6 @@ class GeoGator {
         if (error) {
             console.error('SaveStats Error:', error);
         } else if (isFinal) {
-            // Update local memory BASE only if game is finished to prevent double counting next save
             this.config.game_stats[diffKey] = updatedDiffStats;
             this.config.game_stats.global = {
                 total_correct: updates.total_correct,
@@ -1595,49 +1660,138 @@ class GeoGator {
                 <div class="lb-col" data-i18n="totalGames">Игры</div>
             `;
         }
+        
+        // ... (existing leaderboard logic) ...
+        // Secure Rendering (prevent XSS)
+        data.forEach((entry, idx) => {
+            const tr = document.createElement('tr');
+            
+            // Rank
+            let rankClass = 'rank-other';
+            let iconText = (idx + 1).toString();
+            if (idx === 0) { rankClass = 'rank-1'; iconText = '👑'; }
+            else if (idx === 1) { rankClass = 'rank-2'; iconText = '🥈'; }
+            else if (idx === 2) { rankClass = 'rank-3'; iconText = '🥉'; }
 
-        let myRankData = null;
-        let myIndex = -1;
-
-        data.forEach((entry, index) => {
-            if (entry.login === this.config.user.login) {
-                myIndex = index;
-                myRankData = entry;
+            const isMe = (entry.login === this.config.user.login);
+            if (isMe) {
+                tr.classList.add('my-rank');
+                if (footer) {
+                    footer.classList.remove('hidden');
+                    document.getElementById('myRank').textContent = '#' + (idx + 1);
+                    document.getElementById('myScore').textContent = entry.best_score;
+                    document.getElementById('myCorrect').textContent = entry.total_correct;
+                    document.getElementById('myNickname').textContent = entry.nickname || entry.login;
+                    document.getElementById('myLogin').textContent = '@' + entry.login;
+                }
             }
 
-            const tr = document.createElement('tr');
-            if (entry.login === this.config.user.login) tr.classList.add('my-rank-row');
-            
-            tr.style.display = 'grid';
-            tr.style.gridTemplateColumns = '0.5fr 2fr 1fr 1fr 1fr 1fr';
-            tr.style.padding = '10px 0';
-            tr.style.borderBottom = '1px solid rgba(255,255,255,0.05)';
-            tr.style.alignItems = 'center';
+            // --- Safe Cell Creation ---
+            const createCell = (cls, content, isHtml = false) => {
+                const td = document.createElement('td');
+                td.className = `lb-col ${cls}`;
+                if (isHtml) td.innerHTML = content; else td.textContent = content;
+                return td;
+            };
 
-            // Отрисовка HTML: Используй entry.nickname, цифры напрямую
-            tr.innerHTML = `
-                <td class="rank">${index + 1}</td>
-                <td class="player-cell">
-                    <span style="font-weight:600; color:white;">${entry.nickname || entry.login}</span>
-                </td>
-                <td class="score-cell" style="color:#4ade80;">${entry.total_correct}</td>
-                <td class="time-cell">${this.formatTime(entry.total_time)}</td>
-                <td class="score-cell" style="color:#f59e0b;">${entry.best_score}</td>
-                <td class="score-cell">${entry.total_games}</td>
-            `;
+            // Rank Cell
+            const tdRank = createCell(`rank ${rankClass}`, iconText); // Icon is safe unicode
+            tr.appendChild(tdRank);
+
+            // Player Cell
+            const tdPlayer = document.createElement('td');
+            tdPlayer.className = 'lb-col player';
+            const spanName = document.createElement('span');
+            spanName.className = 'lb-name';
+            spanName.textContent = entry.nickname || entry.login;
+            const smallLogin = document.createElement('small');
+            smallLogin.className = 'lb-login';
+            smallLogin.textContent = '@' + entry.login;
+            
+            tdPlayer.appendChild(spanName);
+            tdPlayer.appendChild(smallLogin);
+            tr.appendChild(tdPlayer);
+
+            // Other Cells
+            tr.appendChild(createCell('score', entry.best_score));
+            tr.appendChild(createCell('time', this.formatTime(entry.total_time)));
+            tr.appendChild(createCell('answers', entry.total_correct));
+            tr.appendChild(createCell('answers', entry.total_games));
+
             table.appendChild(tr);
         });
+    }
 
-        // Sticky Footer
-        if (myRankData) {
-            footer.classList.remove('hidden');
-            document.getElementById('myRank').textContent = `#${myIndex + 1}`;
-            document.getElementById('myNickname').textContent = myRankData.nickname;
-            document.getElementById('myLogin').textContent = '@' + myRankData.login;
-            document.getElementById('myScore').textContent = myRankData.total_correct; // Matching sort metric
-            document.getElementById('myCorrect').textContent = myRankData.total_games + ' игр';
+    // === v11.1 HISTORY UI ===
+    showHistory() {
+        this.openModal('historyModal');
+        const container = document.getElementById('historyList');
+        container.innerHTML = '';
+
+        const history = this.config.user.recent_games || [];
+
+        if (history.length === 0) {
+            container.innerHTML = `<div style="text-align:center; padding: 20px; color: #64748b;">Нет сыгранных матчей</div>`;
+            return;
+        }
+
+        history.forEach(game => {
+            const date = new Date(game.ts).toLocaleDateString();
+            const wrong = game.w !== undefined ? game.w : '-';
+            
+            const diffColors = {
+                easy: '#4ade80',
+                normal: '#4cc9f0',
+                hard: '#f59e0b',
+                extreme: '#ef4444'
+            };
+            const color = diffColors[game.d] || '#ccc';
+
+            const div = document.createElement('div');
+            div.className = 'history-item';
+            
+            // Safe DOM Construction
+            const infoDiv = document.createElement('div');
+            infoDiv.className = 'history-info';
+
+            const dot = document.createElement('span');
+            dot.className = 'diff-dot';
+            dot.style.background = color;
+            dot.style.boxShadow = `0 0 5px ${color}`;
+            
+            const textSpan = document.createElement('span');
+            // Using textContent for mixed content carefully, or constructing children
+            // "Верно: X | Ошибок: Y"
+            textSpan.appendChild(document.createTextNode(`Верно: ${game.s} | Ошибок: `));
+            
+            const wrongSpan = document.createElement('span');
+            wrongSpan.className = 'stat-wrong';
+            wrongSpan.textContent = wrong;
+            textSpan.appendChild(wrongSpan);
+
+            infoDiv.appendChild(dot);
+            infoDiv.appendChild(textSpan);
+
+            const dateDiv = document.createElement('div');
+            dateDiv.className = 'history-date';
+            dateDiv.textContent = date;
+
+            div.appendChild(infoDiv);
+            div.appendChild(dateDiv);
+
+            container.appendChild(div);
+        });
+
+        const closeBtn = document.getElementById('closeHistoryBtn');
+        if (closeBtn) {
+            closeBtn.onclick = () => {
+                this.closeModal('historyModal');
+                this.openStatsModal(); // Back to profile
+            };
         }
     }
+
+
 
     loadLeaderboard(diffKey) {
         // Deprecated in v10.1, redirection to openLeaderboard handled by openLeaderboard() logic

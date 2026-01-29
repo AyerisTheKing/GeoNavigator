@@ -1,4 +1,4 @@
-// locales.js - Модуль локализации для GeoGator v7.0
+// locales.js - Модуль локализации для GeoGator
 // Содержит переводы интерфейса и игровых сообщений на Русский (ru) и Английский (en).
 
 const LOCALES = {
@@ -99,7 +99,7 @@ const LOCALES = {
         'noRush': 'Не спеша',
         'marathon': 'Марафон',
 
-        // --- СЛОЖНОСТЬ (v9.5) ---
+        // --- СЛОЖНОСТЬ ---
         'difficulty': 'СЛОЖНОСТЬ',
         'diffEasy': 'Легкий',
         'diffNormal': 'Нормальный',
@@ -163,14 +163,14 @@ const LOCALES = {
 
         // Дополнительно (на всякий случай)
         'about': 'Об игре',
-        'aboutText': 'GeoGator v8.6\nSmart TV Edition',
+        'aboutText': 'GeoGator v11.2\nSmart TV Edition',
 
         // --- ДОПОЛНИТЕЛЬНЫЕ ТЕКСТЫ ---
         'noData': 'Нет данных',
         'timeOut': 'Время вышло!',
         'goodResult': 'Неплохо! 👍',
         
-        // --- НОВЫЕ КЛЮЧИ (v8.9) ---
+        // --- НОВЫЕ КЛЮЧИ ---
         'fillAllFields': 'Заполните все поля',
         'loginErrorPrefix': 'Ошибка входа: ',
         'loginSuccess': 'Вход выполнен!',
@@ -184,12 +184,13 @@ const LOCALES = {
         'enterMessage': 'Введите сообщение',
         'sendErrorPrefix': 'Ошибка отправки: ',
         
-        // --- ТАБЛИЦА ЛИДЕРОВ (v10.0) ---
+        // --- ТАБЛИЦА ЛИДЕРОВ ---
         'leaderboard': 'Таблица лидеров',
-        'globalLeaderboard': 'ТОП-100 ИГРОКОВ',
+        'globalLeaderboard': 'Таблица лидеров',
         'player': 'Игрок',
         'correctShort': 'Верно',
-        'leaderboardLoginReq': 'Войдите, чтобы видеть таблицу лидеров'
+        'leaderboardLoginReq': 'Войдите, чтобы видеть таблицу лидеров',
+        'history': 'История'
     },
 
     en: {
@@ -289,7 +290,7 @@ const LOCALES = {
         'noRush': 'No Rush',
         'marathon': 'Marathon',
 
-        // --- DIFFICULTY (v9.5) ---
+        // --- DIFFICULTY ---
         'difficulty': 'DIFFICULTY',
         'diffEasy': 'Easy',
         'diffNormal': 'Normal',
@@ -352,18 +353,19 @@ const LOCALES = {
         'profanityError': 'Message contains filtered words. Please be polite.',
 
         'about': 'About',
-        'aboutText': 'GeoGator v8.6\nSmart TV Edition',
+        'aboutText': 'GeoGator v11.2\nSmart TV Edition',
 
         // --- ADDITIONAL TEXTS ---
         'noData': 'No data',
         'timeOut': 'Time\'s up!',
         'goodResult': 'Good! 👍',
 
-        // --- LEADERBOARD (v10.0) ---
+        // --- LEADERBOARD ---
         'leaderboard': 'Leaderboard',
         'globalLeaderboard': 'TOP 100 PLAYERS',
         'player': 'Player',
         'correctShort': 'Correct',
-        'leaderboardLoginReq': 'Please login to view leaderboard'
+        'leaderboardLoginReq': 'Please login to view leaderboard',
+        'history': 'History'
     }
 };
