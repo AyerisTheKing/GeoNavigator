@@ -592,7 +592,6 @@
     </div>
 
     <!-- МОДАЛЬНОЕ ОКНО: ПРОФИЛЬ ИГРОКА (ТОЛЬКО ДЛЯ АВТОРИЗОВАННЫХ) -->
-    <!-- МОДАЛЬНОЕ ОКНО: ПРОФИЛЬ ИГРОКА (ТОЛЬКО ДЛЯ АВТОРИЗОВАННЫХ) -->
     <div id="profileModal" class="modal hidden">
         <div class="modal-content">
             <span class="close" id="closeProfileModal">&times;</span>
@@ -606,15 +605,62 @@
 
             <div class="profile-actions"
                 style="margin-bottom: 20px; display: flex; justify-content: center; gap: 10px;">
-                <button id="openFeedbackFromProfileBtn" class="btn-secondary btn-profile-feedback">
-                    <i class="fas fa-comment-alt"></i> <span data-i18n="writeToUs">Написать нам</span>
+                <button id="openLeaderboardBtn" class="btn-secondary btn-gold">
+                    <i class="fas fa-trophy"></i> <span data-i18n="leaderboard">Таблица лидеров</span>
                 </button>
                 <button id="logoutBtn" class="btn-secondary btn-profile-logout">
                     <i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">Выйти</span>
                 </button>
             </div>
+            
+            <div style="text-align: center; margin-top: 10px;">
+                 <button id="openFeedbackFromProfileBtn" class="btn-link" style="background: none; border: none; color: #64748b; cursor: pointer; text-decoration: underline;">
+                    <i class="fas fa-comment-alt"></i> <span data-i18n="writeToUs">Написать нам</span>
+                 </button>
+            </div>
+        </div>
+    </div>
 
+    <!-- МОДАЛЬНОЕ ОКНО: ТАБЛИЦА ЛИДЕРОВ (v10.0) -->
+    <div id="leaderboardModal" class="modal hidden">
+        <div class="modal-content leaderboard-content">
+            <span class="close" id="closeLeaderboardModal">&times;</span>
+            <h2 class="leaderboard-title">
+                <i class="fas fa-globe"></i> <span data-i18n="globalLeaderboard">ТОП-100 ИГРОКОВ</span>
+            </h2>
 
+            <div class="leaderboard-tabs">
+                <button class="lb-tab active" data-diff="easy">Easy</button>
+                <button class="lb-tab" data-diff="normal">Normal</button>
+                <button class="lb-tab" data-diff="hard">Hard</button>
+                <button class="lb-tab" data-diff="extreme">Extreme</button>
+            </div>
+
+            <div class="leaderboard-header-row">
+                <div class="lb-col rank">#</div>
+                <div class="lb-col player" data-i18n="player">Игрок</div>
+                <div class="lb-col score" data-i18n="score">Рекорд</div>
+                <div class="lb-col answers" data-i18n="correctShort">Верно</div>
+            </div>
+
+            <div class="leaderboard-scroll-area">
+                <table id="leaderboardTable">
+                    <!-- Rows will be injected by JS -->
+                </table>
+                <div id="leaderboardLoading" class="hidden">
+                    <i class="fas fa-spinner fa-spin"></i> Loading...
+                </div>
+            </div>
+
+            <div id="leaderboardFooter" class="sticky-footer hidden">
+                <div class="footer-rank" id="myRank">-</div>
+                <div class="footer-player">
+                    <span id="myNickname">You</span>
+                    <small id="myLogin">@you</small>
+                </div>
+                <div class="footer-score" id="myScore">0</div>
+                <div class="footer-answers" id="myCorrect">0</div>
+            </div>
         </div>
     </div>
 

@@ -182,7 +182,14 @@ const LOCALES = {
         'loggedOut': 'Вы вышли из системы',
         'feedbackLoginReq': 'Пожалуйста, войдите в аккаунт, чтобы оставить отзыв',
         'enterMessage': 'Введите сообщение',
-        'sendErrorPrefix': 'Ошибка отправки: '
+        'sendErrorPrefix': 'Ошибка отправки: ',
+        
+        // --- ТАБЛИЦА ЛИДЕРОВ (v10.0) ---
+        'leaderboard': 'Таблица лидеров',
+        'globalLeaderboard': 'ТОП-100 ИГРОКОВ',
+        'player': 'Игрок',
+        'correctShort': 'Верно',
+        'leaderboardLoginReq': 'Войдите, чтобы видеть таблицу лидеров'
     },
 
     en: {
@@ -350,6 +357,13 @@ const LOCALES = {
         // --- ADDITIONAL TEXTS ---
         'noData': 'No data',
         'timeOut': 'Time\'s up!',
-        'goodResult': 'Good! 👍'
+        'goodResult': 'Good! 👍',
+
+        // --- LEADERBOARD (v10.0) ---
+        'leaderboard': 'Leaderboard',
+        'globalLeaderboard': 'TOP 100 PLAYERS',
+        'player': 'Player',
+        'correctShort': 'Correct',
+        'leaderboardLoginReq': 'Please login to view leaderboard'
     }
 };
