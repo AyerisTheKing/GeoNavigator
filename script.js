@@ -1016,13 +1016,39 @@ class GeoGator {
         }
 
         this.generateQuestions();
-        // Enable/disable interactivity for the Most layer depending on mode
+        const map = this.config.gameState.map;
+        const isMostMode = (this.config.currentGame.mode === 'theMost');
+        // Enable/disable interactivity for Most points
         if (this.config.gameState.mostLayer) {
-            this.config.gameState.mostLayer.eachLayer(l => l.options.interactive = (this.config.currentGame.mode === 'theMost'));
+            this.config.gameState.mostLayer.eachLayer(l => l.options.interactive = isMostMode);
         }
-        // When in 'theMost' mode, disable interactivity for country polygons so only points are clickable
-        if (this.config.gameState.boundariesLayer) {
-            this.config.gameState.boundariesLayer.eachLayer(l => l.options.interactive = (this.config.currentGame.mode !== 'theMost'));
+        // In 'theMost' mode hide country boundaries and disable map interactions so players control zoom/pan themselves
+        if (isMostMode) {
+            if (this.config.gameState.boundariesLayer && map && map.hasLayer && map.hasLayer(this.config.gameState.boundariesLayer)) {
+                try { map.removeLayer(this.config.gameState.boundariesLayer); } catch (e) { }
+            }
+            if (map) {
+                map.dragging?.disable();
+                map.touchZoom?.disable();
+                map.doubleClickZoom?.disable();
+                map.scrollWheelZoom?.disable();
+                map.boxZoom?.disable();
+                try { if (map.keyboard) map.keyboard.disable(); } catch(e) { }
+            }
+        } else {
+            if (this.config.gameState.boundariesLayer && map && map.addLayer && !map.hasLayer(this.config.gameState.boundariesLayer)) {
+                try { map.addLayer(this.config.gameState.boundariesLayer); } catch (e) { }
+                // ensure polygons are interactive again
+                this.config.gameState.boundariesLayer.eachLayer(l => l.options.interactive = true);
+            }
+            if (map) {
+                map.dragging?.enable();
+                map.touchZoom?.enable();
+                map.doubleClickZoom?.enable();
+                map.scrollWheelZoom?.enable();
+                map.boxZoom?.enable();
+                try { if (map.keyboard) map.keyboard.enable(); } catch(e) { }
+            }
         }
         this.config.gameState.gameStartTime = Date.now();
         this.config.gameState.sessionStart = Date.now();
@@ -1240,17 +1266,7 @@ class GeoGator {
         // Use provided question text directly
         document.getElementById('questionText').textContent = q.question;
         document.querySelector('.capital-hint span').textContent = 'Кликните по крупной точке на карте. После ответа вы увидите короткий факт.';
-        // Try to center map on object if feature present
-        try {
-            if (this.config.gameState.mostLayer) {
-                this.config.gameState.mostLayer.eachLayer(l => {
-                    if (l.feature && l.feature.properties && String(l.feature.properties.id) === String(q.id)) {
-                        const latlng = (l.getLatLng && l.getLatLng()) || (l.getBounds && l.getBounds().getCenter());
-                        if (latlng && this.config.currentDifficulty !== 'extreme') this.config.gameState.map.flyTo(latlng, 4, { duration: 1.2 });
-                    }
-                });
-            }
-        } catch (e) { }
+        // No automatic centering/zoom in this mode — players control the map themselves
     }
 
     toggleUIElements({ flag, options, hint }) {
@@ -1595,13 +1611,11 @@ class GeoGator {
     }
 
     highlightCorrectMostObject(answerId) {
-        if (!this.config.gameState.mostLayer || !this.config.gameState.map) return;
+        if (!this.config.gameState.mostLayer) return;
         this.config.gameState.mostLayer.eachLayer(layer => {
-            if (layer.feature && layer.feature.properties && layer.feature.properties.id === answerId) {
-                if (layer.setStyle) layer.setStyle({ radius: 10, color: '#4ade80', fillColor: '#4ade80', fillOpacity: 0.9, weight: 2 });
-                const latlng = (layer.getLatLng && layer.getLatLng()) || (layer.getBounds && layer.getBounds().getCenter && layer.getBounds().getCenter());
-                const difficulty = this.config.currentGame?.difficulty || 'normal';
-                if (latlng && DIFFICULTY_CONFIG[difficulty]?.zoom !== false) this.config.gameState.map.flyTo(latlng, 5, { duration: 1.2 });
+            if (layer.feature && layer.feature.properties && String(layer.feature.properties.id) === String(answerId)) {
+                if (layer.setStyle) layer.setStyle({ radius: 14, color: '#4ade80', fillColor: '#4ade80', fillOpacity: 0.95, weight: 2 });
+                if (layer.bringToFront) layer.bringToFront();
             }
         });
     }
