@@ -9,6 +9,8 @@
  * === CHANGELOG ===
  */
 
+// v9.7: Облачная синхронизация настроек (громкость, язык) через профиль игрока.
+// v9.6: Динамические надписи на карте в зависимости от сложности (Hard/Extreme без надписей).
 // v9.5: Система уровней сложности (Easy, Normal, Hard, Extreme) с динамическими таймерами.
 // v9.3: Реализована визуальная проверка мата в реальном времени (красная рамка).
 // v9.2: Добавлена поддержка Enter для входа.
@@ -17,7 +19,7 @@
 
 const SUPABASE_URL = "https://tdlhwokrmuyxsdleepht.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkbGh3b2tybXV5eHNkbGVlcGh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDc3ODAsImV4cCI6MjA4NDk4Mzc4MH0.RlfUmejx2ywHNcFofZM4mNE8nIw6qxaTNzqxmf4N4-4";
-const APP_VERSION = "v9.5";
+const APP_VERSION = "v9.7";
 
 const DIFFICULTY_CONFIG = {
     easy: { answers: 4, timers: [30, 40, 50, 60], color: '#4ade80', showCorrect: true, zoom: true, label: 'diffEasy' },
@@ -141,6 +143,15 @@ class GeoGator {
         if (profile && !error) {
             this.config.user.login = profile.username;
             this.config.user.nickname = profile.nickname;
+
+            // Sync Settings from Cloud
+            if (profile.settings) {
+                this.config.settings = { ...this.config.settings, ...profile.settings };
+                this.applySettings();
+                this.manageMusic();
+                this.initVolumeSliderVisuals();
+                localStorage.setItem('geoGatorSettings', JSON.stringify(this.config.settings));
+            }
 
             // Explicitly update DOM elements
             const pName = document.getElementById('profileName');
@@ -1212,7 +1223,12 @@ class GeoGator {
             zoomControl: false, attributionControl: false, center: [20, 0], zoom: 2,
             minZoom: 2, maxZoom: 8, worldCopyJump: true, maxBoundsViscosity: 1.0
         });
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png', { subdomains: 'abcd', maxZoom: 8 }).addTo(map);
+        const isHardcore = ['hard', 'extreme'].includes(this.config.currentDifficulty);
+        const tileUrl = isHardcore
+            ? 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png'
+            : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
+
+        L.tileLayer(tileUrl, { subdomains: 'abcd', maxZoom: 8 }).addTo(map);
         this.addCountryBoundaries(map);
         this.config.gameState.map = map;
     }
@@ -1443,7 +1459,21 @@ class GeoGator {
     }
 
     getLocalizedText(key) { return LOCALES?.[this.config.settings.language]?.[key] || key; }
-    saveSettings() { localStorage.setItem('geoGatorSettings', JSON.stringify(this.config.settings)); }
+        saveSettings() {
+        localStorage.setItem('geoGatorSettings', JSON.stringify(this.config.settings));
+
+        // Cloud Sync with Debounce
+        if (this.config.user.id) {
+            if (this.settingsSyncTimeout) clearTimeout(this.settingsSyncTimeout);
+            this.settingsSyncTimeout = setTimeout(async () => {
+                const { error } = await supabaseClient
+                    .from('profiles')
+                    .update({ settings: this.config.settings })
+                    .eq('id', this.config.user.id);
+                if (error) console.error('Settings sync error:', error);
+            }, 1500);
+        }
+    }
     applySettings() {
         document.querySelectorAll('[data-i18n]').forEach(e => { e.textContent = this.getLocalizedText(e.getAttribute('data-i18n')); });
         document.querySelectorAll('.lang-btn').forEach(b => { b.classList.toggle('active', b.dataset.lang === this.config.settings.language); });
