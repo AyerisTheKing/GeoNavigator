@@ -1454,8 +1454,16 @@ class GeoGator {
         const layer = L.geoJson(data, {
             style: { fillColor: 'transparent', weight: 1.5, opacity: 0.6, color: '#4cc9f0', fillOpacity: 0.1, dashArray: '3, 3' },
             onEachFeature: (f, l) => this.setupCountryInteractivity(f, l, map)
-        }).addTo(map);
+        });
+        // Keep reference to the layer, but do not add it to the map if we're in 'theMost' mode.
+        // It will be added when a non-theMost game starts.
         this.config.gameState.boundariesLayer = layer;
+        try {
+            if (this.config.currentGame?.mode !== 'theMost') layer.addTo(map);
+        } catch (e) {
+            // If currentGame undefined (during init) it's safe to add by default
+            try { layer.addTo(map); } catch (err) { }
+        }
     }
 
     // Добавляет слой с объектами режима "Самый-самый" (точки/сегменты). 
@@ -1604,6 +1612,18 @@ class GeoGator {
             this.config.gameState.wrong = (this.config.gameState.wrong || 0) + 1;
             this.showNotification(this.getLocalizedText('wrong'), 'error');
             this.highlightCorrectMostObject(q.id);
+            // Показываем правильный ответ: центрируем и увеличиваем карту на правильной точке
+            try {
+                const map = this.config.gameState.map;
+                if (this.config.gameState.mostLayer && map) {
+                    this.config.gameState.mostLayer.eachLayer(layer => {
+                        if (String(layer.feature?.properties?.id) === String(q.id)) {
+                            const latlng = (layer.getLatLng && layer.getLatLng()) || (layer.getBounds && layer.getBounds().getCenter && layer.getBounds().getCenter());
+                            if (latlng) map.flyTo(latlng, 6, { duration: 1.2 });
+                        }
+                    });
+                }
+            } catch (e) { }
             setTimeout(() => this.showNotification(q.fact || '', 'info'), 800);
         }
         this.saveStats();
