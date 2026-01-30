@@ -2747,3 +2747,7 @@ body.dark-theme::before {
     display: inline-block;
     margin-right: 5px;
 }
+/* Hide Leaflet controls (Zoom, Attribution) */
+.leaflet-control-container {
+    display: none !important;
+}

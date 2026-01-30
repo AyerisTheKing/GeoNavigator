@@ -1,12 +1,12 @@
 /**
  * GeoGator Core
- * Current Version: v12.2
+ * Current Version: v12.7
  * See CHANGELOG.md for full history.
  */
 
 const SUPABASE_URL = "https://tdlhwokrmuyxsdleepht.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkbGh3b2tybXV5eHNkbGVlcGh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDc3ODAsImV4cCI6MjA4NDk4Mzc4MH0.RlfUmejx2ywHNcFofZM4mNE8nIw6qxaTNzqxmf4N4-4";
-const APP_VERSION = "v12.2";
+const APP_VERSION = "v12.7";
 
 const THE_MOST_QUESTIONS = [
     { id: '1', question: 'Самая высокая гора в мире', answer: 'Эверест', fact: 'Высота 8849 м. Находится в Гималаях.' },
@@ -42,10 +42,10 @@ const THE_MOST_QUESTIONS = [
 ];
 
 const DIFFICULTY_CONFIG = {
-    easy: { answers: 4, timers: [30, 40, 50, 60], color: '#4ade80', showCorrect: true, zoom: true, label: 'diffEasy' },
-    normal: { answers: 6, timers: [15, 20, 25, 30], color: '#4cc9f0', showCorrect: true, zoom: true, label: 'diffNormal' },
-    hard: { answers: 8, timers: [5, 8, 12, 15], color: '#f59e0b', showCorrect: false, zoom: true, label: 'diffHard' },
-    extreme: { answers: 8, timers: [2, 3, 4, 5], color: '#ef4444', showCorrect: false, zoom: false, label: 'diffExtreme' }
+    easy: { answers: 4, timers: [30, 40, 50, 60], color: '#4ade80', showCorrect: true, zoom: true, showLabels: true, label: 'diffEasy' },
+    normal: { answers: 6, timers: [15, 20, 25, 30], color: '#4cc9f0', showCorrect: true, zoom: true, showLabels: true, label: 'diffNormal' },
+    hard: { answers: 8, timers: [5, 8, 12, 15], color: '#f59e0b', showCorrect: false, zoom: true, showLabels: false, label: 'diffHard' },
+    extreme: { answers: 8, timers: [2, 3, 4, 5], color: '#ef4444', showCorrect: false, zoom: false, showLabels: false, label: 'diffExtreme' }
 };
 
 // Будет инициализирован в конструкторе
@@ -77,6 +77,7 @@ class GeoGator {
                 gameStartTime: null,
                 timerInterval: null,
                 map: null,
+                tileLayer: null,
                 boundariesLayer: null,
                 isInputBlocked: false,
                 isPaused: false
@@ -197,7 +198,16 @@ class GeoGator {
             return;
         }
 
-        // 3. ЕСЛИ ВСЁ ОК -> ЗАГРУЖАЕМ
+        // 3. ПРОВЕРКА БАНА (Feature: Ban System)
+        if (profile.is_banned === true) {
+            alert("Ваш аккаунт заблокирован администратором.");
+            await supabaseClient.auth.signOut();
+            localStorage.clear();
+            location.reload();
+            return;
+        }
+
+        // 4. ЕСЛИ ВСЁ ОК -> ЗАГРУЖАЕМ
         this.config.user = { 
             id: profile.id, 
             login: profile.login, 
@@ -300,6 +310,7 @@ class GeoGator {
 
     loadSettings() {
         try { Object.assign(this.config.settings, JSON.parse(localStorage.getItem('geoGatorSettings'))); } catch (e) { }
+        this.config.settings.language = 'ru'; // Force Russian language default
         this.applySettings();
     }
 
@@ -988,6 +999,9 @@ class GeoGator {
 
         this.resetGameStateForNewGame();
 
+        // Обновляем стиль карты
+        this.updateMapTiles();
+
         // Save Config for Quick Start (Async, don't wait)
         this.saveLastGameConfig(params);
 
@@ -1353,6 +1367,26 @@ class GeoGator {
     }
 
     // === КАРТА И ЛОГИКА ===
+
+    updateMapTiles() {
+        if (!this.config.gameState.map) return;
+        
+        const currentDiff = this.config.currentDifficulty;
+        // Default to showing labels if config is missing (safety), but follow config if present
+        const showLabels = DIFFICULTY_CONFIG[currentDiff]?.showLabels; 
+        
+        const type = showLabels ? 'dark_all' : 'dark_nolabels';
+        const tileUrl = `https://{s}.basemaps.cartocdn.com/${type}/{z}/{x}/{y}{r}.png`;
+
+        if (this.config.gameState.tileLayer) {
+            this.config.gameState.map.removeLayer(this.config.gameState.tileLayer);
+        }
+
+        this.config.gameState.tileLayer = L.tileLayer(tileUrl, { subdomains: 'abcd', maxZoom: 8 });
+        this.config.gameState.tileLayer.addTo(this.config.gameState.map);
+        this.config.gameState.tileLayer.bringToBack(); // Ensure tiles are background
+    }
+
     /*
      * Инициализация карты Leaflet.
      * Загружает карту, устанавливает границы (тайлы) и добавляет слой границ стран из GeoJSON.
@@ -1366,13 +1400,8 @@ class GeoGator {
             minZoom: 2, maxZoom: 8, worldCopyJump: true, maxBoundsViscosity: 1.0
         });
 
-        const isHardcore = ['hard', 'extreme'].includes(this.config.currentDifficulty);
-        const tileUrl = isHardcore
-            ? 'https://{s}.basemaps.cartocdn.com/dark_nolabels/{z}/{x}/{y}{r}.png'
-            : 'https://{s}.basemaps.cartocdn.com/dark_all/{z}/{x}/{y}{r}.png';
-
-        L.tileLayer(tileUrl, { subdomains: 'abcd', maxZoom: 8 }).addTo(map);
         this.config.gameState.map = map;
+        this.updateMapTiles();
 
         // Защита загрузки GeoJSON
         try {
@@ -1774,6 +1803,7 @@ class GeoGator {
         const { data, error } = await supabaseClient
             .from('profiles')
             .select('nickname, login, total_correct, total_time, best_score, total_games')
+            .eq('is_banned', false)
             .order('total_correct', { ascending: false })
             .limit(100);
 
