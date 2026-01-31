@@ -6,7 +6,7 @@
 
 const SUPABASE_URL = "https://tdlhwokrmuyxsdleepht.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkbGh3b2tybXV5eHNkbGVlcGh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDc3ODAsImV4cCI6MjA4NDk4Mzc4MH0.RlfUmejx2ywHNcFofZM4mNE8nIw6qxaTNzqxmf4N4-4";
-const APP_VERSION = "v13.5";
+const APP_VERSION = "v13.8";
 
 const THE_MOST_QUESTIONS = [
     { id: '1', question: 'Самая высокая гора в мире', answer: 'Эверест', fact: 'Высота 8849 м. Находится в Гималаях.' },
@@ -212,6 +212,7 @@ class GeoGator {
             id: profile.id, 
             login: profile.login, 
             nickname: profile.nickname,
+            class_name: profile.class_name, // v13.8 Added class
             recent_games: profile.recent_games || []
         };
         
@@ -361,7 +362,15 @@ class GeoGator {
         const guestText = this.getLocalizedText('guest');
         const displayName = this.config.user.nickname || this.config.user.login || guestText || "Игрок";
 
-        if (profileNameEl) profileNameEl.textContent = displayName;
+        if (profileNameEl) { 
+            // v13.8 Class Badge Display
+            const userClass = this.config.user.class_name;
+            if (userClass) {
+                profileNameEl.innerHTML = `<span class="class-badge">${userClass}</span> ${displayName}`;
+            } else {
+                profileNameEl.textContent = displayName;
+            }
+        }
         if (menuNameEl) menuNameEl.textContent = displayName;
 
         // Stats Logic
@@ -740,7 +749,13 @@ class GeoGator {
             const dLogin = document.getElementById('profileDisplayLogin');
             
             // Set Text
-            if (dNick) dNick.textContent = profile.nickname || "Unknown";
+            if (dNick) {
+                if (profile.class_name) {
+                    dNick.innerHTML = `<span class="class-badge">${profile.class_name}</span> ${profile.nickname || "Unknown"}`;
+                } else {
+                    dNick.textContent = profile.nickname || "Unknown";
+                }
+            }
             if (dLogin) dLogin.textContent = `(Просмотр: ${profile.login || '?'})`;
 
             // Hide Logout, Show Deep Stats

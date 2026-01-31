@@ -3032,3 +3032,18 @@ body.dark-theme::before {
     50% { box-shadow: 0 0 20px rgba(74, 222, 128, 0.8); }
     100% { box-shadow: 0 0 5px rgba(74, 222, 128, 0.4); }
 }
+
+/* Class Badge in Profile */
+.class-badge {
+    background: rgba(76, 201, 240, 0.2);
+    color: var(--accent-color);
+    border: 1px solid rgba(76, 201, 240, 0.4);
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 0.9em;
+    font-weight: 600;
+    margin-right: 8px;
+    box-shadow: 0 0 10px rgba(76, 201, 240, 0.2);
+    vertical-align: middle;
+    display: inline-block;
+}
