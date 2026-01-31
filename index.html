@@ -659,34 +659,23 @@
     <!-- МОДАЛЬНОЕ ОКНО: ПРОФИЛЬ ИГРОКА (ТОЛЬКО ДЛЯ АВТОРИЗОВАННЫХ) -->
     <div id="profileModal" class="modal hidden">
         <div class="modal-content">
-            <span class="close" id="closeProfileModal">&times;</span>
-            <h2 data-i18n="profileTitle">Профиль</h2>
-
-            <div class="profile-header" style="text-align: center; margin-bottom: 20px;">
-                <i class="fas fa-user-circle" style="font-size: 3rem; color: var(--accent-color);"></i>
-                <h3 id="profileDisplayNickname" style="color: white; margin: 10px 0;">Guest</h3>
-                <small id="profileDisplayLogin" style="color: #64748b;">@guest</small>
+            <div class="profile-header">
+                <h2 class="profile-title">Профиль</h2>
+                <button class="btn-close" id="closeProfileModal">✕</button>
             </div>
-
+            <div class="profile-info">
+                <i class="fas fa-user-circle profile-avatar"></i>
+                <div class="profile-name-line">
+                    <h2 id="profileNickname">Никнейм</h2>
+                    <span id="profileClass" class="badge-class">Класс</span>
+                </div>
+                <span id="profileLogin" class="profile-login-small">@login</span>
+            </div>
             <div class="profile-actions">
-                <button id="openLeaderboardBtn" class="btn-secondary btn-gold">
-                    <i class="fas fa-trophy"></i> <span data-i18n="leaderboard">Таблица лидеров</span>
-                </button>
-                <button id="btnHistory" class="btn-secondary">
-                    <i class="fas fa-history"></i> <span data-i18n="history">История</span>
-                </button>
+                <button id="btnHistory" class="btn-menu btn-gradient">История игр</button>
+                <button id="btnLeaderboard" class="btn-menu btn-gradient">Таблица лидеров</button>
+                <button id="btnLogout" class="btn-menu btn-danger">Выйти</button>
             </div>
-            
-            <!-- Deep Stats Button (For Viewer Mode) -->
-            <button id="viewDeepStatsBtn" class="btn-secondary hidden" style="width: 100%; margin-top: 10px; background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.5);">
-                <i class="fas fa-chart-pie"></i> <span>Полная статистика</span>
-            </button>
-
-            <button id="logoutBtn" class="btn-secondary btn-profile-logout" style="width: 100%; margin-top: 10px;">
-                <i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">Выйти</span>
-            </button>
-            
-
         </div>
     </div>
 
@@ -704,10 +693,10 @@
             </div>
 
             <div class="leaderboard-tabs">
-                <button class="lb-tab active" data-diff="easy">Easy</button>
-                <button class="lb-tab" data-diff="normal">Normal</button>
-                <button class="lb-tab" data-diff="hard">Hard</button>
-                <button class="lb-tab" data-diff="extreme">Extreme</button>
+                <button class="lb-tab active" data-diff="easy" data-i18n="diffEasy">Easy</button>
+                <button class="lb-tab" data-diff="normal" data-i18n="diffNormal">Normal</button>
+                <button class="lb-tab" data-diff="hard" data-i18n="diffHard">Hard</button>
+                <button class="lb-tab" data-diff="extreme" data-i18n="diffExtreme">Extreme</button>
             </div>
 
             <div class="leaderboard-header-row">

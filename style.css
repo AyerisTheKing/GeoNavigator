@@ -654,6 +654,7 @@ body::before {
     width: 100%;
     height: 8px;
     -webkit-appearance: none;
+    appearance: none;
     background: linear-gradient(to right, #4361ee, #4cc9f0);
     border-radius: 4px;
     outline: none;
@@ -1599,7 +1600,6 @@ path.leaflet-interactive {
 
 .leaflet-container path.country-polygon {
     -webkit-tap-highlight-color: transparent !important;
-    tap-highlight-color: transparent !important;
 }
 
 /* Убираем outline и focus styles */
@@ -2559,11 +2559,13 @@ body.dark-theme::before {
 /* Header Row */
 .leaderboard-header-row {
     display: grid;
-    grid-template-columns: 40px 1fr 60px 60px;
+    grid-template-columns: 40px 1fr 60px 60px 60px 50px; /* 6 columns */
+    gap: 10px;
+    align-items: center;
     padding: 10px 20px;
     background: rgba(0, 0, 0, 0.2);
     font-weight: 600;
-    font-size: 0.8rem;
+    font-size: 0.75rem; /* Slightly smaller for fitting */
     color: rgba(255, 255, 255, 0.5);
     text-transform: uppercase;
 }
@@ -2585,42 +2587,66 @@ body.dark-theme::before {
     border-collapse: collapse;
 }
 
-#leaderboardTable tr {
+/* Updated Leaderboard Row Grid */
+.leaderboard-row {
+    display: grid;
+    grid-template-columns: 40px 1fr 60px 60px 60px 50px;
+    gap: 10px;
+    align-items: center;
     border-bottom: 1px solid rgba(255, 255, 255, 0.05);
     transition: background 0.2s;
+    padding: 8px 10px;
 }
 
-#leaderboardTable tr:hover {
+.leaderboard-row:hover {
     background: rgba(255, 255, 255, 0.03);
 }
 
+/* Remove old TD styles that conflict with grid if necessary, or adapt them */
 #leaderboardTable td {
-    padding: 12px 5px;
+    padding: 0; 
     font-size: 0.9rem;
     color: #cbd5e1;
-    vertical-align: middle;
+    border: none;
+    display: block; 
 }
+
+/* User Column Styles (Rich List) */
+.lb-user-col { display: flex; flex-direction: column; overflow: hidden; justify-content: center; }
+.lb-top-line { display: flex; align-items: center; gap: 8px; }
+.lb-name { font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: white; }
+.lb-class-badge { background: rgba(255,255,255,0.15); color: var(--accent-color); padding: 1px 6px; border-radius: 4px; font-size: 0.75em; white-space: nowrap;}
+.lb-login { font-size: 0.75em; color: #94a3b8; margin-top: 2px; }
 
 #leaderboardTable td.rank { 
     text-align: center; 
     font-weight: 700; 
-    width: 40px; 
     color: #64748b;
 }
 
-#leaderboardTable td.player-cell {
-    text-align: left;
-    padding-left: 10px;
-}
-
-.lb-name { display: block; font-weight: 500; color: white; }
-.lb-login { display: block; font-size: 0.75rem; color: #64748b; }
-
 #leaderboardTable td.score-cell {
     text-align: center;
-    width: 60px;
     font-weight: 700;
     color: var(--accent-color);
+}
+
+/* New Cells */
+#leaderboardTable td.time-cell {
+    text-align: center;
+    color: #94a3b8;
+    font-size: 0.85rem;
+}
+
+#leaderboardTable td.record-cell {
+    text-align: center;
+    color: var(--warning-color); /* Gold/Orange for Record */
+    font-weight: 600;
+}
+
+#leaderboardTable td.games-cell {
+    text-align: center;
+    color: #64748b;
+    font-size: 0.85rem;
 }
 
 #leaderboardTable td.answers-cell {
@@ -2692,8 +2718,8 @@ body.dark-theme::before {
 
 /* === HISTORY MODAL (v11.1) === */
 .profile-actions {
-    display: grid;
-    grid-template-columns: 1fr 1fr;
+    display: flex;
+    flex-direction: column;
     gap: 10px;
     margin-bottom: 15px;
 }
@@ -2967,6 +2993,7 @@ body.dark-theme::before {
     width: 50px;
     height: 26px;
     -webkit-appearance: none;
+    appearance: none;
     background: rgba(255, 255, 255, 0.1);
     border-radius: 20px;
     outline: none;
@@ -3047,3 +3074,167 @@ body.dark-theme::before {
     vertical-align: middle;
     display: inline-block;
 }
+
+/* === v14.7 Profile Redesign (Text Only) === */
+
+.profile-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.profile-title {
+    font-size: 1.5rem;
+    color: var(--accent-color);
+    margin: 0;
+    font-weight: 600;
+}
+
+.btn-close {
+    background: transparent;
+    border: none;
+    color: rgba(255, 255, 255, 0.5);
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: 5px 10px;
+    transition: color 0.2s;
+}
+
+.btn-close:hover {
+    color: var(--danger-color);
+}
+
+.profile-info {
+    text-align: center;
+    margin-bottom: 25px;
+}
+
+/* v14.8 Profile Avatar Icon (Static) */
+.profile-avatar {
+    font-size: 4rem;
+    background: linear-gradient(135deg, #4361ee, #4cc9f0);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+    margin-bottom: 10px;
+    display: block;
+    filter: drop-shadow(0 0 15px rgba(76, 201, 240, 0.5));
+}
+
+/* v14.8 Nickname + Class on same line */
+.profile-name-line {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-bottom: 5px;
+}
+
+.profile-info h2 {
+    font-size: 1.8rem;
+    color: white;
+    margin: 0;
+}
+
+/* v14.8 Small login below */
+.profile-login-small {
+    display: block;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    margin-top: 3px;
+}
+
+.profile-meta {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+    font-size: 0.9rem;
+}
+
+.text-muted {
+    color: #94a3b8;
+}
+
+.badge-class {
+    background: rgba(76, 201, 240, 0.15);
+    color: var(--accent-color);
+    padding: 3px 10px;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.85rem;
+}
+
+.btn-menu {
+    width: 100%;
+    text-align: center;
+    margin-bottom: 10px;
+    padding: 12px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-menu:hover {
+    background: rgba(76, 201, 240, 0.2);
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+}
+
+/* v14.8 Gradient Buttons for History & Leaderboard */
+.btn-menu.btn-gradient {
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.3), rgba(76, 201, 240, 0.3));
+    border: 1px solid rgba(76, 201, 240, 0.4);
+    background-size: 200% 200%;
+    animation: gradientShift 3s ease infinite;
+    position: relative;
+    overflow: hidden;
+}
+
+.btn-menu.btn-gradient::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: linear-gradient(
+        45deg,
+        transparent,
+        rgba(255, 255, 255, 0.1),
+        transparent
+    );
+    transform: rotate(45deg);
+    animation: shine 3s infinite;
+}
+
+@keyframes shine {
+    0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+    100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+}
+
+.btn-menu.btn-gradient:hover {
+    background: linear-gradient(135deg, rgba(67, 97, 238, 0.5), rgba(76, 201, 240, 0.5));
+    border-color: var(--accent-color);
+    box-shadow: 0 0 20px rgba(76, 201, 240, 0.4);
+    transform: translateY(-3px);
+}
+
+.btn-menu.btn-danger {
+    background: rgba(239, 68, 68, 0.1);
+    border-color: rgba(239, 68, 68, 0.3);
+    color: #ef4444;
+}
+
+.btn-menu.btn-danger:hover {
+    background: rgba(239, 68, 68, 0.2);
+    border-color: #ef4444;
+}
+

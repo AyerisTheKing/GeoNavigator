@@ -1,12 +1,22 @@
 /**
  * GeoGator Core
- * Current Version: v13.2
+ * Current Version: v14.8
  * See CHANGELOG.md for full history.
+ * v14.8: Profile UI Enhancement - Avatar icon, gradient buttons, improved layout.
+ * v14.7: Profile UI Redesign - Text only buttons, clean interface.
+ * v14.5: Fix Extreme difficulty stats saving to Supabase.
  */
+
+const ROLE_LEVELS = {
+    'admin': 5,
+    'tester': 3,
+    'teacher': 1,
+    'user': 0
+};
 
 const SUPABASE_URL = "https://tdlhwokrmuyxsdleepht.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkbGh3b2tybXV5eHNkbGVlcGh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDc3ODAsImV4cCI6MjA4NDk4Mzc4MH0.RlfUmejx2ywHNcFofZM4mNE8nIw6qxaTNzqxmf4N4-4";
-const APP_VERSION = "v13.8";
+const APP_VERSION = "v14.8";
 
 const THE_MOST_QUESTIONS = [
     { id: '1', question: 'Самая высокая гора в мире', answer: 'Эверест', fact: 'Высота 8849 м. Находится в Гималаях.' },
@@ -216,6 +226,18 @@ class GeoGator {
             recent_games: profile.recent_games || []
         };
         
+        // Critical Fix: Sync Global Stats from DB to Local Config
+        // This ensures multi-device consistency
+        this.config.playerStats = {
+            totalCorrect: profile.total_correct || 0,
+            totalGames: profile.total_games || 0,
+            totalWrong: profile.total_wrong || 0,
+            totalTime: profile.total_time || 0,
+            bestScore: profile.best_score || 0,
+            totalQuestions: (profile.total_correct || 0) + (profile.total_wrong || 0), // Approx
+            regionStats: profile.region_stats || {}
+        };
+        
         // Загружаем статистику с защитой от пустых полей
         this.config.game_stats = {
             global: {
@@ -231,11 +253,12 @@ class GeoGator {
         };
 
         // 5. ROLE CHECK (v13.3 Audit Fix: Safe Check)
-        // 5. ROLE CHECK (v13.3)
+        // 5. ROLE CHECK (v13.12 Hierarchy)
         const roleBtn = document.getElementById('rightMenuBtn');
         if (roleBtn) {
-            // Check if role exists and is NOT 'user' (default)
-            if (profile.role && typeof profile.role === 'string' && profile.role !== 'user') {
+            const userLevel = this.getRoleLevel(profile.role);
+            // Show menu for Teachers (1), Testers (3), Admins (5)
+            if (userLevel >= ROLE_LEVELS.teacher) { 
                 roleBtn.classList.remove('hidden');
                 roleBtn.style.display = 'flex';
             } else {
@@ -258,6 +281,13 @@ class GeoGator {
         
         // Локальный кеш
         localStorage.setItem('geoGatorLogin', this.config.user.login);
+    }
+
+    /**
+     * Helper to get numeric role level
+     */
+    getRoleLevel(role) {
+        return ROLE_LEVELS[role] || ROLE_LEVELS['user'];
     }
 
     manageMusic() {
@@ -356,35 +386,21 @@ class GeoGator {
 
     updateProfileStatsUI() {
         // Fix Name Display Priority: Nickname -> Login -> Guest
-        const profileNameEl = document.getElementById('profileDisplayNickname');
         const menuNameEl = document.getElementById('profileName'); // Button in menu
 
         const guestText = this.getLocalizedText('guest');
         const displayName = this.config.user.nickname || this.config.user.login || guestText || "Игрок";
 
-        if (profileNameEl) { 
-            // v13.8 Class Badge Display
-            const userClass = this.config.user.class_name;
-            if (userClass) {
-                profileNameEl.innerHTML = `<span class="class-badge">${userClass}</span> ${displayName}`;
-            } else {
-                profileNameEl.textContent = displayName;
-            }
-        }
         if (menuNameEl) menuNameEl.textContent = displayName;
 
-        // Stats Logic
-        const s = this.config.playerStats;
-        const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
-
-        // --- Statistics Modal (Detailed) ---
-        setText('statFullGames', s.totalGames || 0);
-        setText('statFullCorrect', s.totalCorrect || 0);
-        setText('statFullWrong', s.totalWrong || 0);
+        // *** REMOVED: Stats update for profile modal (statFullGames, etc.) ***
+        // These elements no longer exist in the redesigned profile modal.
+        // Statistics are now only shown in the separate Statistics Modal.
 
         // Region Table (Only if Statistics Modal is open or prepared)
         const tbody = document.querySelector('#regionStatsTable tbody');
         if (tbody) {
+            const s = this.config.playerStats;
             tbody.innerHTML = '';
             // Only show regions with data
             const regions = Object.entries(s.regionStats).filter(([_, d]) => d.total > 0);
@@ -613,6 +629,12 @@ class GeoGator {
      * 1. Создает пользователя в Supabase Auth (signUp).
      * 2. Создает запись в таблице 'profiles' (insert).
      */
+    /**
+     * Регистрация нового пользователя.
+     * 1. Создает пользователя в Supabase Auth (signUp).
+     * 2. Валидирует данные перед отправкой.
+     * 3. Передает метаданные (nickname, class_name) для триггера БД.
+     */
     async performRegister() {
         const nick = document.getElementById('regNicknameInput').value.trim();
         const login = document.getElementById('regLoginInput').value.trim();
@@ -620,19 +642,19 @@ class GeoGator {
         const confirmPass = document.getElementById('regPasswordConfirmInput').value;
         const errorDiv = document.getElementById('registerError');
 
-        // Валидация (Security Hardening v11.8)
+        // 1. Валидация (оставляем жесткой)
         if (!nick || !login || !pass || !confirmPass) {
             this.showError(errorDiv, this.getLocalizedText('fillAllFields'));
             return;
         }
 
-        // Strict Validation Check
+        // Validate formats
         if (!this.validateInput(login, 'login')) {
-            alert("Ошибка: Логин должен содержать от 5 до 30 символов (только латиница, цифры и '_').");
+            this.showError(errorDiv, "Логин: 5-30 символов, латиница/цифры/_");
             return;
         }
         if (!this.validateInput(nick, 'nickname')) {
-            alert("Ошибка: Никнейм должен содержать от 3 до 15 символов (буквы, цифры, пробелы).");
+            this.showError(errorDiv, "Никнейм: 3-15 символов, буквы/цифры");
             return;
         }
 
@@ -641,61 +663,60 @@ class GeoGator {
             return;
         }
 
-        // Profanity Check
-        if (this.containsProfanity(nick) || this.containsProfanity(login)) {
-            this.showError(errorDiv, this.getLocalizedText('profanityError') || "Недопустимое имя или логин");
+        // Hard checks
+        if (!nick || nick.trim().length < 3) {
+            this.showError(errorDiv, this.getLocalizedText('loginInvalid') || "Некорректный никнейм");
             return;
+        }
+
+        // Проверка на мат (если есть функция hasProfanity/containsProfanity)
+        // В текущем классе есть метод containsProfanity
+        if (this.containsProfanity(nick) || this.containsProfanity(login)) {
+            this.showError(errorDiv, this.getLocalizedText('profanityError'));
+            return;
+        }
+
+        // Формирование класса
+        const classNum = document.getElementById('regClassNumber').value;
+        const classLet = document.getElementById('regClassLetter').value;
+        let classNameStr = null;
+
+        if (classNum && classLet && classNum !== "" && classLet !== "") {
+            classNameStr = `${classNum}-${classLet}`;
         }
 
         const email = `${login}@geogator.game`;
 
-        // 1. Создание Auth User с передачей login И nickname в metadata для триггера
+        // 2. Регистрация с передачей метаданных (Atomic Trigger)
         const { data, error } = await supabaseClient.auth.signUp({
             email: email,
             password: pass,
             options: {
                 data: {
-                data: {
-                    login: login,    // Login for logic (unique)
-                    nickname: nick,   // Nickname for display (max 15 chars)
-                    class_name: null // Init val
+                    login: login,
+                    nickname: nick,
+                    class_name: classNameStr,
+                    role: 'user' // Explicitly setting role as requested
                 }
             }
-        }});
+        });
 
         if (error) {
             this.showError(errorDiv, error.message);
             return;
         }
 
-        if (data.user) {
-            // v13.3 Fix: Strict Class/Letter Validation & formatting
-            const classNum = document.getElementById('regClassNumber').value;
-            const classLet = document.getElementById('regClassLetter').value;
-            let fullClass = null;
-
-            // Only form string if BOTH are selected to avoid "5-undefined" or "null-A"
-            if (classNum && classLet && classNum !== "" && classLet !== "") {
-                 fullClass = `${classNum}-${classLet}`; // e.g., "5-A"
-            } 
-            // If only one is selected, we might want to warn, but for now we'll just ignore partials 
-            // or we could force user to select both. Current UI doesn't force it, so null is safer than bad data.
-
-            if (fullClass) {
-                await supabaseClient
-                    .from('profiles')
-                    .update({ class_name: fullClass })
-                    .eq('id', data.user.id);
-            }
-
-            // 2. Создание профиля делегировано DB Trigger (handle_new_user)
-            // Мы больше не делаем ручной insert, чтобы избежать Race Condition/Error 500
-            
-            this.showNotification(this.getLocalizedText('registerSuccess'), "success");
-            this.closeRegisterModal();
-            this.openLoginModal();
-            document.getElementById('loginUsernameInput').value = login;
-        }
+        // 3. Успех
+        // Профиль создается триггером автоматически из raw_user_meta_data
+        this.showNotification(this.getLocalizedText('registerSuccess'), "success");
+        this.closeRegisterModal();
+        this.openLoginModal();
+        
+        // Автозаполнение логина для удобства
+        const loginInput = document.getElementById('loginUsernameInput');
+        if (loginInput) loginInput.value = login;
+        
+        // this.showSuccess('Регистрация успешна! Теперь вы можете войти.'); 
     }
 
     // 4. Authorized Profile (Simplified)
@@ -706,12 +727,21 @@ class GeoGator {
             modal.classList.remove('hidden');
             modal.style.display = 'flex';
 
-            const dNick = document.getElementById('profileDisplayNickname');
-            const dLogin = document.getElementById('profileDisplayLogin');
-            if (dNick) dNick.textContent = this.config.user.nickname;
-            if (dLogin) dLogin.textContent = '@' + this.config.user.login;
-
-            this.updateProfileStatsUI();
+            // v14.7 Updated IDs to match new profile layout
+            const dNick = document.getElementById('profileNickname');
+            const dLogin = document.getElementById('profileLogin');
+            const dClass = document.getElementById('profileClass');
+            
+            if (dNick) dNick.textContent = this.config.user.nickname || this.getLocalizedText('guest');
+            if (dLogin) dLogin.textContent = '@' + (this.config.user.login || 'guest');
+            
+            // Display Class Badge
+            if (dClass && this.config.user.class_name) {
+                dClass.textContent = this.config.user.class_name;
+                dClass.style.display = 'inline-block';
+            } else if (dClass) {
+                dClass.style.display = 'none'; // Hide if no class
+            }
         }
     }
 
@@ -903,13 +933,24 @@ class GeoGator {
         const pName = document.getElementById('profileName');
         if (pName) pName.textContent = nick;
 
-        // 2. Profile Modal Headers
-        const dNick = document.getElementById('profileDisplayNickname');
-        const dLogin = document.getElementById('profileDisplayLogin');
+        // 2. Profile Modal (v14.7 Updated IDs)
+        const dNick = document.getElementById('profileNickname');
+        const dLogin = document.getElementById('profileLogin');
+        const dClass = document.getElementById('profileClass');
         
         if (dNick) dNick.textContent = nick;
         if (dLogin) {
             dLogin.textContent = isLoggedIn ? ('@' + this.config.user.login) : '@guest';
+        }
+        
+        // Display Class Badge
+        if (dClass) {
+            if (isLoggedIn && this.config.user.class_name) {
+                dClass.textContent = this.config.user.class_name;
+                dClass.style.display = 'inline-block';
+            } else {
+                dClass.style.display = 'none';
+            }
         }
     }
 
@@ -1010,8 +1051,12 @@ class GeoGator {
             { id: 'openRegisterLink', action: (e) => { e.preventDefault(); this.openRegisterModal(); } },
             { id: 'toggleLoginPassword', action: (e) => this.togglePasswordVisibility(e, 'loginPasswordInput') },
             { id: 'toggleRegPassword', action: (e) => this.togglePasswordVisibility(e, 'regPasswordInput') },
-            { id: 'logoutBtn', action: () => this.performLogout() },
-            { id: 'sendFeedbackBtn', action: () => this.sendFeedback() }
+            { id: 'btnLogout', action: () => this.performLogout() }, // v14.7 Updated ID
+            { id: 'logoutBtn', action: () => this.performLogout() }, // Keep for backward compatibility
+            { id: 'btnHistory', action: () => this.showHistory() }, // v14.7 New button
+            { id: 'btnLeaderboard', action: () => this.openLeaderboard() }, // v14.7 New button
+            { id: 'sendFeedbackBtn', action: () => this.sendFeedback() },
+            { id: 'closeHistoryBtn', action: () => { this.closeModal('historyModal'); this.openStatsModal(); } }
         ];
 
         formActions.forEach(({ id, action }) => {
@@ -1895,15 +1940,26 @@ class GeoGator {
     /**
      * Основная логика сохранения (v12.0)
      * Входные параметры: mode, difficulty, correct, wrong, timeSpent
+     * v14.5: Added whitelist validation for difficulty with 'extreme' support
      */
     async saveGameStats(mode, difficulty, correct, wrong, timeSpent) {
         if (!this.config.user.id) return;
 
         console.log(`Saving Stats: ${mode} (${difficulty}) C:${correct} W:${wrong} T:${timeSpent}`);
 
-        // 1. Определение целевой колонки (targetColumn)
+        // 1. Whitelist: Допустимые сложности (включая 'extreme')
+        const validDifficulties = ['easy', 'normal', 'hard', 'extreme'];
+        
+        // 2. Определение целевой колонки (targetColumn)
         // Если режим MostMost -> всегда пишем в stat_normal
-        const targetDiff = (mode === 'MostMost') ? 'normal' : difficulty;
+        let targetDiff = (mode === 'MostMost') ? 'normal' : difficulty;
+        
+        // Фallback: если сложность не поддерживается, сохраняем в normal
+        if (!validDifficulties.includes(targetDiff)) {
+            console.warn(`Unknown difficulty '${targetDiff}', falling back to 'normal'`);
+            targetDiff = 'normal';
+        }
+        
         const colName = `stat_${targetDiff}`;
 
         // 2. Обновление JSON (Read -> Modify -> Write)
@@ -1945,7 +2001,16 @@ class GeoGator {
         const updates = {
             [colName]: baseStats, // Обновляем всю колонку JSONB
             recent_games: trimmedRecent,
-            total_correct: this.config.game_stats.global.total_correct
+            
+            // Critical Fix: Sync Global Stats columns
+            total_correct: this.config.playerStats.totalCorrect,
+            total_games: this.config.playerStats.totalGames,
+            total_wrong: this.config.playerStats.totalWrong,
+            total_time: this.config.playerStats.totalTime,
+            best_score: this.config.playerStats.bestScore,
+            region_stats: this.config.playerStats.regionStats, // Save region progress too
+            
+            updated_at: new Date()
         };
 
         const { error } = await supabaseClient
@@ -1973,7 +2038,16 @@ class GeoGator {
     /**
      * @param {string|null} classNameFilter - If set (e.g. "5-A"), filters by class_name
      */
-    async openLeaderboard(classNameFilter = null) {
+    // === v10.0 LEADERBOARD ===
+    /**
+     * @param {string|null} classNameFilter - "5-A" or null
+     * @param {string} difficultyFilter - "easy", "normal", "hard", "extreme" (default: normal)
+     */
+    /**
+     * @param {string|null} classNameFilter - "5-A" or null
+     * @param {string} difficultyFilter - "easy", "normal", "hard", "extreme" (default: normal)
+     */
+    async openLeaderboard(classNameFilter = null, difficultyFilter = 'normal') {
         if (!this.config.user.id) {
             this.showNotification(this.getLocalizedText('leaderboardLoginReq') || "Войдите для просмотра", "info");
             this.openLoginModal();
@@ -1988,151 +2062,226 @@ class GeoGator {
         // Update Title dynamically
         const titleEl = document.querySelector('.leaderboard-title span');
         if (titleEl) {
-            if (classNameFilter) {
-                titleEl.innerText = `Класс ${classNameFilter}`;
-                // Hide tabs when filtering by class (optional, but logical since tabs are for global difficulty)
-                // But user might want to see who is best in class at "Hard"... 
-                // For now, let's keep tabs but strictly filter the query.
-            } else {
-                titleEl.innerText = this.getLocalizedText('globalLeaderboard') || "Таблица лидеров";
-            }
+            titleEl.innerText = classNameFilter ? `Класс ${classNameFilter}` : (this.getLocalizedText('globalLeaderboard') || "Таблица лидеров");
+        }
+
+        // Setup Tabs UI
+        const tabsContainer = document.querySelector('.leaderboard-tabs');
+        if (classNameFilter) {
+             if(tabsContainer) tabsContainer.style.display = 'none';
+        } else {
+             if(tabsContainer) {
+                 tabsContainer.style.display = 'flex';
+                 document.querySelectorAll('.lb-tab').forEach(btn => {
+                     btn.classList.toggle('active', btn.dataset.diff === difficultyFilter);
+                     btn.onclick = () => this.openLeaderboard(null, btn.dataset.diff);
+                 });
+             }
+        }
+
+        // --- v14.4 UPDATE: 6 Column Header ---
+        const headerRow = document.querySelector('.leaderboard-header-row');
+        if (headerRow) {
+            headerRow.innerHTML = `
+                <div class="lb-col rank">#</div>
+                <div class="lb-col player" style="text-align: left; padding-left: 10px;">Ученик</div>
+                <div class="lb-col score">Очки</div>
+                <div class="lb-col time">Время</div>
+                <div class="lb-col record">Рекорд</div>
+                <div class="lb-col games">Игр</div>
+            `;
         }
 
         table.innerHTML = '';
         loader.classList.remove('hidden');
         footer.classList.add('hidden');
-        
-        // Hide difficulty tabs if showing class specific leaderboard (simplification for "Teacher" view)
-        const tabs = document.querySelector('.leaderboard-tabs');
-        if (classNameFilter) {
-             if(tabs) tabs.style.display = 'none';
-        } else {
-             if(tabs) tabs.style.display = 'flex';
-        }
 
+        // SELECT Strategy: Fetch detailed JSONB columns to parse stats for specific difficulty
         let query = supabaseClient
             .from('profiles')
-            .select('nickname, login, total_correct, total_time, best_score, total_games, class_name') // added class_name
+            .select(`
+                nickname, login, class_name, 
+                total_correct, total_time, best_score, total_games,
+                stat_easy, stat_normal, stat_hard, stat_extreme
+            `) 
             .eq('is_banned', false);
             
         if (classNameFilter) {
             query = query.eq('class_name', classNameFilter);
         }
 
-        // Default sorting (can be improved to respect active tab difficulty if not class filtered)
-        // For Class Leaderboard, usually "Best Score" or "Total Correct" matters most.
-        query = query
-            .order('total_correct', { ascending: false })
-            .limit(100);
+        // Limit to 500 candidates
+        query = query.limit(500); 
 
         const { data, error } = await query;
-
         loader.classList.add('hidden');
 
-        if (error) {
-            table.innerHTML = `<tr><td colspan="6" style="text-align:center;color:#ef4444;">Ошибка загрузки</td></tr>`;
+        if (error || !data) {
+            table.innerHTML = `<tr><td colspan="4" style="text-align:center;color:#ef4444;">Ошибка загрузки</td></tr>`;
             return;
         }
 
-        // Setup Header columns match
-        const headerRow = document.querySelector('.leaderboard-header-row');
-        if (headerRow) {
-            headerRow.style.gridTemplateColumns = '0.5fr 2fr 1fr 1fr 1fr 1fr';
-            headerRow.innerHTML = `
-                <div class="lb-col">#</div>
-                <div class="lb-col" data-i18n="player">Игрок</div>
-                <div class="lb-col" data-i18n="correctShort">Верно</div>
-                <div class="lb-col" data-i18n="time">Время</div>
-                <div class="lb-col" data-i18n="bestScore">Рекорд</div>
-                <div class="lb-col" data-i18n="totalGames">Игры</div>
-            `;
-        }
-        
-        // ... (existing leaderboard logic) ...
-        // Secure Rendering (prevent XSS)
-        data.forEach((entry, idx) => {
-            const tr = document.createElement('tr');
+        // Client-Side Processing for Difficulty
+        const processed = data.map(entry => {
+            const statKey = `stat_${difficultyFilter}`; // e.g. stat_normal
+            const stats = entry[statKey] || {}; // JSON object
             
-            // Rank
-            let rankClass = 'rank-other';
-            let iconText = (idx + 1).toString();
-            if (idx === 0) { rankClass = 'rank-1'; iconText = '👑'; }
-            else if (idx === 1) { rankClass = 'rank-2'; iconText = '🥈'; }
-            else if (idx === 2) { rankClass = 'rank-3'; iconText = '🥉'; }
-
-            const isMe = (entry.login === this.config.user.login);
-            if (isMe) {
-                tr.classList.add('my-rank');
-                if (footer) {
-                    footer.classList.remove('hidden');
-                    document.getElementById('myRank').textContent = '#' + (idx + 1);
-                    document.getElementById('myScore').textContent = entry.best_score;
-                    document.getElementById('myCorrect').textContent = entry.total_correct;
-                    document.getElementById('myNickname').textContent = entry.nickname || entry.login;
-                    document.getElementById('myLogin').textContent = '@' + entry.login;
+            let diffCorrect = 0;
+            let diffTime = 0;
+            // Iterate over modes in the stats object
+            Object.values(stats).forEach(modeData => {
+                if (modeData && typeof modeData === 'object') {
+                    diffCorrect += (modeData.correct || 0);
+                    diffTime += (modeData.time || 0);
                 }
+            });
+
+            return {
+                ...entry,
+                virtual_correct: diffCorrect,
+                virtual_time: diffTime,
+            };
+        });
+
+        // Sort by Correct Answers (Desc), then Time (Asc) (Lower time is better?)
+        // Usually, in these games, Higher Score is better. If score tide, Lower Time is better.
+        processed.sort((a, b) => {
+            if (b.virtual_correct !== a.virtual_correct) return b.virtual_correct - a.virtual_correct;
+            return a.virtual_time - b.virtual_time; // Ascending time as tie-breaker? Assuming faster is better.
+        });
+
+        const top100 = processed.slice(0, 100);
+        let myRank = '-';
+        let myData = null;
+
+        top100.forEach((user, index) => {
+            const rank = index + 1;
+            const isMe = (user.login === this.config.user.login);
+            if (isMe) {
+                myRank = rank;
+                myData = user;
             }
 
-            // --- Safe Cell Creation ---
-            const createCell = (cls, content, isHtml = false) => {
-                const td = document.createElement('td');
-                td.className = `lb-col ${cls}`;
-                if (isHtml) td.innerHTML = content; else td.textContent = content;
-                return td;
-            };
+            const tr = document.createElement('tr');
+            tr.className = 'leaderboard-row'; // NEW CLASS for Grid Layout
+            if (rank <= 3) tr.classList.add(`row-top-${rank}`);
+            if (isMe) tr.style.background = 'rgba(76, 201, 240, 0.15)'; 
 
-            // Rank Cell
-            const tdRank = createCell(`rank ${rankClass}`, iconText); // Icon is safe unicode
-            tr.appendChild(tdRank);
+            // Logic "Smart Class Badge"
+            // If filter is set (classNameFilter), hide badge (redundant).
+            // If global, show badge if exists.
+            const showClassBadge = !classNameFilter && user.class_name;
+            const badgeHtml = showClassBadge ? `<span class="lb-class-badge">${user.class_name}</span>` : '';
 
-            // Player Cell
-            const tdPlayer = document.createElement('td');
-            tdPlayer.className = 'lb-col player';
-            const spanName = document.createElement('span');
-            spanName.className = 'lb-name';
-            spanName.textContent = entry.nickname || entry.login;
-            const smallLogin = document.createElement('small');
-            smallLogin.className = 'lb-login';
-            smallLogin.textContent = '@' + entry.login;
-            
-            tdPlayer.appendChild(spanName);
-            tdPlayer.appendChild(smallLogin);
-            tr.appendChild(tdPlayer);
-
-            // Other Cells
-            tr.appendChild(createCell('score', entry.best_score));
-            tr.appendChild(createCell('time', this.formatTime(entry.total_time)));
-            tr.appendChild(createCell('answers', entry.total_correct));
-            tr.appendChild(createCell('answers', entry.total_games));
+            tr.innerHTML = `
+                <td class="rank ${rank <= 3 ? 'rank-' + rank : ''}">
+                    ${rank <= 3 ? ['🥇', '🥈', '🥉'][rank - 1] : rank}
+                </td>
+                <td class="player-cell">
+                    <div class="lb-user-col">
+                        <div class="lb-top-line">
+                            <span class="lb-name">${user.nickname || 'Unknown'}</span>
+                            ${badgeHtml}
+                        </div>
+                        <span class="lb-login">@${user.login}</span>
+                    </div>
+                </td>
+                <td class="score-cell">${user.virtual_correct}</td>
+                <td class="time-cell">${this.formatTime(user.virtual_time)}</td>
+                <td class="record-cell">${user.best_score || 0}</td>
+                <td class="games-cell">${user.total_games || 0}</td>
+            `;
+            // NOTE: 'best_score' and 'total_games' are currently Global Stats from DB. 
+            // If difficulty-specific is needed, DB structure update is required.
 
             table.appendChild(tr);
         });
+
+        if (myData) {
+            footer.classList.remove('hidden');
+            document.getElementById('myRank').textContent = myRank;
+            document.getElementById('myNickname').textContent = myData.nickname;
+            document.getElementById('myLogin').textContent = '@' + myData.login;
+            document.getElementById('myScore').textContent = myData.virtual_correct;
+            document.getElementById('myCorrect').textContent = this.formatTime(myData.virtual_time);
+            
+            // Fix footer layout to match 6 columns
+            footer.style.display = 'grid';
+            footer.style.gridTemplateColumns = '40px 1fr 60px 60px 60px 50px'; 
+            
+            // We need to inject new footer cells or update HTML structure of footer if it's static in HTML
+            // Since footer HTML is static in index.html, we should update it dynamically here or update index.html too.
+            // Let's safe-check generic footer div update. The existing footer has fixed IDs.
+            // We'll append extra info to the existing divs or rewrite innerHTML of footer.
+            
+            // Rewriting footer HTML to match new columns
+             footer.innerHTML = `
+                <div class="footer-rank" style="text-align:center; color:${myRank <= 3 ? '#fbbf24' : '#4ade80'}; font-weight:700;">${myRank}</div>
+                <div class="footer-player" style="padding-left:10px; display:flex; flex-direction:column;">
+                    <span style="font-weight:600; color:white;">${myData.nickname}</span>
+                    <small style="color:#64748b;">@${myData.login}</small>
+                </div>
+                <div class="footer-score" style="text-align:center; color:var(--accent-color); font-weight:700;">${myData.virtual_correct}</div>
+                <div class="footer-time" style="text-align:center; color:#94a3b8; font-size:0.85rem;">${this.formatTime(myData.virtual_time)}</div>
+                <div class="footer-record" style="text-align:center; color:var(--warning-color); font-weight:600;">${myData.best_score || 0}</div>
+                <div class="footer-games" style="text-align:center; color:#64748b; font-size:0.85rem;">${myData.total_games || 0}</div>
+             `;
+        } else {
+             footer.classList.add('hidden');
+        }
     }
 
     // === v11.1 HISTORY UI ===
     showHistory() {
         this.openModal('historyModal');
         const container = document.getElementById('historyList');
+        if (!container) return; // Safety check
         container.innerHTML = '';
 
-        const history = this.config.user.recent_games || [];
+        // Safely get history array
+        let history = this.config.user.recent_games;
+        if (!Array.isArray(history)) {
+            console.warn("History is not an array, resetting to empty.");
+            history = [];
+            this.config.user.recent_games = [];
+        }
 
         if (history.length === 0) {
-            container.innerHTML = `<div style="text-align:center; padding: 20px; color: #64748b;">Нет сыгранных матчей</div>`;
+            container.innerHTML = `<div style="text-align:center; padding: 20px; color: #64748b;">История пуста</div>`;
             return;
         }
 
-        history.forEach(game => {
-            const date = new Date(game.ts).toLocaleDateString();
-            const wrong = game.w !== undefined ? game.w : '-';
+        history.forEach((game, index) => {
+            // Fault Tolerance: Skip null or invalid entries
+            if (!game || typeof game !== 'object') return;
+
+            // Normalize Data (Support both new full names and old minified names)
+            // Save logic uses: mode, difficulty, correct, wrong, time, date
+            // Old logic might use: d (diff), s (score/correct), w (wrong), ts (date)
             
+            // 1. Date
+            let dateStr = '???';
+            try {
+                const dateRaw = game.date || game.ts;
+                if (dateRaw) dateStr = new Date(dateRaw).toLocaleDateString();
+            } catch (e) { console.error("Date parse error", e); }
+
+            // 2. Difficulty
+            const diff = game.difficulty || game.d || 'normal';
+            
+            // 3. Stats
+            const correct = (game.correct !== undefined) ? game.correct : (game.s !== undefined ? game.s : 0);
+            const wrong = (game.wrong !== undefined) ? game.wrong : (game.w !== undefined ? game.w : 0);
+            const time = (game.time !== undefined) ? game.time : (game.t !== undefined ? game.t : 0);
+
+            // Visuals
             const diffColors = {
                 easy: '#4ade80',
                 normal: '#4cc9f0',
                 hard: '#f59e0b',
                 extreme: '#ef4444'
             };
-            const color = diffColors[game.d] || '#ccc';
+            const color = diffColors[diff] || '#ccc';
 
             const div = document.createElement('div');
             div.className = 'history-item';
@@ -2147,21 +2296,14 @@ class GeoGator {
             dot.style.boxShadow = `0 0 5px ${color}`;
             
             const textSpan = document.createElement('span');
-            // Using textContent for mixed content carefully, or constructing children
-            // "Верно: X | Ошибок: Y"
-            textSpan.appendChild(document.createTextNode(`Верно: ${game.s} | Ошибок: `));
-            
-            const wrongSpan = document.createElement('span');
-            wrongSpan.className = 'stat-wrong';
-            wrongSpan.textContent = wrong;
-            textSpan.appendChild(wrongSpan);
+            textSpan.innerHTML = `Верно: <b>${correct}</b> | Ошибок: <span class="stat-wrong">${wrong}</span> | <i class="fas fa-clock" style="font-size: 0.8em; margin-left: 5px;"></i> ${time}с`;
 
             infoDiv.appendChild(dot);
             infoDiv.appendChild(textSpan);
 
             const dateDiv = document.createElement('div');
             dateDiv.className = 'history-date';
-            dateDiv.textContent = date;
+            dateDiv.textContent = dateStr;
 
             div.appendChild(infoDiv);
             div.appendChild(dateDiv);
@@ -2169,13 +2311,7 @@ class GeoGator {
             container.appendChild(div);
         });
 
-        const closeBtn = document.getElementById('closeHistoryBtn');
-        if (closeBtn) {
-            closeBtn.onclick = () => {
-                this.closeModal('historyModal');
-                this.openStatsModal(); // Back to profile
-            };
-        }
+
     }
 
 

@@ -200,6 +200,7 @@ const LOCALES = {
         'player': 'Игрок',
         'correctShort': 'Верно',
         'leaderboardLoginReq': 'Войдите, чтобы увидеть таблицу лидеров',
+        'historyTitle': 'ИСТОРИЯ ИГР',
         'history': 'История'
     },
 
