@@ -2751,3 +2751,284 @@ body.dark-theme::before {
 .leaflet-control-container {
     display: none !important;
 }
+.profile-btn {
+    pointer-events: auto; /* Fix: Re-enable clicks since parent is pointer-events: none */
+}
+/* === ROLE MENU & CLASS SELECTOR (v13.2) === */
+
+/* === MENU HEADER & RIGHT MENU (v13.3) === */
+.menu-header {
+    position: fixed; /* Fixed to viewport to stay on top during scroll */
+    top: 20px;
+    right: 20px;
+    z-index: 9999; /* MAX z-index to ensure front layer */
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    pointer-events: none; /* Allow clicks to pass through empty space in header */
+}
+
+/* Right Menu Container */
+.menu-container-right {
+    position: relative;
+    display: inline-block;
+    pointer-events: auto; /* Re-enable clicks for container */
+}
+
+/* Hamburger Button */
+#rightMenuBtn {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(76, 201, 240, 0.3);
+    color: var(--primary-color);
+    width: 45px;
+    height: 45px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    backdrop-filter: blur(10px);
+    box-shadow: 0 0 15px rgba(67, 97, 238, 0.2);
+    pointer-events: auto; /* Ensure clickable */
+}
+
+#rightMenuBtn:hover {
+    transform: scale(1.1);
+    background: rgba(67, 97, 238, 0.2);
+    border-color: var(--primary-color);
+    box-shadow: 0 0 20px rgba(67, 97, 238, 0.6);
+    color: white;
+}
+
+#rightMenuBtn svg {
+    filter: drop-shadow(0 0 5px currentColor);
+    transition: transform 0.3s ease;
+    pointer-events: none; /* Prevent SVG from capturing click */
+}
+
+#rightMenuBtn:hover svg {
+    transform: rotate(90deg);
+}
+
+/* Dropdown Menu */
+.dropdown-content {
+    display: block; /* Toggled via .hidden class */
+    position: absolute;
+    top: 60px;
+    right: 0;
+    background: rgba(15, 23, 42, 0.95);
+    min-width: 160px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+    border: 1px solid rgba(76, 201, 240, 0.2);
+    backdrop-filter: blur(15px);
+    z-index: 10000;
+    transform-origin: top right;
+    animation: fadeInDropdown 0.2s ease forwards;
+}
+
+.dropdown-content.hidden {
+    display: none;
+}
+
+.dropdown-content button {
+    width: 100%;
+    padding: 12px 20px;
+    text-align: left;
+    background: transparent;
+    border: none;
+    color: rgba(255,255,255,0.8);
+    font-family: 'Poppins', sans-serif;
+    font-size: 0.95rem;
+    cursor: pointer;
+    transition: all 0.2s;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+}
+
+.dropdown-content button:last-child {
+    border-bottom: none;
+}
+
+.dropdown-content button:hover {
+    background: linear-gradient(90deg, rgba(67, 97, 238, 0.2), transparent);
+    color: var(--accent-color);
+    padding-left: 25px;
+}
+
+@keyframes fadeInDropdown {
+    from { opacity: 0; transform: scale(0.95) translateY(-10px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* Class Selector in Registration */
+.class-selector {
+    display: flex;
+    gap: 10px;
+}
+
+.class-selector select {
+    flex: 1;
+    padding: 15px;
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 8px;
+    color: white;
+    font-family: inherit;
+    font-size: 1rem;
+    outline: none;
+    cursor: pointer;
+    transition: border-color 0.3s;
+}
+
+.class-selector select:focus {
+    border-color: var(--accent-color);
+}
+
+/* Viewer Mode Indicator */
+.viewer-mode-indicator {
+    border: 2px solid var(--warning-color);
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.3);
+}
+
+.hidden {
+    display: none !important;
+}
+
+/* === ROLE DASHBOARD STYLES === */
+
+.role-content {
+    display: flex;
+    flex-direction: column;
+    gap: 25px;
+}
+
+.role-block {
+    background: rgba(255, 255, 255, 0.03);
+    border-radius: 12px;
+    padding: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.role-section-title {
+    font-size: 1.1rem;
+    color: var(--accent-color);
+    margin-bottom: 15px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    padding-bottom: 10px;
+}
+
+/* Teacher: Class Grid */
+.class-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
+    gap: 10px;
+}
+
+.class-btn {
+    background: linear-gradient(145deg, rgba(67, 97, 238, 0.1), rgba(67, 97, 238, 0.05));
+    border: 1px solid rgba(67, 97, 238, 0.3);
+    color: white;
+    padding: 10px 5px;
+    border-radius: 8px;
+    cursor: pointer;
+    font-family: 'Poppins', sans-serif;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    text-align: center;
+}
+
+.class-btn:hover {
+    background: var(--primary-color);
+    border-color: var(--accent-color);
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(67, 97, 238, 0.3);
+}
+
+/* Tester: Toggles */
+.toggle-container {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+}
+
+.toggle-label {
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+}
+
+.toggle-switch {
+    position: relative;
+    width: 50px;
+    height: 26px;
+    -webkit-appearance: none;
+    background: rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    outline: none;
+    cursor: pointer;
+    transition: 0.3s;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.toggle-switch:checked {
+    background: var(--success-color);
+    border-color: var(--success-color);
+}
+
+.toggle-switch::before {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    top: 2px;
+    left: 2px;
+    background: white;
+    transition: 0.3s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.toggle-switch:checked::before {
+    left: 26px;
+}
+
+/* Common Role Buttons */
+.btn-role-action {
+    background: rgba(67, 97, 238, 0.2);
+    border: 1px solid var(--primary-color);
+    color: white;
+    padding: 12px;
+    border-radius: 8px;
+    width: 100%;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.btn-role-action:hover {
+    background: var(--primary-color);
+    box-shadow: 0 0 15px rgba(67, 97, 238, 0.4);
+}
+
+/* Debug Mode Highlight */
+.debug-correct {
+    border: 2px solid var(--success-color) !important;
+    box-shadow: 0 0 15px rgba(74, 222, 128, 0.6) !important;
+    animation: correctPulse 1.5s infinite;
+}
+
+@keyframes correctPulse {
+    0% { box-shadow: 0 0 5px rgba(74, 222, 128, 0.4); }
+    50% { box-shadow: 0 0 20px rgba(74, 222, 128, 0.8); }
+    100% { box-shadow: 0 0 5px rgba(74, 222, 128, 0.4); }
+}

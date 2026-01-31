@@ -1,35 +1,741 @@
 {
   "type": "FeatureCollection",
   "features": [
-    {"type":"Feature","properties":{"id":"1","name":"Эверест"},"geometry":{"type":"Point","coordinates":[86.9250,27.9881]}},
-    {"type":"Feature","properties":{"id":"2","name":"Мертвое море"},"geometry":{"type":"Point","coordinates":[35.5,31.5]}},
-    {"type":"Feature","properties":{"id":"3","name":"Сахара"},"geometry":{"type":"Point","coordinates":[13,24]}},
-    {"type":"Feature","properties":{"id":"4","name":"Амазонка"},"geometry":{"type":"Point","coordinates":[-60,-3]}},
-    {"type":"Feature","properties":{"id":"5","name":"Нил"},"geometry":{"type":"Point","coordinates":[31,30]}},
-    {"type":"Feature","properties":{"id":"6","name":"Анхель"},"geometry":{"type":"Point","coordinates":[-62.5356,5.9675]}},
-    {"type":"Feature","properties":{"id":"7","name":"Бурдж Халифа"},"geometry":{"type":"Point","coordinates":[55.2744,25.1972]}},
-    {"type":"Feature","properties":{"id":"8","name":"Ватикан"},"geometry":{"type":"Point","coordinates":[12.4534,41.9029]}},
-    {"type":"Feature","properties":{"id":"9","name":"Россия"},"geometry":{"type":"Point","coordinates":[97,60]}},
-    {"type":"Feature","properties":{"id":"10","name":"Байкал"},"geometry":{"type":"Point","coordinates":[108,53]}},
-    {"type":"Feature","properties":{"id":"11","name":"Каспийское море"},"geometry":{"type":"Point","coordinates":[50,42]}},
-    {"type":"Feature","properties":{"id":"12","name":"Гренландия"},"geometry":{"type":"Point","coordinates":[-40,72]}},
-    {"type":"Feature","properties":{"id":"13","name":"Токио"},"geometry":{"type":"Point","coordinates":[139.6917,35.6895]}},
-    {"type":"Feature","properties":{"id":"14","name":"Марианская впадина"},"geometry":{"type":"Point","coordinates":[142.2,11.3]}},
-    {"type":"Feature","properties":{"id":"15","name":"Станция Восток"},"geometry":{"type":"Point","coordinates":[106.8,-78.46]}},
-    {"type":"Feature","properties":{"id":"16","name":"Атакама"},"geometry":{"type":"Point","coordinates":[-69,-24]}},
-    {"type":"Feature","properties":{"id":"17","name":"Чимборасо"},"geometry":{"type":"Point","coordinates":[-78.8167,-1.4692]}},
-    {"type":"Feature","properties":{"id":"18","name":"Мауна-Кеа"},"geometry":{"type":"Point","coordinates":[-155.4681,19.8207]}},
-    {"type":"Feature","properties":{"id":"19","name":"Оймякон"},"geometry":{"type":"Point","coordinates":[142.7737,63.4641]}},
-    {"type":"Feature","properties":{"id":"20","name":"Ла-Ринконада"},"geometry":{"type":"Point","coordinates":[-69.4456,-14.6324]}},
-    {"type":"Feature","properties":{"id":"21","name":"Килиманджаро"},"geometry":{"type":"Point","coordinates":[37.3556,-3.0674]}},
-    {"type":"Feature","properties":{"id":"22","name":"Генерал Шерман"},"geometry":{"type":"Point","coordinates":[-118.7511,36.5815]}},
-    {"type":"Feature","properties":{"id":"23","name":"Гранд-Каньон"},"geometry":{"type":"Point","coordinates":[-112.1129,36.1069]}},
-    {"type":"Feature","properties":{"id":"24","name":"ББ Риф"},"geometry":{"type":"Point","coordinates":[147.7,-18.2871]}},
-    {"type":"Feature","properties":{"id":"25","name":"Гавайи"},"geometry":{"type":"Point","coordinates":[-155.5,19.5]}},
-    {"type":"Feature","properties":{"id":"26","name":"Эль-Азизия"},"geometry":{"type":"Point","coordinates":[13.0131,32.5311]}},
-    {"type":"Feature","properties":{"id":"27","name":"Титикака"},"geometry":{"type":"Point","coordinates":[-69.3,-15.8]}},
-    {"type":"Feature","properties":{"id":"28","name":"Водопад Виктория"},"geometry":{"type":"Point","coordinates":[25.8572,-17.9243]}},
-    {"type":"Feature","properties":{"id":"29","name":"Салар-де-Уюни"},"geometry":{"type":"Point","coordinates":[-67.625,-20.1338]}},
-    {"type":"Feature","properties":{"id":"30","name":"Йеллоустоун"},"geometry":{"type":"Point","coordinates":[-110.5885,44.4280]}}
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AS1",
+        "name": "Эверест",
+        "region": "Азия",
+        "category": "Самая высокая гора мира"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86.9250,
+          27.9881
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AS2",
+        "name": "Мертвое море",
+        "region": "Азия",
+        "category": "Самая низкая точка суши"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          35.5,
+          31.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AF1",
+        "name": "Сахара",
+        "region": "Африка",
+        "category": "Самая большая пустыня в мире"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13,
+          24
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SA1",
+        "name": "Амазонка",
+        "region": "Южная Америка",
+        "category": "Самая длинная река в мире (по некоторым данным)"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -60,
+          -3
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AF2",
+        "name": "Нил",
+        "region": "Африка",
+        "category": "Самая длинная река Африки и мира"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31,
+          30
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SA2",
+        "name": "Анхель",
+        "region": "Южная Америка",
+        "category": "Самый высокий водопад в мире"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -62.5356,
+          5.9675
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "W4",
+        "name": "Бурдж Халифа",
+        "region": "Общий",
+        "category": "Самое высокое здание в мире"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          55.2744,
+          25.1972
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "EU2",
+        "name": "Ватикан",
+        "region": "Европа",
+        "category": "Самое маленькое государство мира"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          12.4534,
+          41.9029
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "EU1",
+        "name": "Россия",
+        "region": "Европа",
+        "category": "Самая большая страна Европы и мира"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          55.7558,
+          37.6173
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AS3",
+        "name": "Байкал",
+        "region": "Азия",
+        "category": "Самое глубокое озеро мира"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          108,
+          53
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "W5",
+        "name": "Каспийское море",
+        "region": "Общий",
+        "category": "Самый большой замкнутый водоём"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          50,
+          42
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "W2",
+        "name": "Гренландия",
+        "region": "Общий",
+        "category": "Самый большой остров в мире"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -40,
+          72
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "W7",
+        "name": "Токио",
+        "region": "Общий",
+        "category": "Самый населённый город мира"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          139.6917,
+          35.6895
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "W1",
+        "name": "Марианская впадина",
+        "region": "Общий",
+        "category": "Самое глубокое место в океане"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          142.2,
+          11.3
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "W3",
+        "name": "Станция Восток",
+        "region": "Общий",
+        "category": "Самый холодный континент (Антарктида)"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          106.8,
+          -78.46
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SA4",
+        "name": "Атакама",
+        "region": "Южная Америка",
+        "category": "Самая сухая пустыня в мире"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -69,
+          -24
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SA17",
+        "name": "Чимборасо",
+        "region": "Южная Америка",
+        "category": "Самая удалённая точка от центра Земли"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -78.8167,
+          -1.4692
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "OC3",
+        "name": "Мауна-Кеа",
+        "region": "Океания",
+        "category": "Самая высокая гора от основания"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -155.4681,
+          19.8207
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "W5_2",
+        "name": "Оймякон",
+        "region": "Общий",
+        "category": "Полюс холода Северного полушария"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          142.7737,
+          63.4641
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SA20",
+        "name": "Ла-Ринконада",
+        "region": "Южная Америка",
+        "category": "Самый высокогорный город в мире"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -69.4456,
+          -14.6324
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AF3",
+        "name": "Килиманджаро",
+        "region": "Африка",
+        "category": "Самая высокая гора Африки"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          37.3556,
+          -3.0674
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "NA22",
+        "name": "Генерал Шерман",
+        "region": "Северная Америка",
+        "category": "Самый большой живой организм (дерево)"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -118.7511,
+          36.5815
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "NA3",
+        "name": "Гранд-Каньон",
+        "region": "Северная Америка",
+        "category": "Один из самых больших каньонов мира"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -112.1129,
+          36.1069
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "OC1",
+        "name": "Большой Барьерный риф",
+        "region": "Океания",
+        "category": "Самый большой коралловый риф мира"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          147.7,
+          -18.2871
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "OC5",
+        "name": "Гавайи",
+        "region": "Океания",
+        "category": "Самый удалённый архипелаг"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -155.5,
+          19.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AF26",
+        "name": "Эль-Азизия",
+        "region": "Африка",
+        "category": "Исторический рекорд высокой температуры"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          13.0131,
+          32.5311
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SA5",
+        "name": "Титикака",
+        "region": "Южная Америка",
+        "category": "Самое высокое судоходное озеро мира"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -69.3,
+          -15.8
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AF4",
+        "name": "Водопад Виктория",
+        "region": "Африка",
+        "category": "Самый широкий водопад в мире"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          25.8572,
+          -17.9243
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SA29",
+        "name": "Салар-де-Уюни",
+        "region": "Южная Америка",
+        "category": "Самый большой солончак в мире"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -67.625,
+          -20.1338
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "NA30",
+        "name": "Йеллоустоун",
+        "region": "Северная Америка",
+        "category": "Первый национальный парк в мире"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -110.5885,
+          44.4280
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "EU3",
+        "name": "Волга",
+        "region": "Европа",
+        "category": "Самая длинная река Европы"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          47.1,
+          51.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "EU4",
+        "name": "Эльбрус",
+        "region": "Европа",
+        "category": "Самая высокая гора Европы"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          42.4392,
+          43.3550
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "EU5",
+        "name": "Ладожское озеро",
+        "region": "Европа",
+        "category": "Самое большое озеро Европы"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          31.5,
+          61.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AF4_2",
+        "name": "Конго",
+        "region": "Африка",
+        "category": "Самая глубокая река в мире"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          15.3,
+          -4.3
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AF5",
+        "name": "Озеро Виктория",
+        "region": "Африка",
+        "category": "Самое большое озеро Африки"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          33.0,
+          -1.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AS4",
+        "name": "Янцзы",
+        "region": "Азия",
+        "category": "Самая длинная река Азии"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          119.0,
+          32.0
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "AS5",
+        "name": "Гималаи",
+        "region": "Азия",
+        "category": "Самый высокий горный хребет"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          86,
+          28
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "NA1",
+        "name": "Денали (Мак-Кинли)",
+        "region": "Северная Америка",
+        "category": "Самая высокая гора Северной Америки"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -151.0074,
+          63.0695
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "NA2",
+        "name": "Миссисипи",
+        "region": "Северная Америка",
+        "category": "Самая длинная река Северной Америки"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -90.1,
+          29.9
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "NA4",
+        "name": "Верхнее озеро",
+        "region": "Северная Америка",
+        "category": "Самое большое пресноводное озеро мира"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -88.5,
+          47.5
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "NA5",
+        "name": "Ниагарский водопад",
+        "region": "Северная Америка",
+        "category": "Самый мощный водопад Северной Америки"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -79.0767,
+          43.0799
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "SA3",
+        "name": "Аконкагуа",
+        "region": "Южная Америка",
+        "category": "Самая высокая гора Южной Америки"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -70.0,
+          -32.65
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "OC2",
+        "name": "Гора Вильгельм",
+        "region": "Океания",
+        "category": "Самая высокая гора Океании"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          145.029,
+          -5.78
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "OC4",
+        "name": "Австралия",
+        "region": "Океания",
+        "category": "Самый маленький континент"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          133,
+          -25
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "W3_2",
+        "name": "Антарктида",
+        "region": "Общий",
+        "category": "Самый холодный континент"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          0,
+          -90
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "properties": {
+        "id": "W6",
+        "name": "Долина Смерти",
+        "region": "Общий",
+        "category": "Самая высокая температура воздуха"
+      },
+      "geometry": {
+        "type": "Point",
+        "coordinates": [
+          -116.8231,
+          36.4571
+        ]
+      }
+    }
   ]
 }

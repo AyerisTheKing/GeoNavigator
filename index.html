@@ -29,12 +29,25 @@
                 <i class="fas fa-user-circle"></i>
                 <span id="profileName">Guest</span>
             </button>
+            
+            <div class="menu-container-right">
+                <button id="rightMenuBtn" class="icon-btn glow-effect hidden" style="display: none;"> <!-- Hidden by default, toggled by JS -->
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M3 4H21V6H3V4ZM3 11H21V13H3V11ZM3 18H21V20H3V18Z"></path></svg>
+                </button>
+                <div id="rightMenuDropdown" class="dropdown-content hidden">
+                    <button data-action="admin">Админ</button>
+                    <button data-action="teacher">Учитель</button>
+                    <button data-action="tester">Тестер</button>
+                </div>
+            </div>
         </div>
         
         <!-- Feedback Button (Fixed Bottom Left, only in Main Menu) -->
         <button id="feedbackBtn" class="floating-feedback-btn">
             <i class="fas fa-comment-dots"></i>
         </button>
+
+
 
         <div class="hero-content">
             <div class="game-title">
@@ -102,6 +115,21 @@
                         <button class="lang-btn" data-lang="en">
                             <img src="https://flagcdn.com/w20/gb.png" alt="EN">
                             <span data-i18n-ru="English" data-i18n-en="English">English</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Theme Section (Hidden by default, unlocked by Tester) -->
+                <div class="settings-section" id="themeSettingsSection" style="display: none;">
+                    <h3><i class="fas fa-palette"></i> <span data-i18n="theme">ТЕМА</span></h3>
+                    <div class="theme-options">
+                        <button class="theme-btn active" data-theme="dark">
+                            <i class="fas fa-moon"></i>
+                            <span data-i18n="themeDark">Темная</span>
+                        </button>
+                        <button class="theme-btn" data-theme="light">
+                            <i class="fas fa-sun"></i>
+                            <span data-i18n="themeLight">Светлая</span>
                         </button>
                     </div>
                 </div>
@@ -579,6 +607,35 @@
                 <label for="regLoginInput" data-i18n="login">Логин (латиница):</label>
                 <input type="text" id="regLoginInput" placeholder="login" />
             </div>
+
+            <div class="profile-section">
+                <label data-i18n="class">Класс:</label>
+                <div class="class-selector">
+                    <select id="regClassNumber">
+                        <option value="" disabled selected>Класс</option>
+                        <option value="1">1</option>
+                        <option value="2">2</option>
+                        <option value="3">3</option>
+                        <option value="4">4</option>
+                        <option value="5">5</option>
+                        <option value="6">6</option>
+                        <option value="7">7</option>
+                        <option value="8">8</option>
+                        <option value="9">9</option>
+                        <option value="10">10</option>
+                        <option value="11">11</option>
+                    </select>
+                    <select id="regClassLetter">
+                        <option value="" disabled selected>Буква</option>
+                        <option value="А">А</option>
+                        <option value="Б">Б</option>
+                        <option value="В">В</option>
+                        <option value="Г">Г</option>
+                        <option value="Д">Д</option>
+                        <option value="И">И</option>
+                    </select>
+                </div>
+            </div>
             <div class="profile-section">
                 <label for="regPasswordInput" data-i18n="password">Пароль:</label>
                 <div class="input-wrapper" style="position: relative;">
@@ -619,6 +676,12 @@
                     <i class="fas fa-history"></i> <span data-i18n="history">История</span>
                 </button>
             </div>
+            
+            <!-- Deep Stats Button (For Viewer Mode) -->
+            <button id="viewDeepStatsBtn" class="btn-secondary hidden" style="width: 100%; margin-top: 10px; background: rgba(16, 185, 129, 0.2); border-color: rgba(16, 185, 129, 0.5);">
+                <i class="fas fa-chart-pie"></i> <span>Полная статистика</span>
+            </button>
+
             <button id="logoutBtn" class="btn-secondary btn-profile-logout" style="width: 100%; margin-top: 10px;">
                 <i class="fas fa-sign-out-alt"></i> <span data-i18n="logout">Выйти</span>
             </button>
@@ -687,6 +750,17 @@
             <button class="btn-secondary" id="closeHistoryBtn" style="width: 100%; margin-top: 15px;">
                 <i class="fas fa-arrow-left"></i> <span data-i18n="back">Назад</span>
             </button>
+        </div>
+    </div>
+
+    <!-- МОДАЛЬНОЕ ОКНО: РОЛЕВАЯ ПАНЕЛЬ -->
+    <div id="roleModal" class="modal hidden">
+        <div class="modal-content" style="max-width: 800px;">
+            <span class="close" id="closeRoleModal">&times;</span>
+            <h2 id="roleModalTitle" class="screen-title" style="margin-bottom: 20px;">Роль</h2>
+            <div id="roleModalContent" class="role-content">
+                <!-- Content injected by JS -->
+            </div>
         </div>
     </div>
 

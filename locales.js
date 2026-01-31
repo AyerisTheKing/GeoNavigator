@@ -28,6 +28,8 @@ const LOCALES = {
         'noAccount': 'Нет аккаунта?',
         'registerLink': 'Зарегистрироваться',
         'loginInvalid': 'Недопустимый Логин',
+        'class': 'Класс',
+        'letter': 'Буква',
 
         // --- ПОЛНАЯ СТАТИСТИКА ---
         'totalGames': 'Всего Игр',
@@ -58,7 +60,7 @@ const LOCALES = {
         'gameSettingsTitle': 'НОВАЯ ИГРА',
         'gameContinents': 'РЕГИОНЫ',
         'startGameAction': 'ПОЕХАЛИ!',
-        'selectContinent': 'Выберите хотя бы один регион!',
+        'selectContinent': 'Выберите хотя бы один континент!',
 
         // Континенты (НОВОЕ: Разделение Америки)
         'europe': 'Европа',
@@ -104,10 +106,10 @@ const LOCALES = {
 
         // --- СЛОЖНОСТЬ ---
         'difficulty': 'СЛОЖНОСТЬ',
-        'diffEasy': 'Легкий',
-        'diffNormal': 'Нормальный',
-        'diffHard': 'Сложный',
-        'diffExtreme': 'Экстримальный',
+        'diffEasy': 'Легко',
+        'diffNormal': 'Нормально',
+        'diffHard': 'Сложно',
+        'diffExtreme': 'Экстрим',
         'questions': 'ВОПРОСЫ',
 
         // --- ГЕЙМПЛЕЙ ---
@@ -160,9 +162,14 @@ const LOCALES = {
         'writeToUs': 'Написать нам',
         'send': 'Отправить',
         'messagePlaceholder': 'Ваше сообщение...',
-        'messageTooShort': 'Сообщение слишком короткое (минимум 5 символов)',
+        'messageTooShort': 'Сообщение слишком короткое (мин. 5 символов)',
         'messageSent': 'Спасибо! Ваш отзыв отправлен.',
-        'profanityError': 'Сообщение содержит недопустимые слова. Пожалуйста, будьте вежливы.',
+        'profanityError': 'Сообщение содержит недопустимые слова',
+
+        // --- РОЛИ И АДМИНКА ---
+        'roleAdmin': 'Админка',
+        'roleClass': 'Мой Класс',
+        'roleDebug': 'Отладка',
 
         // Дополнительно (на всякий случай)
         'about': 'Об игре',
@@ -183,7 +190,7 @@ const LOCALES = {
         'profileCreationError': 'Ошибка создания профиля: ',
         'registerSuccess': 'Регистрация успешна! Теперь войдите.',
         'loggedOut': 'Вы вышли из системы',
-        'feedbackLoginReq': 'Пожалуйста, войдите в аккаунт, чтобы оставить отзыв',
+        'feedbackLoginReq': 'Войдите, чтобы оставить отзыв',
         'enterMessage': 'Введите сообщение',
         'sendErrorPrefix': 'Ошибка отправки: ',
         
@@ -192,7 +199,7 @@ const LOCALES = {
         'globalLeaderboard': 'Таблица лидеров',
         'player': 'Игрок',
         'correctShort': 'Верно',
-        'leaderboardLoginReq': 'Войдите, чтобы видеть таблицу лидеров',
+        'leaderboardLoginReq': 'Войдите, чтобы увидеть таблицу лидеров',
         'history': 'История'
     },
 
@@ -222,6 +229,8 @@ const LOCALES = {
         'noAccount': 'No account?',
         'registerLink': 'Register',
         'loginInvalid': 'Invalid Login',
+        'class': 'Class',
+        'letter': 'Letter',
 
         // --- FULL STATISTICS ---
         'totalGames': 'Total Games',
@@ -357,6 +366,10 @@ const LOCALES = {
         'messageTooShort': 'Message is too short (min 5 chars)',
         'messageSent': 'Thanks! Your feedback has been sent.',
         'profanityError': 'Message contains filtered words. Please be polite.',
+
+        'roleAdmin': 'Admin',
+        'roleClass': 'My Class',
+        'roleDebug': 'Debug',
 
         'about': 'About',
         'aboutText': 'GeoGator v11.2\nSmart TV Edition',

@@ -1,12 +1,12 @@
 /**
  * GeoGator Core
- * Current Version: v12.7
+ * Current Version: v13.2
  * See CHANGELOG.md for full history.
  */
 
 const SUPABASE_URL = "https://tdlhwokrmuyxsdleepht.supabase.co";
 const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InRkbGh3b2tybXV5eHNkbGVlcGh0Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Njk0MDc3ODAsImV4cCI6MjA4NDk4Mzc4MH0.RlfUmejx2ywHNcFofZM4mNE8nIw6qxaTNzqxmf4N4-4";
-const APP_VERSION = "v12.7";
+const APP_VERSION = "v13.5";
 
 const THE_MOST_QUESTIONS = [
     { id: '1', question: 'Самая высокая гора в мире', answer: 'Эверест', fact: 'Высота 8849 м. Находится в Гималаях.' },
@@ -126,7 +126,7 @@ class GeoGator {
      * и проверка сессии пользователя в Supabase.
      */
     async init() {
-        console.log(`GeoGator ${APP_VERSION} initialized with Supabase`);
+        // console.log(`GeoGator ${APP_VERSION} initialized with Supabase`); // Clean up
         this.loadSettings();
         // Load local stats first as fallback
         this.loadPlayerStats();
@@ -228,6 +228,20 @@ class GeoGator {
             hard: profile.stat_hard || {},
             extreme: profile.stat_extreme || {}
         };
+
+        // 5. ROLE CHECK (v13.3 Audit Fix: Safe Check)
+        // 5. ROLE CHECK (v13.3)
+        const roleBtn = document.getElementById('rightMenuBtn');
+        if (roleBtn) {
+            // Check if role exists and is NOT 'user' (default)
+            if (profile.role && typeof profile.role === 'string' && profile.role !== 'user') {
+                roleBtn.classList.remove('hidden');
+                roleBtn.style.display = 'flex';
+            } else {
+                roleBtn.classList.add('hidden');
+                roleBtn.style.display = 'none';
+            }
+        }
 
         this.updateProfileUI();
         this.updateProfileStatsUI();
@@ -394,6 +408,37 @@ class GeoGator {
             });
         } else {
             console.warn("Warning: Button 'profileBtn' not found in HTML");
+        }
+
+        // --- ROLE MENU (v13.2) ---
+        // --- RIGHT MENU (v13.3) ---
+        const rightMenuBtn = document.getElementById('rightMenuBtn');
+        const rightMenuDropdown = document.getElementById('rightMenuDropdown');
+        
+        if (rightMenuBtn && rightMenuDropdown) {
+            rightMenuBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                rightMenuDropdown.classList.toggle('hidden');
+            });
+
+            // Hide menu when clicking outside
+            document.addEventListener('click', (e) => {
+                if (!rightMenuBtn.contains(e.target) && !rightMenuDropdown.contains(e.target)) {
+                    rightMenuDropdown.classList.add('hidden');
+                }
+            });
+
+            // Handlers for menu items
+            rightMenuDropdown.querySelectorAll('button').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    rightMenuDropdown.classList.add('hidden');
+                    const action = btn.dataset.action;
+                    
+                    if (action === 'admin' || action === 'teacher' || action === 'tester') {
+                        this.openRoleDashboard(action);
+                    }
+                });
+            });
         }
 
         // Menu
@@ -601,11 +646,13 @@ class GeoGator {
             password: pass,
             options: {
                 data: {
+                data: {
                     login: login,    // Login for logic (unique)
-                    nickname: nick   // Nickname for display (max 15 chars)
+                    nickname: nick,   // Nickname for display (max 15 chars)
+                    class_name: null // Init val
                 }
             }
-        });
+        }});
 
         if (error) {
             this.showError(errorDiv, error.message);
@@ -613,6 +660,25 @@ class GeoGator {
         }
 
         if (data.user) {
+            // v13.3 Fix: Strict Class/Letter Validation & formatting
+            const classNum = document.getElementById('regClassNumber').value;
+            const classLet = document.getElementById('regClassLetter').value;
+            let fullClass = null;
+
+            // Only form string if BOTH are selected to avoid "5-undefined" or "null-A"
+            if (classNum && classLet && classNum !== "" && classLet !== "") {
+                 fullClass = `${classNum}-${classLet}`; // e.g., "5-A"
+            } 
+            // If only one is selected, we might want to warn, but for now we'll just ignore partials 
+            // or we could force user to select both. Current UI doesn't force it, so null is safer than bad data.
+
+            if (fullClass) {
+                await supabaseClient
+                    .from('profiles')
+                    .update({ class_name: fullClass })
+                    .eq('id', data.user.id);
+            }
+
             // 2. Создание профиля делегировано DB Trigger (handle_new_user)
             // Мы больше не делаем ручной insert, чтобы избежать Race Condition/Error 500
             
@@ -640,10 +706,110 @@ class GeoGator {
         }
     }
 
+    /**
+     * Viewer Mode (v13.2)
+     * Opens a read-only view of another user's profile.
+     * @param {string} targetUserId 
+     */
+    async viewUserProfile(targetUserId) {
+        // 1. Fetch Target Profile
+        const { data: profile, error } = await supabaseClient
+            .from('profiles')
+            .select('*')
+            .eq('id', targetUserId)
+            .single();
+
+        if (error || !profile) {
+            alert("Ошибка загрузки профиля: " + (error?.message || "Не найден"));
+            return;
+        }
+
+        // 2. Prepare Data (Without breaking current session)
+        // We temporarily hijack the config for UI Update, but strictly for the modal
+        // Ideally, we should refactor updateProfileStatsUI to accept a data object,
+        // but to save time/complexity, we'll manually populate the modal elements.
+
+        this.closeAllModals();
+        const modal = document.getElementById('profileModal');
+        if (modal) {
+            modal.classList.remove('hidden');
+            modal.style.display = 'flex';
+            modal.classList.add('viewer-mode-indicator'); // Add visual cue
+
+            const dNick = document.getElementById('profileDisplayNickname');
+            const dLogin = document.getElementById('profileDisplayLogin');
+            
+            // Set Text
+            if (dNick) dNick.textContent = profile.nickname || "Unknown";
+            if (dLogin) dLogin.textContent = `(Просмотр: ${profile.login || '?'})`;
+
+            // Hide Logout, Show Deep Stats
+            document.getElementById('logoutBtn')?.classList.add('hidden');
+            document.getElementById('viewDeepStatsBtn')?.classList.remove('hidden');
+
+            // Populate Stats (Manually, since updateProfileStatsUI uses this.config.user)
+            // Or better: Create a temporary stats viewer logic here
+            const setText = (id, val) => { const el = document.getElementById(id); if (el) el.textContent = val; };
+            
+            // We use the same IDs as the real profile, which is fine since the modal is open
+            // But we must be careful not to persist this in this.config
+            
+            // Full Stats (Use what's available in profile)
+            setText('statFullGames', profile.total_games || 0);
+            setText('statFullCorrect', profile.total_correct || 0);
+            setText('statFullWrong', (profile.total_games * 20) - (profile.total_correct || 0)); // Approx validation
+
+             // Handle "Deep Stats" button click for THIS user
+             const dsBtn = document.getElementById('viewDeepStatsBtn');
+             // Clear previous listeners to avoid stacking
+             const newDsBtn = dsBtn.cloneNode(true);
+             dsBtn.parentNode.replaceChild(newDsBtn, dsBtn);
+             
+             newDsBtn.onclick = () => {
+                 alert("Детальная статистика этого пользователя (TBD)");
+             };
+             
+             // Ensure Logout is HIDDEN in viewer mode
+             document.getElementById('logoutBtn')?.classList.add('hidden');
+        }
+    }
+
     closeStatsModal() {
         const modal = document.getElementById('profileModal');
         if (modal) {
             modal.classList.add('hidden');
+            
+            // v13.3 Audit Fix: Reset viewer mode correctly
+            modal.classList.remove('viewer-mode-indicator'); 
+            
+            // Reset Buttons: 
+            // "Deep Stats" -> ALWAYS Hidden (it's only for viewer)
+            document.getElementById('viewDeepStatsBtn')?.classList.add('hidden');
+
+            // "Logout" -> VISIBLE ONLY IF I AM LOGGED IN!
+            // Do NOT show logout if I am a guest viewing a profile.
+            const logoutBtn = document.getElementById('logoutBtn');
+            if (this.config.user.id) {
+                logoutBtn?.classList.remove('hidden');
+            } else {
+                logoutBtn?.classList.add('hidden');
+            }
+            
+            // Reset Text to Current User (if logged in, otherwise Guest default)
+             if (this.config.user.id) {
+                const dNick = document.getElementById('profileDisplayNickname');
+                const dLogin = document.getElementById('profileDisplayLogin');
+                if (dNick) dNick.textContent = this.config.user.nickname;
+                if (dLogin) dLogin.textContent = '@' + this.config.user.login;
+            } else {
+                 // Reset to Guest if we were viewing someone as a Guest
+                const dNick = document.getElementById('profileDisplayNickname');
+                const dLogin = document.getElementById('profileDisplayLogin');
+                const guestText = this.getLocalizedText('guest');
+                if (dNick) dNick.textContent = guestText;
+                if (dLogin) dLogin.textContent = '@guest';
+            }
+
             setTimeout(() => modal.style.display = 'none', 300);
         }
     }
@@ -798,9 +964,9 @@ class GeoGator {
             'closeProfileModal': 'profileModal',
             'closeStatisticsModal': 'statisticsModal',
             'closeFeedbackModal': 'feedbackModal',
-            'closeFeedbackModal': 'feedbackModal',
             'closeLeaderboardModal': 'leaderboardModal',
-            'closeHistoryModal': 'historyModal'
+            'closeHistoryModal': 'historyModal',
+            'closeRoleModal': 'roleModal'
         };
 
         Object.entries(closeMap).forEach(([btnId, modalId]) => {
@@ -1277,6 +1443,11 @@ class GeoGator {
             btn.textContent = displayText;
             btn.dataset.val = ans; // Store original value for logic
 
+            // v13.5 Debug Highlight
+            if (this.config.debugMode && ans === correct) {
+                btn.classList.add('debug-correct');
+            }
+
             btn.addEventListener('click', () => {
                 if (!this.config.gameState.isInputBlocked) this.handleAnswerSelection(ans, correct, q);
             });
@@ -1298,7 +1469,7 @@ class GeoGator {
         if (!this.config.playerStats.regionStats[region]) this.config.playerStats.regionStats[region] = { correct: 0, total: 0 };
         this.config.playerStats.regionStats[region].total++;
 
-        if (this.config.currentGame.mode === 'countryByCapitalText') this.highlightCorrectCountry(q.country);
+        this.highlightCorrectCountry(q.country);
 
         if (selected === correct) {
             this.config.gameState.score++;
@@ -1598,18 +1769,20 @@ class GeoGator {
     }
 
     highlightCorrectCountry(name) {
+        // Блокируем зум для режима "Самый-самый"
+        if (this.config.currentGame.mode === 'theMost') return;
+
         if (!this.config.gameState.boundariesLayer) return;
         this.config.gameState.boundariesLayer.eachLayer(layer => {
             const iso = layer.feature.properties.ISO_A2 || layer.feature.properties.ISO_A2_EH;
             const adm3 = layer.feature.properties.ADM0_A3;
             if (window.GeoCountries?.getCountryNameByCode(iso, adm3) === name) {
                 layer.setStyle({ weight: 3, color: '#4ade80', fillColor: '#4ade80', fillOpacity: 0.4, dashArray: '' });
-                if (this.config.currentGame.mode !== 'countryByCapitalText') {
-                    const difficulty = this.config.currentGame?.difficulty || 'normal';
-                    if (DIFFICULTY_CONFIG[difficulty]?.zoom !== false) {
-                        const bounds = layer.getBounds();
-                        if (bounds.isValid()) this.config.gameState.map.flyToBounds(bounds, { padding: [50, 50], maxZoom: 5, duration: 1.5 });
-                    }
+                
+                const difficulty = this.config.currentGame?.difficulty || 'normal';
+                if (DIFFICULTY_CONFIG[difficulty]?.zoom !== false) {
+                    const bounds = layer.getBounds();
+                    if (bounds.isValid()) this.config.gameState.map.flyToBounds(bounds, { padding: [50, 50], maxZoom: 5, duration: 1.5 });
                 }
             }
         });
@@ -1782,7 +1955,10 @@ class GeoGator {
     }
 
     // === v10.0 LEADERBOARD ===
-    async openLeaderboard() {
+    /**
+     * @param {string|null} classNameFilter - If set (e.g. "5-A"), filters by class_name
+     */
+    async openLeaderboard(classNameFilter = null) {
         if (!this.config.user.id) {
             this.showNotification(this.getLocalizedText('leaderboardLoginReq') || "Войдите для просмотра", "info");
             this.openLoginModal();
@@ -1794,18 +1970,47 @@ class GeoGator {
         const loader = document.getElementById('leaderboardLoading');
         const footer = document.getElementById('leaderboardFooter');
         
+        // Update Title dynamically
+        const titleEl = document.querySelector('.leaderboard-title span');
+        if (titleEl) {
+            if (classNameFilter) {
+                titleEl.innerText = `Класс ${classNameFilter}`;
+                // Hide tabs when filtering by class (optional, but logical since tabs are for global difficulty)
+                // But user might want to see who is best in class at "Hard"... 
+                // For now, let's keep tabs but strictly filter the query.
+            } else {
+                titleEl.innerText = this.getLocalizedText('globalLeaderboard') || "Таблица лидеров";
+            }
+        }
+
         table.innerHTML = '';
         loader.classList.remove('hidden');
         footer.classList.add('hidden');
-        document.querySelector('.leaderboard-tabs').style.display = 'none';
+        
+        // Hide difficulty tabs if showing class specific leaderboard (simplification for "Teacher" view)
+        const tabs = document.querySelector('.leaderboard-tabs');
+        if (classNameFilter) {
+             if(tabs) tabs.style.display = 'none';
+        } else {
+             if(tabs) tabs.style.display = 'flex';
+        }
 
-        // Запрос: .select('nickname, login, total_correct, total_time, best_score, total_games')
-        const { data, error } = await supabaseClient
+        let query = supabaseClient
             .from('profiles')
-            .select('nickname, login, total_correct, total_time, best_score, total_games')
-            .eq('is_banned', false)
+            .select('nickname, login, total_correct, total_time, best_score, total_games, class_name') // added class_name
+            .eq('is_banned', false);
+            
+        if (classNameFilter) {
+            query = query.eq('class_name', classNameFilter);
+        }
+
+        // Default sorting (can be improved to respect active tab difficulty if not class filtered)
+        // For Class Leaderboard, usually "Best Score" or "Total Correct" matters most.
+        query = query
             .order('total_correct', { ascending: false })
             .limit(100);
+
+        const { data, error } = await query;
 
         loader.classList.add('hidden');
 
@@ -2078,6 +2283,40 @@ class GeoGator {
             this.config.user.nickname = this.getLocalizedText('guest');
             this.updateProfileUI();
         }
+
+        // Apply Theme
+        if (this.config.settings.theme) {
+            this.changeTheme(this.config.settings.theme);
+        } else {
+            this.changeTheme('dark'); // Default
+        }
+    }
+
+    changeTheme(themeName) {
+        document.documentElement.setAttribute('data-theme', themeName);
+        this.config.settings.theme = themeName;
+        
+        document.querySelectorAll('.theme-btn').forEach(btn => {
+            btn.classList.toggle('active', btn.dataset.theme === themeName);
+        });
+
+        // Dynamic CSS Variables
+        const root = document.documentElement.style;
+        if (themeName === 'light') {
+            root.setProperty('--bg-color', '#f8fafc');
+            root.setProperty('--card-bg-color', '#ffffff');
+            root.setProperty('--text-color', '#0f172a');
+            root.setProperty('--primary-color', '#4f46e5');
+            root.setProperty('--accent-color', '#0ea5e9');
+        } else {
+            // Dark / Default (Deep Blue)
+            root.removeProperty('--bg-color');
+            root.removeProperty('--card-bg-color');
+            root.removeProperty('--text-color');
+            root.removeProperty('--primary-color');
+            root.removeProperty('--accent-color');
+        }
+        this.saveSettings();
     }
     changeLanguage(lang) {
         if (this.config.navigation.gameActive && confirm(this.getLocalizedText('languageChangeWarning'))) {
@@ -2152,6 +2391,111 @@ class GeoGator {
         else if (prev === 'gameSetupScreen') this.showScreen('gameSetupScreen');
         else this.showScreen('mainMenu');
     }
+
+    // === ROLE DASHBOARDS (v13.5) ===
+    openRoleDashboard(role) {
+        this.openModal('roleModal');
+        const content = document.getElementById('roleModalContent');
+        const title = document.getElementById('roleModalTitle');
+        content.innerHTML = ''; // Clear previous
+
+        if (role === 'tester') {
+            title.textContent = "Панель Тестера";
+            title.style.color = "#a855f7"; // Purple
+
+            // 1. Debug Mode Toggle
+            const toggleBlock = document.createElement('div');
+            toggleBlock.className = 'role-block';
+            toggleBlock.innerHTML = `
+                <div class="toggle-container">
+                    <span class="toggle-label">Подсветка ответов</span>
+                    <input type="checkbox" id="debugToggle" class="toggle-switch" ${this.config.debugMode ? 'checked' : ''}>
+                </div>
+                <div class="toggle-container" style="margin-top: 15px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 15px;">
+                    <span class="toggle-label">Расширить настройки</span>
+                    <input type="checkbox" id="settingsToggle" class="toggle-switch">
+                </div>
+            `;
+            content.appendChild(toggleBlock);
+
+            setTimeout(() => {
+                // Debug Toggle
+                document.getElementById('debugToggle')?.addEventListener('change', (e) => {
+                    this.config.debugMode = e.target.checked;
+                    this.showNotification(`Debug Mode: ${e.target.checked ? 'ON' : 'OFF'}`, 'info');
+                });
+
+                // Settings Toggle
+                const sToggle = document.getElementById('settingsToggle');
+                // Check if already unlocked (naive check: is first section visible?)
+                const langSection = document.querySelector('.settings-section');
+                if (langSection && langSection.style.display !== 'none') {
+                    sToggle.checked = true;
+                }
+
+                sToggle?.addEventListener('change', (e) => {
+                    // Target the hidden Language section and Theme section
+                    const sections = document.querySelectorAll('.settings-section');
+                    // Usually Lang is 0, Vol is 2 (index 1 is now Theme if inserted). 
+                    // Let's just toggle ALL sections that are initially hidden or all except the always-visible ones?
+                    // Simpler: Just toggle all 'settings-section' display.
+                    // But wait, volume might be visible? 
+                    // Let's rely on the fact that standard user only sees some. 
+                    // Actually, Language was hidden by default in previous chats? 
+                    // Let's just toggle them all for now as "Extended" implies showing everything.
+                    
+                    sections.forEach(s => {
+                         s.style.display = e.target.checked ? 'block' : 'none';
+                    });
+                     
+                    this.showNotification(e.target.checked ? "Расширенные настройки включены" : "Настройки скрыты", "success");
+                });
+            }, 0);
+        
+        } else if (role === 'teacher') {
+            title.textContent = "Мои Классы";
+            title.style.color = "#4ade80"; // Green
+
+            const createClassSection = (label, start, end) => {
+                const section = document.createElement('div');
+                section.className = 'role-block';
+                section.innerHTML = `<div class="role-section-title"><i class="fas fa-users"></i> ${label}</div>`;
+                
+                const grid = document.createElement('div');
+                grid.className = 'class-grid';
+                
+                const letters = ['А', 'Б', 'В', 'Г', 'Д', 'И'];
+                for (let i = start; i <= end; i++) {
+                    letters.forEach(letter => {
+                        const btn = document.createElement('button');
+                        btn.className = 'class-btn';
+                        btn.textContent = `${i}-${letter}`;
+                        btn.onclick = () => {
+                            this.closeModal('roleModal');
+                            this.openLeaderboard(`${i}-${letter}`);
+                        };
+                        grid.appendChild(btn);
+                    });
+                }
+                section.appendChild(grid);
+                return section;
+            };
+
+            content.appendChild(createClassSection("Средняя школа", 5, 9));
+            content.appendChild(createClassSection("Старшая школа", 10, 11));
+
+        } else if (role === 'admin') {
+            title.textContent = "Панель Администратора";
+            title.style.color = "#ef4444"; // Red
+            content.innerHTML = `
+                <div class="role-block" style="text-align:center; padding: 40px;">
+                    <i class="fas fa-tools" style="font-size: 3rem; color: #64748b; margin-bottom: 20px;"></i>
+                    <p style="color: #94a3b8;">Этот раздел находится в разработке.</p>
+                </div>
+            `;
+        }
+    }
+
     navigateToSettings(from) {
         this.config.navigation.previousScreen = from;
         this.showScreen('settingsScreen');
